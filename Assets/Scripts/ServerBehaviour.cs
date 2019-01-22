@@ -15,7 +15,7 @@ public class ServerBehaviour : MonoBehaviour
     void Start()
     {
         m_Driver = new UdpCNetworkDriver(new INetworkParameter[0]); // Create driver without parameters.
-        // Bind driver to port 9000 and listen to it:
+        // Bind driver to port 9000 and listen through it:
         if (m_Driver.Bind(new IPEndPoint(IPAddress.Any, 9000)) != 0)
         {
             Debug.Log("Failed to bind to port 9000!");
