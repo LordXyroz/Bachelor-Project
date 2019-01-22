@@ -5,6 +5,6 @@ Repository for bachelor thesis. Developing a cyber security strategy game for Cy
 
 
 Created by:
-	- Christian Bråthen Tverberg
+	- Christian BrÃ¥then Tverberg
 	- Maarten Dijkstra
-	- Nataniel Gåsøy
+	- Nataniel GÃ¥sÃ¸y
