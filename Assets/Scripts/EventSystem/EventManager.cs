@@ -63,9 +63,10 @@ public class EventManager : MonoBehaviour
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
-            EventManager.TriggerEvent(EventTypes.Defenses.SANITIZE_INPUT);
-        if (Input.GetKeyDown(KeyCode.S))
             FindObjectOfType<InjectionAttack>().StartAttack();
+        if (Input.GetKeyDown(KeyCode.D))
+            FindObjectOfType<ValidationDenfense>().StartDefense();
+
     }
 
     public void SomeFunc()

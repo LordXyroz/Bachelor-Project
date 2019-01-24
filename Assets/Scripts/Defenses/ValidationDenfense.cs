@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InjectionAttack : BaseAttack
+public class ValidationDenfense : BaseDefense
 {
     // Start is called before the first frame update
-    public void Start()
+    void Start()
     {
         cost = 100;
-        duration = 6;
+        duration = 10;
 
-        description = "Do a code-injection attack";
+        description = "Sanitize and validate user input";
 
-        EventManager.StartListening(EventTypes.Defenses.SANITIZE_INPUT, OnDefense);
+        EventManager.StartListening(EventTypes.Attacks.INJECTION, OnAttack);
     }
 
     // Update is called once per frame
@@ -28,27 +28,27 @@ public class InjectionAttack : BaseAttack
             timer = 0;
         }
     }
-    
+
     public override void Effect()
     {
-        if (!stopped)
-            EventManager.TriggerEvent(EventTypes.Attacks.INJECTION);
+        if (stopped)
+            EventManager.TriggerEvent(EventTypes.Defenses.SANITIZE_INPUT);
         else
-            Debug.Log("Attacker lost!");
-        //gameObject.SetActive(false);    
+            Debug.Log("Defender lost!");
+        //gameObject.SetActive(false);
     }
 
     public override void OnAttack()
     {
-        throw new System.NotImplementedException();
+        stopped = false;
     }
 
     public override void OnDefense()
     {
-        stopped = true;
+        throw new System.NotImplementedException();
     }
 
-    public override void StartAttack()
+    public override void StartDefense()
     {
         triggered = true;
     }
