@@ -1,37 +1,69 @@
 ﻿namespace EventTypes
 {
     [System.Serializable]
+    public static class Logging
+    {
+        private const ushort offset = 0x0000;
+
+
+    }
+
+    [System.Serializable]
+    public static class Network
+    {
+        private const ushort offset = 0x0100;
+
+
+    }
+
+    [System.Serializable]
     public static class Attacks
     {
-        public const uint INJECTION = 0x00000001;
-        public const uint CREDENTIAL_STUFFING = 0x00000002;
-        public const uint PACKAGE_SNIFFING = 0x00000003;
-        public const uint HOSTILE_XML = 0x00000004;
-        public const uint BYPASS_ACCESS_CONTROLL = 0x00000005;
-        public const uint EXPLOIT_SEC_MISCONFIG = 0x00000006;
-        public const uint XSS = 0x00000007;
-        
+        private const ushort offset = 0x0400;
+
+        public const ushort INJECTION = offset + 1;
+        public const ushort CREDENTIAL_STUFFING = offset + 2;
+        public const ushort PACKAGE_SNIFFING = offset + 3;
+        public const ushort HOSTILE_XML = offset + 4;
+        public const ushort BYPASS_ACCESS_CONTROLL = offset + 5;
+        public const ushort EXPLOIT_SEC_MISCONFIG = offset + 6;
+        public const ushort XSS = offset + 7;
+        public const ushort REMOTE_CODE_EXEC = offset + 8;
+        public const ushort EXPLOIT_MISCONFIG_SYS = offset + 9;
+        public const ushort DISABLE_LOG = offset + 10;
     }
 
     [System.Serializable]
     public static class Defenses
     {
-        public const uint SANITIZE_INPUT = 0x00000101;
-        public const uint FIREWALL = 0x00000102;
+        private const ushort offset = 0x0500;
+
+        public const ushort SANITIZE_INPUT = offset + 1;
+        public const ushort TWO_FACTOR_AUTH = offset + 2;
+        public const ushort FIREWALL = offset + 3;
+        public const ushort PATCH_UPDATE = offset + 4;
+        public const ushort LOG_FAILURE = offset + 5;
+        public const ushort UPDATE_CONFIG = offset + 6;
+        public const ushort ESCAPE_UNTRUSTED_HTTP_DATA = offset + 7;
+        public const ushort INTEGRITY_CHECK = offset + 8;
+        public const ushort PATCH_SYSTEM = offset + 9;
+        public const ushort OFFSITE_BACKUP = offset + 10;
     }
 
     [System.Serializable]
     public static class User_Defined
     {
-        public const uint USER_01 = 0x00FF0001;
-        public const uint USER_02 = 0x00FF0002;
-        public const uint USER_03 = 0x00FF0003;
-        public const uint USER_04 = 0x00FF0004;
-        public const uint USER_05 = 0x00FF0005;
-        public const uint USER_06 = 0x00FF0006;
-        public const uint USER_07 = 0x00FF0007;
-        public const uint USER_08 = 0x00FF0008;
-        public const uint USER_09 = 0x00FF0009;
-        public const uint USER_10 = 0x00FF000A;
+        private const ushort offset = 0x0600;
+
+        public const ushort USER_01 = offset + 1;
+        public const ushort USER_02 = offset + 2;
+        public const ushort USER_03 = offset + 3;
+        public const ushort USER_04 = offset + 4;
+        public const ushort USER_05 = offset + 5;
+        public const ushort USER_06 = offset + 6;
+        public const ushort USER_07 = offset + 7;
+        public const ushort USER_08 = offset + 8;
+        public const ushort USER_09 = offset + 9;
+        public const ushort USER_10 = offset + 10;
     }
 }

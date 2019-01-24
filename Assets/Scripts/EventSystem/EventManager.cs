@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 public class EventManager : MonoBehaviour
 {
-    private Dictionary<uint, UnityEvent> eventDictionary;
+    private Dictionary<ushort, UnityEvent> eventDictionary;
 
     private static EventManager eventManager;
 
@@ -30,10 +30,10 @@ public class EventManager : MonoBehaviour
     private void Init()
     {
         if (eventDictionary == null)
-            eventDictionary = new Dictionary<uint, UnityEvent>();
+            eventDictionary = new Dictionary<ushort, UnityEvent>();
     }
 
-    public static void StartListening(uint type, UnityAction action)
+    public static void StartListening(ushort type, UnityAction action)
     {
         UnityEvent thisEvent = null;
 
@@ -48,12 +48,12 @@ public class EventManager : MonoBehaviour
         }
     }
 
-    public static void StopListening(uint type, System.Action action)
+    public static void StopListening(ushort type, System.Action action)
     {
 
     }
 
-    public static void TriggerEvent(uint type)
+    public static void TriggerEvent(ushort type)
     {
         UnityEvent thisEvent = null;
         if (Instance.eventDictionary.TryGetValue(type, out thisEvent))

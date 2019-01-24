@@ -5,10 +5,14 @@ using UnityEngine;
 public class InjectionAttack : BaseAttack
 {
     // Start is called before the first frame update
-    override
     public void Start()
     {
-        EventManager.StartListening(EventTypes.Defenses.SANITIZE_INPUT, OnDefend);
+        cost = 100;
+        duration = 60;
+
+        description = "Do a code-injection attack";
+
+        EventManager.StartListening(EventTypes.Defenses.SANITIZE_INPUT, OnDefense);
     }
 
     // Update is called once per frame
@@ -17,9 +21,18 @@ public class InjectionAttack : BaseAttack
 
     }
     
-
-    public void OnDefend()
+    public override void Effect()
     {
-        Debug.Log("OnDefend was called!!");
+        throw new System.NotImplementedException();
+    }
+
+    public override void OnAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void OnDefense()
+    {
+        throw new System.NotImplementedException();
     }
 }
