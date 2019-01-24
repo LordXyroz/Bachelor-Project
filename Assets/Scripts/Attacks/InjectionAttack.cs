@@ -8,7 +8,7 @@ public class InjectionAttack : BaseAttack
     public void Start()
     {
         cost = 100;
-        duration = 60;
+        duration = 6;
 
         description = "Do a code-injection attack";
 
@@ -18,12 +18,20 @@ public class InjectionAttack : BaseAttack
     // Update is called once per frame
     void Update()
     {
+        if (triggered)
+            timer += Time.deltaTime;
 
+        if (timer >= duration)
+            Effect();
     }
     
     public override void Effect()
     {
-        throw new System.NotImplementedException();
+        if (!stopped)
+            Debug.Log("WIN!");
+        else
+            Debug.Log("LOOSE!");
+        gameObject.SetActive(false);    
     }
 
     public override void OnAttack()
@@ -33,6 +41,11 @@ public class InjectionAttack : BaseAttack
 
     public override void OnDefense()
     {
-        throw new System.NotImplementedException();
+        stopped = true;
+    }
+
+    public override void StartAttack()
+    {
+        triggered = true;
     }
 }

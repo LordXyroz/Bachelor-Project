@@ -7,6 +7,9 @@ abstract public class BaseAttack : MonoBehaviour
     public int cost;
     public int duration;
 
+    public bool stopped = false;
+    public bool triggered = false;
+
     public float timer = 0f;
 
     public string description;
@@ -15,4 +18,6 @@ abstract public class BaseAttack : MonoBehaviour
 
     public abstract void OnAttack();
     public abstract void OnDefense();
+
+    public abstract void StartAttack();
 }
