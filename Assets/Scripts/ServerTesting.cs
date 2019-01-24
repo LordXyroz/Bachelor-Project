@@ -5,23 +5,116 @@ using Unity.Collections;
 using Unity.Networking.Transport;
 using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
 using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
+using System;
+using System.Net.Sockets;
+using System.Threading;
+using System.Text;
 
 public class ServerTesting : MonoBehaviour
 {
-
     public UdpCNetworkDriver m_ServerDriver;
     private NativeList<NetworkConnection> m_connections;
 
     private JobHandle m_updateHandle;
 
+    public static string GetLocalIPAddress()
+    {
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                return ip.ToString();
+            }
+        }
+        throw new Exception("No network adapters with an IPv4 address in the system!");
+    }
+
+
+    // Testing thread:
+    public static void ThreadProc()
+    {
+        // Incoming data from the client.  
+        string data = null;
+        System.Net.IPAddress wantedAddress;
+        for (int i = 0; i < 10; i++)
+        {
+            byte[] bytes = new Byte[1024];
+
+            // Establish the local endpoint for the socket.  
+            // Dns.GetHostName returns the name of the   
+            // host running the application.  
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            Debug.Log("Serverside - server ip address: " + ipHostInfo.AddressList[3]);
+            wantedAddress = ipHostInfo.AddressList[3];
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+
+            // Create a TCP/IP socket.  
+            Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+            // Bind the socket to the local endpoint and   
+            // listen for incoming connections.  
+            try
+            {
+                listener.Bind(localEndPoint);
+                listener.Listen(10);
+
+                // Start listening for connections.  
+                while (true)
+                {
+                    Console.WriteLine("Waiting for a connection...");
+                    // Program is suspended while waiting for an incoming connection.  
+                    Socket handler = listener.Accept();
+                    data = null;
+
+                    // An incoming connection needs to be processed.  
+                    while (true)
+                    {
+                        int bytesRec = handler.Receive(bytes);
+                        data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                        if (data.IndexOf("<EOF>") > -1)
+                        {
+                            break;
+                        }
+                    }
+
+                    // Show the data on the console.  
+                    Debug.Log("Serverside - Text received: " + data);
+
+                    // Echo the data back to the client.
+                    byte[] msg = Encoding.ASCII.GetBytes(wantedAddress.ToString());
+
+                    handler.Send(msg);
+                    handler.Shutdown(SocketShutdown.Both);
+                    handler.Close();
+                }
+
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Server exception: " + e.ToString());
+            }
+        }
+    }
+    // End of thread test.
+
+
     void Start()
     {
+        Thread t = new Thread(new ThreadStart(ThreadProc));
+
+        t.Start();
+
         // Create the server driver, bind it to a port and start listening for incoming connections
         m_ServerDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
-        if (m_ServerDriver.Bind(new IPEndPoint(IPAddress.Loopback, 9000)) != 0)
+        if (m_ServerDriver.Bind(new IPEndPoint(IPAddress.Parse(GetLocalIPAddress()), 9000)) != 0)
             Debug.Log("Failed to bind to port 9000");
         else
+        {
             m_ServerDriver.Listen();
+            Debug.Log("Listening...");
+        }
 
         m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
     }
@@ -58,7 +151,6 @@ public class ServerTesting : MonoBehaviour
             {
                 if (cmd == NetworkEvent.Type.Data)
                 {
-                    // For ping requests we reply with a pong message
                     // A DataStreamReader.Context is required to keep track of current read position since
                     // DataStreamReader is immutable
                     var readerCtx = default(DataStreamReader.Context);

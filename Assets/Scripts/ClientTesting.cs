@@ -5,6 +5,10 @@ using Unity.Collections;
 using Unity.Jobs;
 using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
 using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
+using System.Threading;
+using System.Net.Sockets;
+using System.Text;
+using System;
 
 public class ClientTesting : MonoBehaviour
 {
@@ -22,9 +26,74 @@ public class ClientTesting : MonoBehaviour
     private int m_lastPingTime;
     private int m_numPingsSent;
 
-    
+    // Testing thread:
+    public static void ThreadProc()
+    {
+        // Data buffer for incoming data.  
+        byte[] bytes = new byte[1024];
+
+        // Connect to a remote device.  
+        try
+        {
+            // Establish the remote endpoint for the socket.  
+            // This example uses port 11000 on the local computer.  
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
+
+            // Create a TCP/IP  socket.  
+            Socket sender = new Socket(ipAddress.AddressFamily,
+                SocketType.Stream, ProtocolType.Tcp);
+
+            // Connect the socket to the remote endpoint. Catch any errors.  
+            try
+            {
+                sender.Connect(remoteEP);
+
+                //Debug.Log("Clientside - Socket connected to" + sender.RemoteEndPoint.ToString());
+
+                // Encode the data string into a byte array.  
+                byte[] msg = Encoding.ASCII.GetBytes("I want your ip address<EOF>");
+
+                // Send the data through the socket.  
+                int bytesSent = sender.Send(msg);
+
+                // Receive the response from the remote device.  
+                int bytesRec = sender.Receive(bytes);
+                Debug.Log("Clientside - Echoed test = " + Encoding.ASCII.GetString(bytes, 0, bytesRec));
+
+                // Release the socket.  
+                sender.Shutdown(SocketShutdown.Both);
+                sender.Close();
+
+            }
+            catch (ArgumentNullException ane)
+            {
+                Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
+            }
+            catch (SocketException se)
+            {
+                Console.WriteLine("SocketException : {0}", se.ToString());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unexpected exception : {0}", e.ToString());
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+    }
+
+
     void Start()
     {
+        Thread t = new Thread(new ThreadStart(ThreadProc));
+
+        t.Start();
+
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
     }
 
