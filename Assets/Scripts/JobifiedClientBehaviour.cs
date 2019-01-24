@@ -51,6 +51,11 @@ public class JobifiedClientBehaviour : MonoBehaviour
         ClientJobHandle = m_Driver.ScheduleUpdate();
         ClientJobHandle = job.Schedule(ClientJobHandle);
     }
+
+    public void Testing()
+    {
+        
+    }
 }
 
 // Handle inputs from the network:
@@ -59,6 +64,7 @@ struct ClientUpdateJob : IJob
     public UdpCNetworkDriver driver;
     public NativeArray<NetworkConnection> connection;
     public NativeArray<byte> done;
+    
 
     public void Execute() // Handle updates:
     {
@@ -71,7 +77,8 @@ struct ClientUpdateJob : IJob
 
         DataStreamReader stream;
         NetworkEvent.Type cmd;
-
+        
+        // Do jobs while the queue is not empty:
         while ((cmd = connection[0].PopEvent(driver, out stream)) != NetworkEvent.Type.Empty)
         {
             if (cmd == NetworkEvent.Type.Connect)
@@ -90,10 +97,10 @@ struct ClientUpdateJob : IJob
                 var readerCtx = default(DataStreamReader.Context);
                 uint value = stream.ReadUInt(ref readerCtx);
                 Debug.Log("Client - Got the value = " + value + " back from the server");
-
+                /*
                 done[0] = 1;
                 connection[0].Disconnect(driver);
-                connection[0] = default(NetworkConnection);
+                connection[0] = default(NetworkConnection);*/
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {

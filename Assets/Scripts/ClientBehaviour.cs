@@ -63,9 +63,9 @@ public class ClientBehaviour : MonoBehaviour
                 var readerCtx = default(DataStreamReader.Context);
                 uint value = stream.ReadUInt(ref readerCtx);
                 Debug.Log("Got the value = " + value + " back from the server");
-                Done = true;
+                /*Done = true;
                 m_Connection.Disconnect(m_Driver);
-                m_Connection = default(NetworkConnection);
+                m_Connection = default(NetworkConnection);*/
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {

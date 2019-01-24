@@ -64,6 +64,7 @@ struct ServerUpdateJob : IJobParallelFor
 {
     public UdpCNetworkDriver.Concurrent driver; // .Concurrent allows to call from multiple threads.
     public NativeArray<NetworkConnection> connections;
+    // public ClientData         // Contains data of every client connected t o the server, is a struct. Contains index number, bool NIM, struct ClientType(Attacker/defender/spectator), index of attacker/defender/spectator playing against.
 
     public void Execute(int index)  // Use index to get through all connections.
     {
@@ -82,7 +83,7 @@ struct ServerUpdateJob : IJobParallelFor
                 uint number = stream.ReadUInt(ref readerCtx);
 
                 Debug.Log("Server - Got " + number + " from the Client adding + 2 to it.");
-                Debug.Log("Sending it to client: " + index);
+                Debug.Log("Sending it to client nr " + index);
                 number += 2;
 
                 using (var writer = new DataStreamWriter(4, Allocator.Temp))
