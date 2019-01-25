@@ -1,6 +1,18 @@
 ﻿using TMPro;
 using UnityEngine;
 
+
+/*  ----------------TODO---------------
+ * 
+ * Hover over exploits in order to view information.
+ * Exploits hve levels to them (i.e. 2. broken authentication has 1. brute force 2. Credential stuffing + dictionary 3. tools)
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
 public class AttackerStatusField : MonoBehaviour
 {
 
