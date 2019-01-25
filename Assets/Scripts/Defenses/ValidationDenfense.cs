@@ -5,7 +5,7 @@ using UnityEngine;
 public class ValidationDenfense : BaseDefense
 {
     // Start is called before the first frame update
-    void Start()
+    public override void Start()
     {
         cost = 100;
         duration = 10;
@@ -16,7 +16,7 @@ public class ValidationDenfense : BaseDefense
     }
 
     // Update is called once per frame
-    void Update()
+    public override void Update()
     {
         if (triggered)
             timer += Time.deltaTime;

@@ -14,6 +14,11 @@ abstract public class BaseAttack : MonoBehaviour
 
     public string description;
 
+    public BaseNetComponent target;
+
+    public abstract void Start();
+    public abstract void Update();
+
     public abstract void Effect();
 
     public abstract void OnAttack();

@@ -13,6 +13,9 @@ public abstract  class BaseDefense : MonoBehaviour
     public float timer = 0f;
 
     public string description;
+    
+    public abstract void Start();
+    public abstract void Update();
 
     public abstract void Effect();
 

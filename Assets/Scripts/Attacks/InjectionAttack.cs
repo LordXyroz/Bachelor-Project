@@ -5,7 +5,7 @@ using UnityEngine;
 public class InjectionAttack : BaseAttack
 {
     // Start is called before the first frame update
-    public void Start()
+    public override void Start()
     {
         cost = 100;
         duration = 6;
@@ -16,7 +16,7 @@ public class InjectionAttack : BaseAttack
     }
 
     // Update is called once per frame
-    void Update()
+    public override void Update()
     {
         if (triggered)
             timer += Time.deltaTime;
@@ -31,6 +31,11 @@ public class InjectionAttack : BaseAttack
     
     public override void Effect()
     {
+        //foreach (var def in target.implementedDefenses)
+        //{
+        //    
+        //}
+
         if (!stopped)
             EventManager.TriggerEvent(EventTypes.Attacks.INJECTION);
         else

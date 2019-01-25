@@ -301,7 +301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 0
   duration: 0
-  stopped: 0
+  stopped: 1
   triggered: 0
   timer: 0
   description: 
