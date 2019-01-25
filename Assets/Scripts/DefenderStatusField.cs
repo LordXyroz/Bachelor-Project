@@ -21,6 +21,7 @@ public class DefenderStatusField : MonoBehaviour
     {
         SetStatusText();
         m_TimerStarted = true;
+        m_TimerCount = 0;
         SetTimer();
     }
 
