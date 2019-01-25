@@ -1,0 +1,52 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System;
+
+public class DefenderStatusField : MonoBehaviour
+{
+
+    public TextMeshProUGUI m_Text;
+    public TextMeshProUGUI m_Timer;
+
+    public static float m_TimerCount;
+    public static bool m_TimerStarted = false;
+
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        SetStatusText();
+        m_TimerStarted = true;
+        SetTimer();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        SetStatusText();
+
+        if (m_TimerStarted)
+        {
+            m_TimerCount += Time.deltaTime;
+            SetTimer();
+        }
+    }
+
+    void SetStatusText()
+    {
+        m_Text.text = "Status: " + "Defending";
+    }
+
+    void SetTimer()
+    {
+        float minutes = Mathf.Floor(m_TimerCount / 60);
+        float seconds = (m_TimerCount % 60);
+
+
+        m_Timer.text = minutes.ToString("00") + ":" + seconds.ToString("00");
+    }
+}
