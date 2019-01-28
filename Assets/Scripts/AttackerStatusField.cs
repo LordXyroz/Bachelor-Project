@@ -19,9 +19,10 @@ public class AttackerStatusField : MonoBehaviour
     public TextMeshProUGUI m_Text;
     public TextMeshProUGUI m_Timer;
 
-    public static float m_TimerCount;
+    [SerializeField]
+    public float m_TimerCount;
+    public static bool m_TimerCountDown;
     public static bool m_TimerStarted = false;
-
 
 
     // Start is called before the first frame update
@@ -29,7 +30,18 @@ public class AttackerStatusField : MonoBehaviour
     {
         SetStatusText();
         m_TimerStarted = true;
-        m_TimerCount = 0;
+
+        // If the timer is set to zero (or less), it will count up. otherwise, it will count up
+        if (m_TimerCount <= 0)
+        {
+            m_TimerCount = 0;
+            m_TimerCountDown = false;
+        }
+        else
+        {
+            m_TimerCountDown = true;
+        }
+
         SetTimer();
     }
 
@@ -40,7 +52,14 @@ public class AttackerStatusField : MonoBehaviour
 
         if (m_TimerStarted)
         {
-            m_TimerCount += Time.deltaTime;
+            if (m_TimerCountDown)
+            {
+                m_TimerCount -= Time.deltaTime;
+            }
+            else
+            {
+                m_TimerCount += Time.deltaTime;
+            }
             SetTimer();
         }
     }
@@ -52,10 +71,20 @@ public class AttackerStatusField : MonoBehaviour
 
     void SetTimer()
     {
-        float minutes = Mathf.Floor(m_TimerCount / 60);
+        /// In order to have a timer count down, set a start time (in seconds) and have "m_TimerCount -= Time.deltaTime;" in update
+
         float seconds = (m_TimerCount % 60);
+        float minutes = Mathf.Floor(m_TimerCount / 60);
+        float hours = Mathf.Floor(minutes / 60);
 
 
-        m_Timer.text = minutes.ToString("00") + ":" + seconds.ToString("00");
+        if (m_TimerCount < 0)
+        {
+            m_Timer.text = "Time is out";
+        }
+        else
+        {
+            m_Timer.text = hours.ToString("00") + ":" + minutes.ToString("00") + ":" + seconds.ToString("00");
+        }
     }
 }
