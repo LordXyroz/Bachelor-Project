@@ -139,12 +139,9 @@ public class ClientTesting : MonoBehaviour
         {
             connect = false;
 
-            // If the client ui indicates we should not be sending pings but we do have a connection we close that connection
-            if (m_clientToServerConnection.IsCreated && !ServerEndPoint.IsValid)
-            {
-                m_clientToServerConnection.Disconnect(m_ClientDriver);
-                m_clientToServerConnection = default(NetworkConnection);
-            }
+            // If the client presses the button to branch to this section, the connection will be closed.(as wanted by user.)
+            m_clientToServerConnection.Disconnect(m_ClientDriver);
+            m_clientToServerConnection = default(NetworkConnection);
             Debug.Log("UI - disconnecting...");
         }
         else
@@ -162,9 +159,14 @@ public class ClientTesting : MonoBehaviour
         
     }
 
-    public void SendMessage()
+    public void SendMessage(string message)
     {
-        
+        var messageWriter = new DataStreamWriter(50, Allocator.Temp);
+        // Setting prefix for server to easily know what kind of msg is being written.
+        message += "<Message>";
+        byte[] msg = Encoding.ASCII.GetBytes(message);
+        messageWriter.Write(msg);
+        m_ClientDriver.Send(m_clientToServerConnection, messageWriter);
     }
 
     void FixedUpdate()
@@ -245,11 +247,8 @@ public class ClientTesting : MonoBehaviour
             
             if (cmd == NetworkEvent.Type.Connect)
             {
-                // When we get the connect message we can start sending data to the server
-                // Set the ping id to a sequence number for the new ping we are about to send
-                m_pendingPing = new PendingPing { id = m_numPingsSent, time = Time.fixedTime };
                 // Create a 4 byte data stream which we can store our ping sequence number in
-                var pingData = new DataStreamWriter(30, Allocator.Temp);
+                var pingData = new DataStreamWriter(50, Allocator.Temp);
                 byte[] msg = Encoding.ASCII.GetBytes("<Connecting>");
                 pingData.Write(msg);
                 m_clientToServerConnection.Send(m_ClientDriver, pingData);
@@ -266,18 +265,17 @@ public class ClientTesting : MonoBehaviour
                 byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
                 string data = Encoding.ASCII.GetString(bytes);
 
-                if (data.Contains("Connect"))
+                if (data.Contains("<Connect>"))
                 {
                     Debug.Log("Client - You are connected to server!");
                 }
-                else
+                else if (data.Contains("<MessageReply>"))
                 {
-                    Debug.Log("Client received message: " + data);
+                    Debug.Log("Client message - " + data);
                 }
-
-                m_lastPingTime = (int)((Time.fixedTime - m_pendingPing.time) * 100);
-                m_clientToServerConnection.Disconnect(m_ClientDriver);
-                m_clientToServerConnection = default(NetworkConnection);
+                
+                /*m_clientToServerConnection.Disconnect(m_ClientDriver);
+                m_clientToServerConnection = default(NetworkConnection);*/
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {

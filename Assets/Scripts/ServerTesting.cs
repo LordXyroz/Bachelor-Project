@@ -97,15 +97,16 @@ public class ServerTesting : MonoBehaviour
                     string data = Encoding.ASCII.GetString(bytes);
 
                     /// Create a temporary DataStreamWriter to write back a receival message to the client:
-                    var writer = new DataStreamWriter(30, Allocator.Temp);
+                    var writer = new DataStreamWriter(50, Allocator.Temp);
                     if (data.Contains("<Connecting>"))
                     {
                         Debug.Log("Server - Client connecting to server...");
-                        writer.Write(Encoding.ASCII.GetBytes("Connected"));
+                        writer.Write(Encoding.ASCII.GetBytes("<Connected>"));
                     }
                     else if (data.Contains("<Message>"))
                     {
                         Debug.Log("Server - Got message: " + data);
+                        writer.Write(Encoding.ASCII.GetBytes("Sending this message to client.<MessageReply>" + " : " + m_connections.Length.ToString()));
                     }
                     /// Send a message back to the client.
                     m_ServerDriver.Send(m_connections[i], writer);
