@@ -50,7 +50,7 @@ public class UITest : MonoBehaviour
                     if (endpoint.Length > 1 && ushort.TryParse(endpoint[1], out newPort))
                         port = newPort;
 
-                    Debug.Log($"Connecting to PingServer at {endpoint[0]}:{port}.");
+                    //Debug.Log($"Connecting... : Server at {endpoint[0]}:{port}.");
                     ServerEndPoint = new IPEndPoint(IPAddress.Parse(endpoint[0]), port);
                 }
             }
@@ -63,6 +63,7 @@ public class UITest : MonoBehaviour
             // Ping is running, display ui for stopping it
             if (GUILayout.Button("Stop ping"))
             {
+                //Debug.Log("Disconnecting");
                 ServerEndPoint = default(NetworkEndPoint);
             }
         }

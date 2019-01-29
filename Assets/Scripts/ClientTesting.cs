@@ -3,12 +3,16 @@ using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
 using Unity.Jobs;
+using UnityEngine.UI;
 using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
 using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
 using System.Threading;
 using System.Net.Sockets;
 using System.Text;
 using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 public class ClientTesting : MonoBehaviour
 {
@@ -17,6 +21,27 @@ public class ClientTesting : MonoBehaviour
         public int id;
         public float time;
     }
+    
+
+    public static string GetLocalIPAddress()
+    {
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                return ip.ToString();
+            }
+        }
+        throw new Exception("No network adapters with an IPv4 address in the system!");
+    }
+
+
+
+    // Used to check if client is trying to start to play a game, no matter if host or not.
+    public static NetworkEndPoint ServerEndPoint { get; private set; }
+    private bool connect;
+    private bool start;
 
     private UdpCNetworkDriver m_ClientDriver;
     private NetworkConnection m_clientToServerConnection;
@@ -25,6 +50,7 @@ public class ClientTesting : MonoBehaviour
     // The ping stats are two integers, time for last ping and number of pings
     private int m_lastPingTime;
     private int m_numPingsSent;
+    
 
     // Testing thread:
     public static void ThreadProc()
@@ -40,6 +66,7 @@ public class ClientTesting : MonoBehaviour
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
+
 
             // Create a TCP/IP  socket.  
             Socket sender = new Socket(ipAddress.AddressFamily,
@@ -66,6 +93,7 @@ public class ClientTesting : MonoBehaviour
                 sender.Shutdown(SocketShutdown.Both);
                 sender.Close();
 
+
             }
             catch (ArgumentNullException ane)
             {
@@ -90,9 +118,12 @@ public class ClientTesting : MonoBehaviour
 
     void Start()
     {
-        Thread t = new Thread(new ThreadStart(ThreadProc));
+        start = true;
+        connect = false;
+       
+        /*Thread t = new Thread(new ThreadStart(ThreadProc));
 
-        t.Start();
+        t.Start();*/
 
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
     }
@@ -102,8 +133,101 @@ public class ClientTesting : MonoBehaviour
         m_ClientDriver.Dispose();
     }
 
+    public void ConnectToServer()
+    {
+        if (connect)
+        {
+            connect = false;
+
+            // If the client ui indicates we should not be sending pings but we do have a connection we close that connection
+            if (m_clientToServerConnection.IsCreated && !ServerEndPoint.IsValid)
+            {
+                m_clientToServerConnection.Disconnect(m_ClientDriver);
+                m_clientToServerConnection = default(NetworkConnection);
+            }
+            Debug.Log("UI - disconnecting...");
+        }
+        else
+        {
+            connect = true;
+
+            ServerEndPoint = new IPEndPoint(IPAddress.Parse("10.22.210.138"), 9000);
+            // If the client ui indicates we should be sending pings but we do not have an active connection we create one
+            if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
+            {
+                m_clientToServerConnection = m_ClientDriver.Connect(ServerEndPoint);
+            }
+            Debug.Log("UI - connecting...");
+        }
+        
+    }
+
+    public void SendMessage()
+    {
+        
+    }
+
     void FixedUpdate()
     {
+
+        // When client wants to start a game, check for being host or not.
+        if (start)
+        {
+            start = false;
+
+            // Testing to get ipaddresses
+            List<string[]> results = new List<string[]>();
+
+            using (System.Diagnostics.Process p = new System.Diagnostics.Process())
+            {
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.Arguments = "/c arp -a";
+                p.StartInfo.FileName = @"C:\Windows\System32\cmd.exe";
+                p.Start();
+
+                string line;
+
+                while ((line = p.StandardOutput.ReadLine()) != null)
+                {
+                    if (line != "" && !line.Contains("Interface") && !line.Contains("Physical Address"))
+                    {
+                        var lineArr = line.Trim().Split(' ').Select(n => n).Where(n => !string.IsNullOrEmpty(n)).ToArray();
+                        var arrResult = new string[]
+                    {
+                   lineArr[0],
+                   lineArr[1],
+                   lineArr[2]
+                    };
+                        results.Add(arrResult);
+                    }
+                }
+
+                p.WaitForExit();
+            }
+
+            // Add local ip for testing purposes.
+            string[] localIP = new string[3];
+            localIP[0] = GetLocalIPAddress();
+            results.Add(localIP);
+            //TODO try connect to all of these, if can't connect to any of them
+            for (int i = 0; i < results.Count; i++)
+            {
+                Debug.Log("result nr." + i + ": " + results[i][0]);
+            }
+            //Your own ip is not in these results, so when you want to host yourself, do something else than this...
+            //For now just add own ip address so you can host.TODO fix.
+            
+            ///
+            /// start takes results and tries to get connection this one time.
+            /// in start try to send message, if nothing is received back within a short period, we have no connection?
+            /// when start is done, it will go through else part, and send/receive data whenever needed.
+            /// 
+
+
+
+        }
         // Update the ping client UI with the ping statistics computed by teh job scheduled previous frame since that
         // is now guaranteed to have completed
         UITest.UpdateStats(m_numPingsSent, m_lastPingTime);
@@ -111,46 +235,57 @@ public class ClientTesting : MonoBehaviour
         // Update the NetworkDriver. It schedules a job so we must wait for that job with Complete
         m_ClientDriver.ScheduleUpdate().Complete();
 
-        // If the client ui indicates we should be sending pings but we do not have an active connection we create one
-        if (UITest.ServerEndPoint.IsValid && !m_clientToServerConnection.IsCreated)
-            m_clientToServerConnection = m_ClientDriver.Connect(UITest.ServerEndPoint);
-        // If the client ui indicates we should not be sending pings but we do have a connection we close that connection
-        if (!UITest.ServerEndPoint.IsValid && m_clientToServerConnection.IsCreated)
-        {
-            m_clientToServerConnection.Disconnect(m_ClientDriver);
-            m_clientToServerConnection = default(NetworkConnection);
-        }
 
-        DataStreamReader strm;
+
+
         NetworkEvent.Type cmd;
         // Process all events on the connection. If the connection is invalid it will return Empty immediately
-        while ((cmd = m_clientToServerConnection.PopEvent(m_ClientDriver, out strm)) != NetworkEvent.Type.Empty)
+        while ((cmd = m_clientToServerConnection.PopEvent(m_ClientDriver, out DataStreamReader strm)) != NetworkEvent.Type.Empty)
         {
+            
             if (cmd == NetworkEvent.Type.Connect)
             {
                 // When we get the connect message we can start sending data to the server
                 // Set the ping id to a sequence number for the new ping we are about to send
                 m_pendingPing = new PendingPing { id = m_numPingsSent, time = Time.fixedTime };
                 // Create a 4 byte data stream which we can store our ping sequence number in
-                var pingData = new DataStreamWriter(4, Allocator.Temp);
-                pingData.Write(m_numPingsSent);
+                var pingData = new DataStreamWriter(30, Allocator.Temp);
+                byte[] msg = Encoding.ASCII.GetBytes("<Connecting>");
+                pingData.Write(msg);
                 m_clientToServerConnection.Send(m_ClientDriver, pingData);
+
                 pingData.Dispose();
                 // Update the number of sent pings
                 ++m_numPingsSent;
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
-                // When the pong message is received we calculate the ping time and disconnect
-                m_lastPingTime = (int)((Time.fixedTime - m_pendingPing.time) * 1000);
+                // If data received says that client is connected to server, we are connected!
+                var readerCtx = default(DataStreamReader.Context);
+                /// Read message sent from client and respond to that:
+                byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
+                string data = Encoding.ASCII.GetString(bytes);
+
+                if (data.Contains("Connect"))
+                {
+                    Debug.Log("Client - You are connected to server!");
+                }
+                else
+                {
+                    Debug.Log("Client received message: " + data);
+                }
+
+                m_lastPingTime = (int)((Time.fixedTime - m_pendingPing.time) * 100);
                 m_clientToServerConnection.Disconnect(m_ClientDriver);
                 m_clientToServerConnection = default(NetworkConnection);
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
+                Debug.Log("Client - Disconnecting");
                 // If the server disconnected us we clear out connection
                 m_clientToServerConnection = default(NetworkConnection);
             }
         }
+        
     }
 }
