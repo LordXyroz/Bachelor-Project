@@ -3,24 +3,49 @@ using UnityEngine.EventSystems;
 
 public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    private Color mouseOverColor = Color.blue;
-    private Color originalColor = Color.yellow;
-    private bool dragging = false;
-    private float distance;
+    //private Color mouseOverColor = Color.blue;
+    //private Color originalColor = Color.yellow;
+    //private bool dragging = false;
+    //private float distance;
+
+    public Transform parentToReturnTo = null;
+
+    private Vector2 offset;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        /// Use an ofset in order to have the focus on the clicked point, not snap to the middle
+
+        offset = (Vector2)this.transform.position - eventData.position;
+        Cursor.visible = false;
+
+        parentToReturnTo = this.transform.parent;
+        this.transform.SetParent(this.transform.parent.parent);
+
+        GetComponent<CanvasGroup>().blocksRaycasts = false;
+
+
         Debug.Log("on begin drag");
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        Debug.Log("OnDrag");
+        this.transform.position = eventData.position + offset;
+
+
+        //Debug.Log("OnDrag");
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("OnEndDrag");
+        Cursor.visible = true;
+
+        this.transform.SetParent(parentToReturnTo);
+
+        GetComponent<CanvasGroup>().blocksRaycasts = true;
+
+
+        Debug.Log("OnEndDrag. X: " + eventData.position.x + ", Y: " + eventData.position.y);
     }
 
 
