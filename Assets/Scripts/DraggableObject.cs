@@ -16,16 +16,10 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        /// Use an ofset in order to have the focus on the clicked point, not snap to the middle
-        //Image APIClone = (Image)Instantiate(API, this.transform.position, this.transform.rotation);
-
-        //DropZone dropZone = eventData.pointerDrag.GetComponent<DropZone>();
-
-        //Debug.Log(dropZone.transform.parent.GetComponent<DropZone>());
+        /// if the object is not dragged from a dropzone, make a clone of it.
         if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
         {
-            Debug.Log("Instantiating API clone");
-            Image API2 = (Image)Instantiate(API, parentToReturnTo);
+            Image APIClone = (Image)Instantiate(API, parentToReturnTo);
         }
 
         offset = (Vector2)this.transform.position - eventData.position;
@@ -52,12 +46,12 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         this.transform.SetParent(parentToReturnTo);
         Debug.Log("OnDrop parent: " + parentToReturnTo);
 
-        if (this.transform.parent != parentToReturnTo)
-        {
-            Debug.Log("Wrong parent on drop: " + this.transform.parent + " - " + parentToReturnTo);
-        }
-
         GetComponent<CanvasGroup>().blocksRaycasts = true;
+
+        if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
+        {
+            Destroy(this.gameObject);
+        }
 
 
         //Debug.Log("OnEndDrag. X: " + eventData.position.x + ", Y: " + eventData.position.y);
@@ -67,33 +61,18 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     void OnMouseEnter()
     {
-        Debug.Log("OnMouseEnter (color change)");
         GetComponent<Image>().material.color = mouseOverColor;
+        Debug.Log("OnMouseEnter (color change) " + GetComponent<Image>().material.color);
     }
 
     void OnMouseExit()
     {
         GetComponent<Image>().material.color = originalColor;
     }
-    /*
-    void OnMouseDown()
-    {
-        distance = Vector3.Distance(transform.position, Camera.main.transform.position);
-        dragging = true;
-    }
 
-    void OnMouseUp()
+    /// destroys objects outside of the screen (outside camera view)
+    void OnBecameInvisible()
     {
-        dragging = false;
+        Destroy(gameObject);
     }
-
-    void Update()
-    {
-        if (dragging)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Vector3 rayPoint = ray.GetPoint(distance);
-            transform.position = rayPoint;
-        }
-    }*/
 }

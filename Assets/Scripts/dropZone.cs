@@ -13,6 +13,6 @@ public class DropZone : MonoBehaviour, IDropHandler
         }
 
 
-        Debug.Log(eventData.pointerDrag.name + " - was dropped on - " + gameObject.name);
+        //Debug.Log(eventData.pointerDrag.name + " - was dropped on - " + gameObject.name);
     }
 }
