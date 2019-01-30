@@ -13,6 +13,16 @@ public class APINetComponent : BaseNetComponent
 
     public override void Update()
     {
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
+    }
+
+    public override void UnderAttack(Message message)
+    {
+        if (name == message.targetName)
+        {
+            Debug.Log("Message recieved from: " + message.senderName + " to me: " + name);
+
+            EventManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Events.DEFENSE));
+        }
     }
 }

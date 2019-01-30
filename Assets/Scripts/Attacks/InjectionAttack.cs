@@ -12,7 +12,7 @@ public class InjectionAttack : BaseAttack
 
         description = "Do a code-injection attack";
 
-        EventManager.StartListening(EventTypes.Defenses.SANITIZE_INPUT, OnDefense);
+        //EventManager.StartListening(EventTypes.Defenses.SANITIZE_INPUT, OnDefense);
     }
 
     // Update is called once per frame
@@ -27,6 +27,11 @@ public class InjectionAttack : BaseAttack
             triggered = false;
             timer = 0;
         }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            EventManager.BroadcastMessage(new Message("GoogleAPI", name, MessageTypes.Events.ATTACK));
+        }
     }
     
     public override void Effect()
@@ -36,16 +41,19 @@ public class InjectionAttack : BaseAttack
         //    
         //}
 
-        if (!stopped)
-            EventManager.TriggerEvent(EventTypes.Attacks.INJECTION);
-        else
-            Debug.Log("Attacker lost!");
+        //if (!stopped)
+        //    EventManager.TriggerEvent(EventTypes.Attacks.INJECTION);
+        //else
+        //    Debug.Log("Attacker lost!");
         //gameObject.SetActive(false);    
     }
 
-    public override void OnAttack()
+    public override void AttackResponse(Message message)
     {
-        throw new System.NotImplementedException();
+        if (message.targetName == name)
+        {
+            Debug.Log("Message recieved from: " + message.senderName + " to me: " + name);
+        }
     }
 
     public override void OnDefense()
@@ -57,4 +65,5 @@ public class InjectionAttack : BaseAttack
     {
         triggered = true;
     }
+    
 }

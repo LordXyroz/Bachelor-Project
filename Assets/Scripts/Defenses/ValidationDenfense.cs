@@ -12,7 +12,7 @@ public class ValidationDenfense : BaseDefense
 
         description = "Sanitize and validate user input";
 
-        EventManager.StartListening(EventTypes.Attacks.INJECTION, OnAttack);
+        //EventManager.StartListening(EventTypes.Attacks.INJECTION, OnAttack);
     }
 
     // Update is called once per frame
@@ -31,10 +31,10 @@ public class ValidationDenfense : BaseDefense
 
     public override void Effect()
     {
-        if (stopped)
-            EventManager.TriggerEvent(EventTypes.Defenses.SANITIZE_INPUT);
-        else
-            Debug.Log("Defender lost!");
+        //if (stopped)
+        //    EventManager.TriggerEvent(EventTypes.Defenses.SANITIZE_INPUT);
+        //else
+        //    Debug.Log("Defender lost!");
         //gameObject.SetActive(false);
     }
 

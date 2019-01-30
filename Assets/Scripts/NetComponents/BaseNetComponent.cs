@@ -10,4 +10,6 @@ public abstract class BaseNetComponent : MonoBehaviour
 
     public abstract void Start();
     public abstract void Update();
+
+    public abstract void UnderAttack(Message message);
 }

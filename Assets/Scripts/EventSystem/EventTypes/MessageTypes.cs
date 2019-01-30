@@ -1,4 +1,4 @@
-﻿namespace EventTypes
+﻿namespace MessageTypes
 {
     [System.Serializable]
     public static class Logging
@@ -14,6 +14,15 @@
         private const ushort offset = 0x0100;
 
 
+    }
+
+    [System.Serializable]
+    public static class Events
+    {
+        private const ushort offset = 0x0200;
+
+        public const ushort ATTACK = offset + 1;
+        public const ushort DEFENSE = offset + 2;
     }
 
     [System.Serializable]
