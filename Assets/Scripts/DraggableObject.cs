@@ -6,8 +6,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 {
     private Color mouseOverColor = Color.blue;
     private Color originalColor;
-    //private bool dragging = false;
-    //private float distance;
 
     public float setupScreenWidth;
     public float setupScreenHeight;
@@ -80,12 +78,11 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (objectPosition.x < width * 0.5f - objectWidth * 0.33f ||
             objectPosition.x > width * 1.5f - objectWidth * 1.3f ||
             objectPosition.y < height * 0.32f - objectHeight ||
-            objectPosition.y > height)
+            objectPosition.y > height + 10)
         {
             Destroy(this.gameObject);
         }
     }
-
 
 
     void OnMouseEnter()
