@@ -325,11 +325,11 @@ public class ClientTesting : MonoBehaviour
             Console.WriteLine(e.ToString());
         }
     }
-
-
+    
 
     void Start()
     {
+        StartCoroutine(UpdateConnection());
         connect = false;
         
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
@@ -375,6 +375,24 @@ public class ClientTesting : MonoBehaviour
         }
     }
 
+    IEnumerator UpdateConnection()
+    {
+        while (true)
+        {
+            if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
+            {
+                var updateWriter = new DataStreamWriter(30, Allocator.Temp);
+                // Setting prefix for server to easily know what kind of msg is being written.
+                string message = "<UpdateConnection>";
+                byte[] msg = Encoding.ASCII.GetBytes(message);
+                updateWriter.Write(msg);
+                m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
+                updateWriter.Dispose();
+            }
+            yield return new WaitForSeconds(15);
+        }
+    }
+
     /// <summary>
     /// SendMessage is used to send simple strings through the network.
     /// </summary>
@@ -407,11 +425,12 @@ public class ClientTesting : MonoBehaviour
     {
         Debug.Log("Client - Sending classObject.");
         string classObj = JsonUtility.ToJson(obj) + "<Class>";
-        var classWriter = new DataStreamWriter(200, Allocator.Temp);
+        var classWriter = new DataStreamWriter(classObj.Length + 2, Allocator.Temp);
         // Setting prefix for server to easily know what kind of msg is being written.
         byte[] msg = Encoding.ASCII.GetBytes(classObj);
         classWriter.Write(msg);
         m_ClientDriver.Send(m_clientToServerConnection, classWriter);
+        classWriter.Dispose();
     }
 
     public class TestClass
@@ -459,9 +478,11 @@ public class ClientTesting : MonoBehaviour
                 {
                     Debug.Log("Client - Got message: " + data);
                 }
+                else if (data.Contains("<UpdateConnection>"))
+                {
+                    Debug.Log("Connection updated");
+                }
                 
-                /*m_clientToServerConnection.Disconnect(m_ClientDriver);
-                m_clientToServerConnection = default(NetworkConnection);*/
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
@@ -470,6 +491,5 @@ public class ClientTesting : MonoBehaviour
                 m_clientToServerConnection = default(NetworkConnection);
             }
         }
-
     }
 }

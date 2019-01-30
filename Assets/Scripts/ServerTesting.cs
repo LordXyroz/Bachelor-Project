@@ -152,6 +152,10 @@ public class ServerTesting : MonoBehaviour
             // Pop all events for the connection
             while ((cmd = m_ServerDriver.PopEventForConnection(m_connections[i], out strm)) != NetworkEvent.Type.Empty)
             {
+                if (cmd == NetworkEvent.Type.Connect)
+                {
+                    Debug.Log("Server - Connectevent");
+                }
                 if (cmd == NetworkEvent.Type.Data)
                 {
                     // If client is trying to connect to the server, send back data about this.
@@ -163,7 +167,12 @@ public class ServerTesting : MonoBehaviour
 
                     /// Create a temporary DataStreamWriter to write back a receival message to the client:
                     var writer = new DataStreamWriter(100, Allocator.Temp);
-                    if (data.Contains("<Connecting>"))
+                    if (data.Contains("<UpdateConnection>"))
+                    {
+                        writer.Write(Encoding.ASCII.GetBytes("Connection updated<UpdateConnection>"));
+                        m_ServerDriver.Send(m_connections[i], writer);
+                    }
+                    else if (data.Contains("<Connecting>"))
                     {
                         Debug.Log("Server - Connecting client...");
                         writer.Write(Encoding.ASCII.GetBytes("<Connected>"));
@@ -176,12 +185,11 @@ public class ServerTesting : MonoBehaviour
                         Debug.Log("Server - Got message: " + data);
                         writer.Write(Encoding.ASCII.GetBytes("Sending this message to client.<MessageReply>" + "  " + i + " : " + m_connections.Length.ToString()));
 
-                        /// Send a message back to the client.
+                        /// Send a message to all clients:
                         m_ServerDriver.Send(m_connections[i], writer);
                     }
                     else if (data.Contains("<Class>"))
                     {
-
                         Debug.Log("Server - Got class: " + data);
                     }
 
