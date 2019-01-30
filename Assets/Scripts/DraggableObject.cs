@@ -9,10 +9,21 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     //private bool dragging = false;
     //private float distance;
 
+    public float setupScreenWidth;
+    public float setupScreenHeight;
+
+    private Camera mainCamera;
+
     public Transform parentToReturnTo = null;
     public Image API;
 
     private Vector2 offset;
+    Vector2 objectPosition;
+
+    void Start()
+    {
+        mainCamera = Camera.main;
+    }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -42,11 +53,10 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnEndDrag(PointerEventData eventData)
     {
         Cursor.visible = true;
+        GetComponent<CanvasGroup>().blocksRaycasts = true;
 
         this.transform.SetParent(parentToReturnTo);
-        Debug.Log("OnDrop parent: " + parentToReturnTo);
 
-        GetComponent<CanvasGroup>().blocksRaycasts = true;
 
         if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
         {
@@ -54,7 +64,26 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
 
 
-        //Debug.Log("OnEndDrag. X: " + eventData.position.x + ", Y: " + eventData.position.y);
+        /// Setting up the area for the drop zone, deleting objects dropped outside of the drop zone
+        GameObject dropZone = GameObject.Find("SystemSetupScreen");
+        RectTransform setupScreen = dropZone.GetComponent<RectTransform>();// transform as RectTransform;
+
+        objectPosition = this.transform.position;
+        float width = setupScreen.rect.width;
+        float height = setupScreen.rect.height;
+        float objectWidth = this.GetComponent<RectTransform>().rect.width;
+        float objectHeight = this.GetComponent<RectTransform>().rect.height;
+
+        Debug.Log("position: " + objectPosition.x + ", " + objectPosition.y +
+          "----, width low: " + (width * 0.5f - objectWidth * 0.33f) + " width high: " + (width * 1.5f - objectWidth * 1.3f));
+
+        if (objectPosition.x < width * 0.5f - objectWidth * 0.33f ||
+            objectPosition.x > width * 1.5f - objectWidth * 1.3f ||
+            objectPosition.y < height * 0.32f - objectHeight ||
+            objectPosition.y > height)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
 
@@ -73,6 +102,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     /// destroys objects outside of the screen (outside camera view)
     void OnBecameInvisible()
     {
+        Debug.Log("Outside of screen");
         Destroy(gameObject);
     }
 }
