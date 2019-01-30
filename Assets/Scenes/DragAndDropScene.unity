@@ -239,6 +239,17 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7987985313589940670, guid: 604ab902938f3c441a6ee5ca93c7fe48,
+        type: 3}
+      propertyPath: API
+      value: 
+      objectReference: {fileID: 7987985313589940669, guid: 604ab902938f3c441a6ee5ca93c7fe48,
+        type: 3}
+    - target: {fileID: 7987985313589940670, guid: 604ab902938f3c441a6ee5ca93c7fe48,
+        type: 3}
+      propertyPath: parentToReturnTo
+      value: 
+      objectReference: {fileID: 980619073}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 604ab902938f3c441a6ee5ca93c7fe48, type: 3}
 --- !u!1001 &735121267
@@ -490,7 +501,7 @@ GameObject:
   - component: {fileID: 980619075}
   - component: {fileID: 980619074}
   m_Layer: 5
-  m_Name: ItemMenu
+  m_Name: ItemMenuLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -714,6 +725,17 @@ PrefabInstance:
       propertyPath: m_FlexibleWidth
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7987985313589940670, guid: 604ab902938f3c441a6ee5ca93c7fe48,
+        type: 3}
+      propertyPath: parentToReturnTo
+      value: 
+      objectReference: {fileID: 980619073}
+    - target: {fileID: 7987985313589940670, guid: 604ab902938f3c441a6ee5ca93c7fe48,
+        type: 3}
+      propertyPath: API
+      value: 
+      objectReference: {fileID: 7987985313589940669, guid: 604ab902938f3c441a6ee5ca93c7fe48,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 604ab902938f3c441a6ee5ca93c7fe48, type: 3}
 --- !u!224 &1032073048 stripped
@@ -970,7 +992,7 @@ GameObject:
   - component: {fileID: 1593867381}
   - component: {fileID: 1593867380}
   m_Layer: 5
-  m_Name: ItemMenu (1)
+  m_Name: ItemMenuRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

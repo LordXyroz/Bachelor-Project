@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class dropZone : MonoBehaviour, IDropHandler
+public class DropZone : MonoBehaviour, IDropHandler
 {
 
     public void OnDrop(PointerEventData eventData)
@@ -13,6 +13,6 @@ public class dropZone : MonoBehaviour, IDropHandler
         }
 
 
-        Debug.Log(eventData.pointerDrag.name + " was dropped on" + gameObject.name);
+        Debug.Log(eventData.pointerDrag.name + " - was dropped on - " + gameObject.name);
     }
 }
