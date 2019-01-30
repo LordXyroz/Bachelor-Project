@@ -13,15 +13,27 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 
 public class ClientTesting : MonoBehaviour
 {
-    struct PendingPing
-    {
-        public int id;
-        public float time;
-    }
+    /// <summary>
+    /// Debug.Log($"{DateTime.Now:HH:mm:ss.fff}: starting a new callback.");
+    /// This is a way to see time right now, could be useful.
+    /// </summary>
+
+    // Testing to get ipaddresses
+    List<string[]> results = new List<string[]>();
+
+
+    // Used to check if client is trying to start to play a game, no matter if host or not.
+    public static NetworkEndPoint ServerEndPoint { get; private set; }
+    private bool connect;
+
+    private UdpCNetworkDriver m_ClientDriver;
+    private NetworkConnection m_clientToServerConnection;
     
+
 
     public static string GetLocalIPAddress()
     {
@@ -36,28 +48,225 @@ public class ClientTesting : MonoBehaviour
         throw new Exception("No network adapters with an IPv4 address in the system!");
     }
 
+    IEnumerator FindHost()
+    {
+        for (int i = 0; i < results.Count; i++)
+        {
+
+            // Data buffer for incoming data.  
+            byte[] bytes = new byte[1024];
+
+            // Connect to a remote device.  
+            try
+            {
+                // Establish the remote endpoint for the socket.  
+                // This example uses port 11000 on the local computer.  
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(results[i][0]), 11000);
+
+                // Create a TCP/IP  socket.  
+                Socket sender = new Socket(IPAddress.Parse(results[i][0]).AddressFamily,//maybe change to local ip!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    SocketType.Stream, ProtocolType.Tcp);
+
+                // Connect the socket to the remote endpoint. Catch any errors.  
+                try
+                {
+                    sender.Connect(remoteEP);
+
+                    //Debug.Log("Clientside - Socket connected to" + sender.RemoteEndPoint.ToString());
+
+                    // Encode the data string into a byte array.  
+                    byte[] msg = Encoding.ASCII.GetBytes("I want your ip address<EOF>");
+
+                    // Send the data through the socket.  
+                    int bytesSent = sender.Send(msg);
+
+                    // Receive the response from the remote device.  
+                    int bytesRec = sender.Receive(bytes);
+                    Debug.Log("Clientside - Echoed test = " + Encoding.ASCII.GetString(bytes, 0, bytesRec));
+
+                    if (Encoding.ASCII.GetString(bytes, 0, bytesRec).Length > 0)
+                    {
+                        ServerEndPoint = new IPEndPoint(IPAddress.Parse(results[i][0]), 9000);
+                    }
+                    else
+                    {
+                        ServerEndPoint = default;
+                    }
+
+                    // Release the socket.  
+                    sender.Shutdown(SocketShutdown.Both);
+                    sender.Close();
+
+                }
+                catch (ArgumentNullException ane)
+                {
+                    Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
+                }
+                catch (SocketException se)
+                {
+                    Console.WriteLine("SocketException : {0}", se.ToString());
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Unexpected exception : {0}", e.ToString());
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            
+            yield return new WaitForSeconds(1);
+            
+
+            Debug.Log("finished result nr: " + i);
+        }
+    }
+
+    /// <summary>
+    /// GetResults is gathering the ipaddresses of possible hosts of the game and puts them into the list 'results'.
+    /// </summary>
+    public void GetResults()
+    {
+        using (System.Diagnostics.Process p = new System.Diagnostics.Process())
+        {
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.Arguments = "/c arp -a";
+            p.StartInfo.FileName = @"C:\Windows\System32\cmd.exe"; // If user is not of windows one should use something else!
+            p.Start();
+
+            string line;
+
+            while ((line = p.StandardOutput.ReadLine()) != null)
+            {
+                if (line != "" && !line.Contains("Interface") && !line.Contains("Physical Address"))
+                {
+                    var lineArr = line.Trim().Split(' ').Select(n => n).Where(n => !string.IsNullOrEmpty(n)).ToArray();
+                    var arrResult = new string[]
+                {
+                   lineArr[0],
+                   lineArr[1],
+                   lineArr[2]
+                };
+                    results.Add(arrResult);
+                }
+            }
+
+            p.WaitForExit();
+        }
+
+        // Add local ip for testing purposes.
+        string[] localIP = new string[3];
+        localIP[0] = GetLocalIPAddress();
+        results.Add(localIP);
+        //TODO try connect to all of these, if can't connect to any of them
+        /*for (int i = 0; i < results.Count; i++)
+        {
+            Debug.Log("result nr." + i + ": " + results[i][0]);
+        }*/
+    }
+
+    public void GetHostIPAddress()
+    {
+        /// Collects possible ips of hosts in the local network.
+        GetResults();
+        
+        // TODO, for matchmaking make the players have to wait until all players are connected and in game.
+
+        /// Tries to find a host out of the possible ips in the local network.
+        //StartCoroutine(FindHost());
+
+        /*for (int i = 0; i < results.Count; i++)
+        {
+            Debug.Log("ipaddress nr: " + i);
 
 
-    // Used to check if client is trying to start to play a game, no matter if host or not.
-    public static NetworkEndPoint ServerEndPoint { get; private set; }
-    private bool connect;
-    private bool start;
 
-    private UdpCNetworkDriver m_ClientDriver;
-    private NetworkConnection m_clientToServerConnection;
-    // pendingPing is a ping sent to the server which have not yet received a response.
-    private PendingPing m_pendingPing;
-    // The ping stats are two integers, time for last ping and number of pings
-    private int m_lastPingTime;
-    private int m_numPingsSent;
+            ServerEndPoint = new IPEndPoint(IPAddress.Parse(results[i][0]), 9000);
+            // If the client ui indicates we should be sending pings but we do not have an active connection we create one.
+            if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
+            {
+                m_clientToServerConnection = m_ClientDriver.Connect(ServerEndPoint);
+            }
+            
+            Debug.Log(m_ClientDriver.GetConnectionState(m_clientToServerConnection));
+
+            // Update the NetworkDriver. Needs to be done before trying to pop events.
+            m_ClientDriver.ScheduleUpdate().Complete();
+            
+
+            NetworkEvent.Type cmd;
+            // Process all events on the connection. If the connection is invalid it will return Empty immediately.
+            while ((cmd = m_clientToServerConnection.PopEvent(m_ClientDriver, out DataStreamReader strm)) != NetworkEvent.Type.Empty)
+            {
+
+                if (cmd == NetworkEvent.Type.Connect)
+                {
+                    /// Create a 4 byte data stream which we can send our connection request through.
+                    var connectionWriter = new DataStreamWriter(100, Allocator.Temp);
+                    byte[] msg = Encoding.ASCII.GetBytes("<Connecting>");
+                    connectionWriter.Write(msg);
+                    m_clientToServerConnection.Send(m_ClientDriver, connectionWriter);
+                    
+                    connectionWriter.Dispose();
+                }
+                else if (cmd == NetworkEvent.Type.Data)
+                {
+                    // If data received says that client is connected to server, we are connected!
+                    var readerCtx = default(DataStreamReader.Context);
+                    /// Read message sent from client and respond to that:
+                    byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
+                    string data = Encoding.ASCII.GetString(bytes);
+
+                    if (data.Contains("<Connect>"))
+                    {
+                        Debug.Log("Client - You are connected to server!");
+                        break;
+                        //TODO see if break puts us in correct spot..
+                    }
+                    else
+                    {
+                        ServerEndPoint = default;
+                    }
+
+                    //m_clientToServerConnection.Disconnect(m_ClientDriver);
+                    //m_clientToServerConnection = default(NetworkConnection);
+                }
+            }
+            /*try
+            {
+                var writer = new DataStreamWriter(100, Allocator.Temp);
+                byte[] message = Encoding.ASCII.GetBytes("Hello son!<Message>");
+                writer.Write(message);
+
+                var failure = m_ClientDriver.Send(m_clientToServerConnection, writer);
+                Debug.Log("failure: " + failure);
+            } catch(Exception e)
+            {
+                Debug.Log(e);
+            }
+
+            ServerEndPoint = default;
+        }*/
+        //Debug.Log("Ipaddresses looped");// If serverendpoint doesn't have a valid ipaddress at this point, we could not find any hosts! TODO say this to user!
+    }
+
+    public void idk()
+    {
+        Debug.Log("idk");
+    }
     
 
     // Testing thread:
-    public static void ThreadProc()
+    public void ThreadProc()
     {
         // Data buffer for incoming data.  
         byte[] bytes = new byte[1024];
-
         // Connect to a remote device.  
         try
         {
@@ -66,7 +275,6 @@ public class ClientTesting : MonoBehaviour
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
-
 
             // Create a TCP/IP  socket.  
             Socket sender = new Socket(ipAddress.AddressFamily,
@@ -87,25 +295,27 @@ public class ClientTesting : MonoBehaviour
 
                 // Receive the response from the remote device.  
                 int bytesRec = sender.Receive(bytes);
-                Debug.Log("Clientside - Echoed test = " + Encoding.ASCII.GetString(bytes, 0, bytesRec));
-
+                //Debug.Log("Clientside(socket) - Echoed test = " + Encoding.ASCII.GetString(bytes, 0, bytesRec));
                 // Release the socket.  
                 sender.Shutdown(SocketShutdown.Both);
                 sender.Close();
 
-
+                // Setup server connection and try to connect:
+                string hostIp = Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                ServerEndPoint = new IPEndPoint(IPAddress.Parse(hostIp), 9000);
+                
             }
             catch (ArgumentNullException ane)
             {
-                Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
+                Console.WriteLine("ArgumentNullException: ", ane.ToString());
             }
             catch (SocketException se)
             {
-                Console.WriteLine("SocketException : {0}", se.ToString());
+                Console.WriteLine("SocketException: ", se.ToString());
             }
             catch (Exception e)
             {
-                Console.WriteLine("Unexpected exception : {0}", e.ToString());
+                Console.WriteLine("Unexpected exception: ", e.ToString());
             }
 
         }
@@ -116,146 +326,84 @@ public class ClientTesting : MonoBehaviour
     }
 
 
+
     void Start()
     {
-        start = true;
         connect = false;
-       
-        /*Thread t = new Thread(new ThreadStart(ThreadProc));
-
-        t.Start();*/
-
+        
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
     }
 
+    /// <summary>
+    /// Dispose stuff when not needed anymore.
+    /// </summary>
     void OnDestroy()
     {
         m_ClientDriver.Dispose();
     }
 
+    /// <summary>
+    /// A button runs this command to either connect or disconnect from the server.
+    /// </summary>
     public void ConnectToServer()
     {
         if (connect)
         {
             connect = false;
 
-            // If the client presses the button to branch to this section, the connection will be closed.(as wanted by user.)
+            // Disconnect client from host:
             m_clientToServerConnection.Disconnect(m_ClientDriver);
-            m_clientToServerConnection = default(NetworkConnection);
-            Debug.Log("UI - disconnecting...");
+            m_clientToServerConnection = default;
+            ServerEndPoint = default;
         }
         else
         {
+            //GetResults();
+            //GetHostIPAddress();
+            
+            /// Could use thread, but testing showed that Task was more efficient to use in this scenario. Easy to wait for the task to finish before doing something else aswell.
+            Task setupHostIp = Task.Run(ThreadProc);
+            setupHostIp.Wait();
+            
             connect = true;
-
-            ServerEndPoint = new IPEndPoint(IPAddress.Parse("10.22.210.138"), 9000);
-            // If the client ui indicates we should be sending pings but we do not have an active connection we create one
+            /// Connect to host if one is found and connection isn't already made.
             if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
             {
                 m_clientToServerConnection = m_ClientDriver.Connect(ServerEndPoint);
             }
-            Debug.Log("UI - connecting...");
         }
-        
     }
 
-    public void SendMessage(string message)
+    public new void SendMessage(string message)
     {
-        var messageWriter = new DataStreamWriter(50, Allocator.Temp);
+        var messageWriter = new DataStreamWriter(100, Allocator.Temp);
         // Setting prefix for server to easily know what kind of msg is being written.
         message += "<Message>";
         byte[] msg = Encoding.ASCII.GetBytes(message);
         messageWriter.Write(msg);
         m_ClientDriver.Send(m_clientToServerConnection, messageWriter);
     }
+    
 
     void FixedUpdate()
     {
-
-        // When client wants to start a game, check for being host or not.
-        if (start)
-        {
-            start = false;
-
-            // Testing to get ipaddresses
-            List<string[]> results = new List<string[]>();
-
-            using (System.Diagnostics.Process p = new System.Diagnostics.Process())
-            {
-                p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.Arguments = "/c arp -a";
-                p.StartInfo.FileName = @"C:\Windows\System32\cmd.exe";
-                p.Start();
-
-                string line;
-
-                while ((line = p.StandardOutput.ReadLine()) != null)
-                {
-                    if (line != "" && !line.Contains("Interface") && !line.Contains("Physical Address"))
-                    {
-                        var lineArr = line.Trim().Split(' ').Select(n => n).Where(n => !string.IsNullOrEmpty(n)).ToArray();
-                        var arrResult = new string[]
-                    {
-                   lineArr[0],
-                   lineArr[1],
-                   lineArr[2]
-                    };
-                        results.Add(arrResult);
-                    }
-                }
-
-                p.WaitForExit();
-            }
-
-            // Add local ip for testing purposes.
-            string[] localIP = new string[3];
-            localIP[0] = GetLocalIPAddress();
-            results.Add(localIP);
-            //TODO try connect to all of these, if can't connect to any of them
-            for (int i = 0; i < results.Count; i++)
-            {
-                Debug.Log("result nr." + i + ": " + results[i][0]);
-            }
-            //Your own ip is not in these results, so when you want to host yourself, do something else than this...
-            //For now just add own ip address so you can host.TODO fix.
-            
-            ///
-            /// start takes results and tries to get connection this one time.
-            /// in start try to send message, if nothing is received back within a short period, we have no connection?
-            /// when start is done, it will go through else part, and send/receive data whenever needed.
-            /// 
-
-
-
-        }
-        // Update the ping client UI with the ping statistics computed by teh job scheduled previous frame since that
-        // is now guaranteed to have completed
-        UITest.UpdateStats(m_numPingsSent, m_lastPingTime);
-
-        // Update the NetworkDriver. It schedules a job so we must wait for that job with Complete
+        // Update the NetworkDriver. Needs to be done before trying to pop events.
         m_ClientDriver.ScheduleUpdate().Complete();
-
-
-
+        
 
         NetworkEvent.Type cmd;
         // Process all events on the connection. If the connection is invalid it will return Empty immediately
         while ((cmd = m_clientToServerConnection.PopEvent(m_ClientDriver, out DataStreamReader strm)) != NetworkEvent.Type.Empty)
         {
-            
             if (cmd == NetworkEvent.Type.Connect)
             {
                 // Create a 4 byte data stream which we can store our ping sequence number in
-                var pingData = new DataStreamWriter(50, Allocator.Temp);
+                var connectionWriter = new DataStreamWriter(100, Allocator.Temp);
                 byte[] msg = Encoding.ASCII.GetBytes("<Connecting>");
-                pingData.Write(msg);
-                m_clientToServerConnection.Send(m_ClientDriver, pingData);
+                connectionWriter.Write(msg);
+                m_clientToServerConnection.Send(m_ClientDriver, connectionWriter);
 
-                pingData.Dispose();
-                // Update the number of sent pings
-                ++m_numPingsSent;
+                connectionWriter.Dispose();
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
@@ -265,13 +413,13 @@ public class ClientTesting : MonoBehaviour
                 byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
                 string data = Encoding.ASCII.GetString(bytes);
 
-                if (data.Contains("<Connect>"))
+                if (data.Contains("<Connected>"))
                 {
                     Debug.Log("Client - You are connected to server!");
                 }
                 else if (data.Contains("<MessageReply>"))
                 {
-                    Debug.Log("Client message - " + data);
+                    Debug.Log("Client - Got message: " + data);
                 }
                 
                 /*m_clientToServerConnection.Disconnect(m_ClientDriver);
@@ -284,6 +432,6 @@ public class ClientTesting : MonoBehaviour
                 m_clientToServerConnection = default(NetworkConnection);
             }
         }
-        
+
     }
 }

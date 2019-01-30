@@ -8,22 +8,12 @@ using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Ne
 public class UITest : MonoBehaviour
 {
     public static NetworkEndPoint ServerEndPoint { get; private set; }
-
-    // Update the ping statistics displayed in the ui. Should be called from the ping client every time a new ping is complete
-    public static void UpdateStats(int count, int time)
-    {
-        m_pingCounter = count;
-        m_pingTime = time;
-    }
-
-    private static int m_pingTime;
-    private static int m_pingCounter;
+    
+    
     private string m_CustomIp = "";
 
     void Start()
     {
-        m_pingTime = 0;
-        m_pingCounter = 0;
         ServerEndPoint = default(NetworkEndPoint);
     }
 
@@ -34,7 +24,6 @@ public class UITest : MonoBehaviour
 
     private void UpdatePingClientUI()
     {
-        GUILayout.Label("PING " + m_pingCounter + ": " + m_pingTime + "ms");
         if (!ServerEndPoint.IsValid)
         {
             // Ping is not currently running, display ui for starting a ping
@@ -57,15 +46,6 @@ public class UITest : MonoBehaviour
 
             m_CustomIp = GUILayout.TextField(m_CustomIp);
             
-        }
-        else
-        {
-            // Ping is running, display ui for stopping it
-            if (GUILayout.Button("Stop ping"))
-            {
-                //Debug.Log("Disconnecting");
-                ServerEndPoint = default(NetworkEndPoint);
-            }
         }
     }
     
