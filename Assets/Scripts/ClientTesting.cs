@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using System.Linq.Expressions;
 
 public class ClientTesting : MonoBehaviour
 {
@@ -374,16 +375,53 @@ public class ClientTesting : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// SendMessage is used to send simple strings through the network.
+    /// </summary>
+    /// <param name="message"></param>
     public new void SendMessage(string message)
     {
-        var messageWriter = new DataStreamWriter(100, Allocator.Temp);
+        /*var messageWriter = new DataStreamWriter(100, Allocator.Temp);
         // Setting prefix for server to easily know what kind of msg is being written.
         message += "<Message>";
         byte[] msg = Encoding.ASCII.GetBytes(message);
         messageWriter.Write(msg);
         m_ClientDriver.Send(m_clientToServerConnection, messageWriter);
+        messageWriter.Dispose();*/
+
+        //test:
+        TestClass testObj = new TestClass
+        {
+            playerName = "Chris",
+            timeElapsed = 3.14f,
+            level = 5,
+            position = new Vector2(5, 3),
+            values = new int[]{ 5, 3, 6, 8, 2 }
+        };
+        SendClass(testObj);
+
     }
-    
+
+
+    public void SendClass(dynamic obj)
+    {
+        Debug.Log("Client - Sending classObject.");
+        string classObj = JsonUtility.ToJson(obj) + "<Class>";
+        var classWriter = new DataStreamWriter(200, Allocator.Temp);
+        // Setting prefix for server to easily know what kind of msg is being written.
+        byte[] msg = Encoding.ASCII.GetBytes(classObj);
+        classWriter.Write(msg);
+        m_ClientDriver.Send(m_clientToServerConnection, classWriter);
+    }
+
+    public class TestClass
+    {
+        public int level;
+        public float timeElapsed;
+        public string playerName;
+        public Vector2 position;
+        public int[] values;
+    }
 
     void FixedUpdate()
     {

@@ -167,14 +167,25 @@ public class ServerTesting : MonoBehaviour
                     {
                         Debug.Log("Server - Connecting client...");
                         writer.Write(Encoding.ASCII.GetBytes("<Connected>"));
+
+                        /// Send a message back to the client.
+                        m_ServerDriver.Send(m_connections[i], writer);
                     }
                     else if (data.Contains("<Message>"))
                     {
                         Debug.Log("Server - Got message: " + data);
                         writer.Write(Encoding.ASCII.GetBytes("Sending this message to client.<MessageReply>" + "  " + i + " : " + m_connections.Length.ToString()));
+
+                        /// Send a message back to the client.
+                        m_ServerDriver.Send(m_connections[i], writer);
                     }
-                    /// Send a message back to the client.
-                    m_ServerDriver.Send(m_connections[i], writer);
+                    else if (data.Contains("<Class>"))
+                    {
+
+                        Debug.Log("Server - Got class: " + data);
+                    }
+
+                    /// Dispose the writer when the message to client has been sent.
                     writer.Dispose();
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
