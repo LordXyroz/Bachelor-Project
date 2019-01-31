@@ -17,8 +17,8 @@ public class NetworkingManager : MonoBehaviour
         /// For now just create server and client on the same computer:
 
         GameObject gm = GameObject.Find("GameManager");
-        gm.AddComponent<ServerTesting>();
-        gm.AddComponent<ClientTesting>();
+        gm.AddComponent<ServerBehaviour>();
+        gm.AddComponent<ClientBehaviour>();
     }
 
 
@@ -32,8 +32,12 @@ public class NetworkingManager : MonoBehaviour
          * This will either make the client be able to send and get messages as an attacker/defender
          * or receive messages as a host/spectator of the game.
          */
-         /*
-          if (isSpectator)*/
+
+        if (isSpectator)
+        {
+            GameObject gm = GameObject.Find("GameManager");
+            gm.AddComponent<ServerBehaviour>();
+        }
     }
     
 
@@ -46,7 +50,7 @@ public class NetworkingManager : MonoBehaviour
         if (!isSpectator)
         {
             string msg = GameObject.Find("InputField").GetComponent<InputField>().text;
-            GameObject.Find("GameManager").GetComponent<ClientTesting>().SendMessage(msg);
+            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().SendMessage(msg);
         }
     }
 
@@ -59,11 +63,16 @@ public class NetworkingManager : MonoBehaviour
         GameObject.Find("MessageText").GetComponent<Text>().text = msg;
     }
 
+    public void GetHostMessage(string msg)
+    {
+        Debug.Log("Host message: " + msg);
+    }
+
     /// <summary>
     /// CreateConnection will use the client script to create a connection to the server(host of the game).
     /// </summary>
     public void CreateConnection()
     {
-        GameObject.Find("GameManager").GetComponent<ClientTesting>().ConnectToServer();
+        GameObject.Find("GameManager").GetComponent<ClientBehaviour>().ConnectToServer();
     }
 }

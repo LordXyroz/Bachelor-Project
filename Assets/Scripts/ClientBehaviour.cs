@@ -2,21 +2,17 @@
 using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine.UI;
 using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
 using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
-using System.Threading;
 using System.Net.Sockets;
 using System.Text;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections;
-using System.Linq.Expressions;
 
-public class ClientTesting : MonoBehaviour
+public class ClientBehaviour : MonoBehaviour
 {
     /// <summary>
     /// Debug.Log($"{DateTime.Now:HH:mm:ss.fff}: starting a new callback.");
@@ -33,8 +29,8 @@ public class ClientTesting : MonoBehaviour
 
     private UdpCNetworkDriver m_ClientDriver;
     private NetworkConnection m_clientToServerConnection;
-    
-    
+
+
     // Testing thread:
     public void FindHost()
     {
@@ -76,7 +72,7 @@ public class ClientTesting : MonoBehaviour
                 // Setup server connection and try to connect:
                 string hostIp = Encoding.ASCII.GetString(bytes, 0, bytesRec);
                 ServerEndPoint = new IPEndPoint(IPAddress.Parse(hostIp), 9000);
-                
+
             }
             catch (ArgumentNullException ane)
             {
@@ -97,13 +93,13 @@ public class ClientTesting : MonoBehaviour
             Console.WriteLine(e.ToString());
         }
     }
-    
+
 
     void Start()
     {
         StartCoroutine(UpdateConnection());
         connect = false;
-        
+
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
     }
 
@@ -135,11 +131,11 @@ public class ClientTesting : MonoBehaviour
         }
         else
         {
-            
+
             /// Could use thread, but testing showed that Task was more efficient to use in this scenario. Easy to wait for the task to finish before doing something else aswell.
             Task setupHostIp = Task.Run(FindHost);
             setupHostIp.Wait();
-            
+
             connect = true;
             /// Connect to host if one is found and connection isn't already made.
             if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
@@ -230,7 +226,7 @@ public class ClientTesting : MonoBehaviour
     {
         // Update the NetworkDriver. Needs to be done before trying to pop events.
         m_ClientDriver.ScheduleUpdate().Complete();
-        
+
 
         NetworkEvent.Type cmd;
         // Process all events on the connection. If the connection is invalid it will return Empty immediately
@@ -264,7 +260,7 @@ public class ClientTesting : MonoBehaviour
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(data);
                     Debug.Log("Client - Got message: " + data);
                 }
-                
+
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {

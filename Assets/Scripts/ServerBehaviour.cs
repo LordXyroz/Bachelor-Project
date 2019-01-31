@@ -9,14 +9,13 @@ using System;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
-using System.Threading.Tasks;
 
-public class ServerTesting : MonoBehaviour
+public class ServerBehaviour : MonoBehaviour
 {
     public UdpCNetworkDriver m_ServerDriver;
     private NativeList<NetworkConnection> m_connections;
     private JobHandle m_updateHandle;
-    
+
 
     public static string GetLocalIPAddress()
     {
@@ -98,14 +97,14 @@ public class ServerTesting : MonoBehaviour
         {
             Debug.Log("Server exception: " + e.ToString());
         }
-    
+
     }
     // End of thread test.
 
 
     void Start()
     {
-        
+
         //Task.Factory.StartNew(() => ThreadProc());
         Thread t = new Thread(new ThreadStart(ThreadProc));
 
@@ -136,10 +135,10 @@ public class ServerTesting : MonoBehaviour
     void FixedUpdate()
     {
 
-       
+
         // Update the NetworkDriver. It schedules a job so we must wait for that job with Complete
         m_ServerDriver.ScheduleUpdate().Complete();
-        
+
         // Accept all new connections
         while (true)
         {
@@ -149,7 +148,7 @@ public class ServerTesting : MonoBehaviour
                 break;
             m_connections.Add(con);
         }
-        
+
 
         for (int i = 0; i < m_connections.Length; ++i)
         {
@@ -189,11 +188,14 @@ public class ServerTesting : MonoBehaviour
                     else if (data.Contains("<Message>"))
                     {
                         /// Send message received to all clients, which means the attacker/defender AND here in the server script to the host:
-                        Debug.Log("Server - Got message: " + data + "  " + i + " : " + m_connections.Length.ToString());
+                        Debug.Log("Server - Got message: " + data);
                         writer.Write(Encoding.ASCII.GetBytes(data + "<MessageReply>"));
 
                         /// Send a message to all clients:
                         m_ServerDriver.Send(m_connections[i], writer);
+
+                        data = data.Substring(0, data.Length - 9);
+                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetHostMessage(data);
                     }
                     else if (data.Contains("<Class>"))
                     {
