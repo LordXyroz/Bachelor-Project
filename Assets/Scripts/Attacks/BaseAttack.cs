@@ -20,8 +20,7 @@ abstract public class BaseAttack : MonoBehaviour
     public abstract void Update();
 
     public abstract void Effect();
-
-    public abstract void AttackResponse(Message message);
+    
     public abstract void OnDefense();
 
     public abstract void StartAttack();

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InjectionAttack : BaseAttack
+public class InjectionAttack : BaseAttack, IAttackResponse
 {
     // Start is called before the first frame update
     public override void Start()
@@ -30,7 +30,7 @@ public class InjectionAttack : BaseAttack
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            EventManager.BroadcastMessage(new Message("GoogleAPI", name, MessageTypes.Events.ATTACK));
+            MessagingManager.BroadcastMessage(new Message("GoogleAPI", name, MessageTypes.Events.ATTACK, AttackEnum.Injection));
         }
     }
     
@@ -48,11 +48,15 @@ public class InjectionAttack : BaseAttack
         //gameObject.SetActive(false);    
     }
 
-    public override void AttackResponse(Message message)
+    public void AttackResponse(Message message)
     {
         if (message.targetName == name)
         {
             Debug.Log("Message recieved from: " + message.senderName + " to me: " + name);
+            if (!message.success)
+                Debug.Log("Attack success!");
+            else
+                Debug.Log("Attack failed!");
         }
     }
 

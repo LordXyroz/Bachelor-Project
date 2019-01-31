@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public class APINetComponent : BaseNetComponent
+public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
 {
     public override void Start()
     {
-        vulnerability = new List<BaseAttack>();
-        availableDefenses = new List<BaseDefense>();
-        implementedDefenses = new List<BaseDefense>();
+        vulnerability = new List<AttackEnum>();
+        availableDefenses = new List<DefenseEnum>();
+        implementedDefenses = new List<DefenseEnum>();
+
+        availableDefenses.Add(DefenseEnum.Sanitize_Input);
     }
 
     public override void Update()
@@ -16,13 +19,41 @@ public class APINetComponent : BaseNetComponent
         //throw new System.NotImplementedException();
     }
 
-    public override void UnderAttack(Message message)
+    public void UnderAttack(Message message)
     {
         if (name == message.targetName)
         {
             Debug.Log("Message recieved from: " + message.senderName + " to me: " + name);
 
-            EventManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Events.DEFENSE));
+            if (message.attack != AttackEnum.zero)
+            {
+                if (message.attack == AttackEnum.Injection)
+                {
+                    bool safe = false;
+                    foreach (var def in implementedDefenses)
+                    {
+                        if (def == DefenseEnum.Sanitize_Input)
+                            safe = true;
+                    }
+                    MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Events.DEFENSE, safe));
+                }
+            }
+        }
+    }
+
+    public void AddDefense(Message message)
+    {
+        if (name == message.targetName)
+        {
+            Debug.Log("Defense received from: " + message.senderName + " to me: " + name);
+
+            if (message.defense != DefenseEnum.zero)
+            {
+                if (availableDefenses.Remove(message.defense))
+                    implementedDefenses.Add(message.defense);
+            }
         }
     }
 }
+
+

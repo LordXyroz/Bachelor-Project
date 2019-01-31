@@ -23,6 +23,7 @@
 
         public const ushort ATTACK = offset + 1;
         public const ushort DEFENSE = offset + 2;
+        public const ushort ADD_DEFENSE = offset + 3;
     }
 
     [System.Serializable]

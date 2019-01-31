@@ -27,15 +27,14 @@ public class ValidationDenfense : BaseDefense
             triggered = false;
             timer = 0;
         }
+
+        if (Input.GetKeyDown(KeyCode.S))
+            Effect();
     }
 
     public override void Effect()
     {
-        //if (stopped)
-        //    EventManager.TriggerEvent(EventTypes.Defenses.SANITIZE_INPUT);
-        //else
-        //    Debug.Log("Defender lost!");
-        //gameObject.SetActive(false);
+        MessagingManager.BroadcastMessage(new Message("GoogleAPI", name, MessageTypes.Events.ADD_DEFENSE, DefenseEnum.Sanitize_Input));
     }
 
     public override void OnAttack()
