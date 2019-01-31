@@ -40,6 +40,13 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         GetComponent<CanvasGroup>().blocksRaycasts = false;
 
+
+        if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
+        {
+            Debug.Log("Dropzone is present");
+            EventSystem.current.SetSelectedGameObject(null);
+            this.gameObject.GetComponent<HighlightObject>().StartHighlight();
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -97,9 +104,10 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     }
 
     /// destroys objects outside of the screen (outside camera view)
-    void OnBecameInvisible()
+    /// TODO sometimes deletes objects before exiting screen, needs debugging
+    /*void OnBecameInvisible()
     {
         Debug.Log("Outside of screen");
         Destroy(gameObject);
-    }
+    }*/
 }
