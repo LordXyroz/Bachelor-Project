@@ -15,8 +15,8 @@ public class ServerTesting : MonoBehaviour
 {
     public UdpCNetworkDriver m_ServerDriver;
     private NativeList<NetworkConnection> m_connections;
-
     private JobHandle m_updateHandle;
+    
 
     public static string GetLocalIPAddress()
     {
@@ -33,7 +33,7 @@ public class ServerTesting : MonoBehaviour
 
 
     // Testing thread:
-    public static void ThreadProc()
+    public void ThreadProc()
     {
         // Incoming data from the client.  
         string data = null;
@@ -58,9 +58,16 @@ public class ServerTesting : MonoBehaviour
             listener.Bind(localEndPoint);
             listener.Listen(10);
 
-            // Start listening for connections.  
-            while (true)
+            int connectionAmount = 0;
+            // Start listening for connections
+            while (connectionAmount < 2)
             {
+                /// As of right now we want exactly 2 people to connect to the host, so the host will be listening for clients until that amount has been reached.
+                if (m_connections.IsCreated)
+                {
+                    connectionAmount = m_connections.Length;
+                }
+
                 // Program is suspended while waiting for an incoming connection.  
                 Socket handler = listener.Accept();
                 data = null;
@@ -84,7 +91,6 @@ public class ServerTesting : MonoBehaviour
                 handler.Send(msg);
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
-                break;
             }
 
         }
@@ -169,8 +175,8 @@ public class ServerTesting : MonoBehaviour
                     var writer = new DataStreamWriter(100, Allocator.Temp);
                     if (data.Contains("<UpdateConnection>"))
                     {
-                        writer.Write(Encoding.ASCII.GetBytes("Connection updated<UpdateConnection>"));
-                        m_ServerDriver.Send(m_connections[i], writer);
+                        /*writer.Write(Encoding.ASCII.GetBytes("Connection updated<UpdateConnection>"));
+                        m_ServerDriver.Send(m_connections[i], writer);*/
                     }
                     else if (data.Contains("<Connecting>"))
                     {
@@ -182,6 +188,7 @@ public class ServerTesting : MonoBehaviour
                     }
                     else if (data.Contains("<Message>"))
                     {
+                        /// Send message received to all clients, which means the attacker/defender AND here in the server script to the host:
                         Debug.Log("Server - Got message: " + data);
                         writer.Write(Encoding.ASCII.GetBytes("Sending this message to client.<MessageReply>" + "  " + i + " : " + m_connections.Length.ToString()));
 

@@ -394,21 +394,22 @@ public class ClientTesting : MonoBehaviour
     }
 
     /// <summary>
-    /// SendMessage is used to send simple strings through the network.
+    /// SendMessage is used to send simple strings through the network, will later on use the type 'Message' to send more data through the network.
     /// </summary>
     /// <param name="message"></param>
     public new void SendMessage(string message)
     {
-        /*var messageWriter = new DataStreamWriter(100, Allocator.Temp);
+        // Example of sending a string through the network:
+        var messageWriter = new DataStreamWriter(100, Allocator.Temp);
         // Setting prefix for server to easily know what kind of msg is being written.
         message += "<Message>";
         byte[] msg = Encoding.ASCII.GetBytes(message);
         messageWriter.Write(msg);
         m_ClientDriver.Send(m_clientToServerConnection, messageWriter);
-        messageWriter.Dispose();*/
+        messageWriter.Dispose();
 
-        //test:
-        TestClass testObj = new TestClass
+        // Example of sending a class object through the network:
+        /*TestClass testObj = new TestClass
         {
             playerName = "Chris",
             timeElapsed = 3.14f,
@@ -416,7 +417,7 @@ public class ClientTesting : MonoBehaviour
             position = new Vector2(5, 3),
             values = new int[]{ 5, 3, 6, 8, 2 }
         };
-        SendClass(testObj);
+        SendClass(testObj);*/
 
     }
 
@@ -424,6 +425,7 @@ public class ClientTesting : MonoBehaviour
     public void SendClass(dynamic obj)
     {
         Debug.Log("Client - Sending classObject.");
+        // Maybe change this to <Message> later on, as simple string messages won't be sent over the network then.
         string classObj = JsonUtility.ToJson(obj) + "<Class>";
         var classWriter = new DataStreamWriter(classObj.Length + 2, Allocator.Temp);
         // Setting prefix for server to easily know what kind of msg is being written.
@@ -477,10 +479,6 @@ public class ClientTesting : MonoBehaviour
                 else if (data.Contains("<MessageReply>"))
                 {
                     Debug.Log("Client - Got message: " + data);
-                }
-                else if (data.Contains("<UpdateConnection>"))
-                {
-                    Debug.Log("Connection updated");
                 }
                 
             }
