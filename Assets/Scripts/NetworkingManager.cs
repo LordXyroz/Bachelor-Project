@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NetworkingManager : MonoBehaviour
 {
@@ -40,10 +41,11 @@ public class NetworkingManager : MonoBehaviour
     /// SendMessage will use the Message given through parameter(temporarily set as string, will be of type 'Message' later)
     /// to send a message that the gamestate has changed through the network to update the versions of other players in the game.
     /// </summary>
-    public void SendMessage(string msg)
+    public void SendMessage()
     {
         if (!isSpectator)
         {
+            string msg = GameObject.Find("InputField").GetComponent<InputField>().text;
             GameObject.Find("GameManager").GetComponent<ClientTesting>().SendMessage(msg);
         }
     }
@@ -54,7 +56,7 @@ public class NetworkingManager : MonoBehaviour
     /// <param name="msg"></param>
     public void GetMessage(string msg)
     {
-        Debug.Log(msg);
+        GameObject.Find("MessageText").GetComponent<Text>().text = msg;
     }
 
     /// <summary>

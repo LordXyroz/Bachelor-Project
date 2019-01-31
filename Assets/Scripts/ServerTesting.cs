@@ -189,8 +189,8 @@ public class ServerTesting : MonoBehaviour
                     else if (data.Contains("<Message>"))
                     {
                         /// Send message received to all clients, which means the attacker/defender AND here in the server script to the host:
-                        Debug.Log("Server - Got message: " + data);
-                        writer.Write(Encoding.ASCII.GetBytes("Sending this message to client.<MessageReply>" + "  " + i + " : " + m_connections.Length.ToString()));
+                        Debug.Log("Server - Got message: " + data + "  " + i + " : " + m_connections.Length.ToString());
+                        writer.Write(Encoding.ASCII.GetBytes(data + "<MessageReply>"));
 
                         /// Send a message to all clients:
                         m_ServerDriver.Send(m_connections[i], writer);
