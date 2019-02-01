@@ -311,11 +311,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1712313248}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b86487734b07934dbe3d4a74b1b4bd7, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a2b2845aa901f14098b36f928c8e57a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vulnerabilities: 01000000
-  availableDefenses: 
+  availableDefenses: 01000000
   implementedDefenses: 
 --- !u!4 &1712313250
 Transform:

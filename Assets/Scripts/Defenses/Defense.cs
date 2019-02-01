@@ -12,7 +12,7 @@ public class Defense : MonoBehaviour, IDefenseResponse
     public string description;
 
     [Header("Defense type")]
-    public DefenseEnum defenseType;
+    public DefenseTypes defenseType;
 
     [HideInInspector]
     public GameObject target;

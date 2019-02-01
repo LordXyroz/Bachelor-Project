@@ -1,22 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
-public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
+public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense
 {
-    public override void Start()
-    {
-        availableDefenses = new List<DefenseEnum>();
-        implementedDefenses = new List<DefenseEnum>();
-
-        availableDefenses.Add(DefenseEnum.Sanitize_Input);
-    }
-
-    public override void Update()
-    {
-        //throw new System.NotImplementedException();
-    }
+    public List<AttackTypes> vulnerabilities;
+    public List<DefenseTypes> availableDefenses;
+    public List<DefenseTypes> implementedDefenses;
 
     public void UnderAttack(Message message)
     {
@@ -24,7 +14,7 @@ public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
         {
             Debug.Log("Message recieved from: " + message.senderName + " to me: " + name);
 
-            if (message.attack != AttackEnum.zero)
+            if (message.attack != AttackTypes.zero)
             {
                 bool isVulnerable = false;
                 foreach (var vuln in vulnerabilities)
@@ -34,7 +24,7 @@ public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
                         isVulnerable = true;
                         foreach (var def in implementedDefenses)
                         {
-                            if (def == DefenseEnum.Sanitize_Input)
+                            if (VulnerabilityPairings.IsVulnerable(message.attack, def))
                                 isVulnerable = false;
                         }
                     }
@@ -50,7 +40,7 @@ public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
         {
             Debug.Log("Defense received from: " + message.senderName + " to me: " + name);
 
-            if (message.defense != DefenseEnum.zero)
+            if (message.defense != DefenseTypes.zero)
             {
                 if (availableDefenses.Remove(message.defense))
                 {
@@ -63,5 +53,3 @@ public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
         }
     }
 }
-
-

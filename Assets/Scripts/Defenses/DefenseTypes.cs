@@ -1,4 +1,4 @@
-﻿public enum DefenseEnum
+﻿public enum DefenseTypes
 {
     zero,
     Sanitize_Input,

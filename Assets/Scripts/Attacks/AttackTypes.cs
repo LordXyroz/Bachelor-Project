@@ -1,9 +1,9 @@
-﻿public enum AttackEnum
+﻿public enum AttackTypes
 {
     zero,
     Injection,
     Credential_Stuffing,
     Package_Sniffing,
     Hostile_XML,
-    Bypass_Access_Control,
+    Bypass_Access_Control
 }

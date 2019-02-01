@@ -9,8 +9,8 @@ public class Message
 
     public ushort messageType;
 
-    public AttackEnum attack;
-    public DefenseEnum defense;
+    public AttackTypes attack;
+    public DefenseTypes defense;
 
     public bool success;
 
@@ -20,8 +20,8 @@ public class Message
         senderName = sender;
         messageType = type;
 
-        attack = AttackEnum.zero;
-        defense = DefenseEnum.zero;
+        attack = AttackTypes.zero;
+        defense = DefenseTypes.zero;
 
         success = false;
     }
@@ -32,31 +32,31 @@ public class Message
         senderName = sender;
         messageType = type;
 
-        attack = AttackEnum.zero;
-        defense = DefenseEnum.zero;
+        attack = AttackTypes.zero;
+        defense = DefenseTypes.zero;
 
         success = successful;
     }
 
-    public Message(string target, string sender, ushort type, AttackEnum attackEnum)
+    public Message(string target, string sender, ushort type, AttackTypes attackEnum)
     {
         targetName = target;
         senderName = sender;
         messageType = type;
 
         attack = attackEnum;
-        defense = DefenseEnum.zero;
+        defense = DefenseTypes.zero;
 
         success = false;
     }
 
-    public Message(string target, string sender, ushort type, DefenseEnum defenseEnum)
+    public Message(string target, string sender, ushort type, DefenseTypes defenseEnum)
     {
         targetName = target;
         senderName = sender;
         messageType = type;
 
-        attack = AttackEnum.zero;
+        attack = AttackTypes.zero;
         defense = defenseEnum;
 
         success = false;

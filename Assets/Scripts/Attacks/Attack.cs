@@ -12,7 +12,7 @@ public class Attack : MonoBehaviour, IAttackResponse
     public string description;
     
     [Header("Attack type")]
-    public AttackEnum attackType;
+    public AttackTypes attackType;
 
     [HideInInspector]
     public GameObject target;
