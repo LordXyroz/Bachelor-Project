@@ -27,9 +27,7 @@ public class ValidationDenfense : BaseDefense
             triggered = false;
             timer = 0;
         }
-
-        if (Input.GetKeyDown(KeyCode.S))
-            Effect();
+        
     }
 
     public override void Effect()

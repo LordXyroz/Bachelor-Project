@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class BaseNetComponent : MonoBehaviour
 {
-    public List<AttackEnum> vulnerability;
+    public List<AttackEnum> vulnerabilities;
     public List<DefenseEnum> availableDefenses;
     public List<DefenseEnum> implementedDefenses;
 

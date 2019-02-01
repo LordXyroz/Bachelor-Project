@@ -11,7 +11,7 @@ public static class MessagingManager
         {
             case MessageTypes.Events.ATTACK:
                 {
-                    Debug.Log("Attack event sent!");
+                    Debug.Log("Attack event of type: " + message.attack);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IUnderAttack>();
                     foreach (MonoBehaviour o in objects)
                         o.SendMessage("UnderAttack", message);

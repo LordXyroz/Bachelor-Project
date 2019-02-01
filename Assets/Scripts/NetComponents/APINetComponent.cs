@@ -7,7 +7,6 @@ public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
 {
     public override void Start()
     {
-        vulnerability = new List<AttackEnum>();
         availableDefenses = new List<DefenseEnum>();
         implementedDefenses = new List<DefenseEnum>();
 
@@ -27,16 +26,20 @@ public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
 
             if (message.attack != AttackEnum.zero)
             {
-                if (message.attack == AttackEnum.Injection)
+                bool isVulnerable = false;
+                foreach (var vuln in vulnerabilities)
                 {
-                    bool safe = false;
-                    foreach (var def in implementedDefenses)
+                    if (message.attack == vuln)
                     {
-                        if (def == DefenseEnum.Sanitize_Input)
-                            safe = true;
+                        isVulnerable = true;
+                        foreach (var def in implementedDefenses)
+                        {
+                            if (def == DefenseEnum.Sanitize_Input)
+                                isVulnerable = false;
+                        }
                     }
-                    MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Events.DEFENSE, safe));
                 }
+                MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Events.DEFENSE, isVulnerable));
             }
         }
     }
