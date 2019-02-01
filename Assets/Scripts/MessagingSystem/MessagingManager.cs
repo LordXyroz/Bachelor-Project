@@ -1,15 +1,24 @@
 ﻿using UnityEngine;
 using System.Linq;
 
+/// <summary>
+/// Static class to handle messaging between GameObjects.
+/// </summary>
 public static class MessagingManager
 {
-    // Sends a message to all of the different gameobject types
-    // Gameobject/Script type is based on event type
+    /// <summary>
+    /// Sends the message to relevant GameObjects based on interfaces and MessageTypes.
+    /// Uses FindObjectsOfType to find every MonoBehaviour (scripts that inherit it),
+    /// and sorts out only those with the relevant interface using Linq.
+    /// Casts individual items in the IEnumerable to MonoBehaviour in order to 
+    /// send the message.
+    /// </summary>
+    /// <param name="message">Message containing relevant info to be handled by the function</param>
     public static void BroadcastMessage(Message message)
     {
         switch (message.messageType)
         {
-            case MessageTypes.Events.ATTACK:
+            case MessageTypes.Game.ATTACK:
                 {
                     Debug.Log("Attack event of type: " + message.attack);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IUnderAttack>();
@@ -18,7 +27,7 @@ public static class MessagingManager
                     break;
                 }
 
-            case MessageTypes.Events.ATTACK_RESPONSE:
+            case MessageTypes.Game.ATTACK_RESPONSE:
                 {
                     Debug.Log("Attack response of type: " + message.success);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAttackResponse>();
@@ -27,7 +36,7 @@ public static class MessagingManager
                     break;
                 }
 
-            case MessageTypes.Events.DEFENSE:
+            case MessageTypes.Game.DEFENSE:
                 {
                     Debug.Log("Defend event of type: " + message.defense);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAddDefense>();
@@ -36,7 +45,7 @@ public static class MessagingManager
                     break;
                 }
 
-            case MessageTypes.Events.DEFENSE_RESPONSE:
+            case MessageTypes.Game.DEFENSE_RESPONSE:
                 {
                     Debug.Log("Defend response of type: " + message.success);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDefenseResponse>();

@@ -1,5 +1,15 @@
-﻿namespace MessageTypes
+﻿/// <summary>
+/// Namespace for containing every type of message to be sent within the game.
+/// Types are categorized in static classes where each category has its own offset.
+/// All message types are set in ushort to reduce size (2 bytes vs 4 with uint), 
+/// and we don't need millions of event types. With ushort, we can have a maximum of 
+/// 65'535 different events. The offsets are set to the 2nd byte to have 256 types per category
+/// </summary>
+namespace MessageTypes
 {
+    /// <summary>
+    /// Static class for logging event codes
+    /// </summary>
     [System.Serializable]
     public static class Logging
     {
@@ -8,6 +18,9 @@
 
     }
 
+    /// <summary>
+    /// Static class for networking event codes
+    /// </summary>
     [System.Serializable]
     public static class Network
     {
@@ -16,8 +29,11 @@
 
     }
 
+    /// <summary>
+    /// Static class for game event codes
+    /// </summary>
     [System.Serializable]
-    public static class Events
+    public static class Game
     {
         private const ushort offset = 0x0200;
 

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Handles the defender's controls and capabilities.
+/// </summary>
 public class Defender : MonoBehaviour
 {
     public GameObject[] defensePrefabs;

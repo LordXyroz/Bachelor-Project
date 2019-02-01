@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Handles the attacker's controls and capabilities.
+/// </summary>
 public class Attacker : MonoBehaviour
 {
     public GameObject[] attackPrefabs;
