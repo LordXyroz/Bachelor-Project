@@ -22,8 +22,9 @@
         private const ushort offset = 0x0200;
 
         public const ushort ATTACK = offset + 1;
-        public const ushort DEFENSE = offset + 2;
-        public const ushort ADD_DEFENSE = offset + 3;
+        public const ushort ATTACK_RESPONSE = offset + 2;
+        public const ushort DEFENSE = offset + 3;
+        public const ushort DEFENSE_RESPONSE = offset + 4;
     }
 
     [System.Serializable]

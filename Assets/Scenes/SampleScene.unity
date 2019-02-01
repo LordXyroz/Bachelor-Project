@@ -220,15 +220,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1187280284}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f211173589db304f89096aed56213c0, type: 3}
+  m_Script: {fileID: 11500000, guid: ce8e9a965dcb7334797d946f1829a4ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cost: 0
-  duration: 0
-  stopped: 1
-  triggered: 0
-  timer: 0
-  description: 
+  defensePrefabs:
+  - {fileID: 4268445095572297963, guid: f2802098d81fab34e81288686f9ba05c, type: 3}
 --- !u!4 &1187280286
 Transform:
   m_ObjectHideFlags: 0

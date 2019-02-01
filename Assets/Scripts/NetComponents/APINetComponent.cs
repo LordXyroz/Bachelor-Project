@@ -39,7 +39,7 @@ public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
                         }
                     }
                 }
-                MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Events.DEFENSE, isVulnerable));
+                MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Events.ATTACK_RESPONSE, isVulnerable));
             }
         }
     }
@@ -53,7 +53,12 @@ public class APINetComponent : BaseNetComponent, IUnderAttack, IAddDefense
             if (message.defense != DefenseEnum.zero)
             {
                 if (availableDefenses.Remove(message.defense))
+                {
                     implementedDefenses.Add(message.defense);
+                    MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Events.DEFENSE_RESPONSE, true));
+                }
+                else
+                    MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Events.DEFENSE_RESPONSE, false));
             }
         }
     }

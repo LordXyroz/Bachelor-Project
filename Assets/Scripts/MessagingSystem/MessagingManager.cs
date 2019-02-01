@@ -3,7 +3,7 @@ using System.Linq;
 
 public static class MessagingManager
 {
-    // Sends a message all of the different gameobject types
+    // Sends a message to all of the different gameobject types
     // Gameobject/Script type is based on event type
     public static void BroadcastMessage(Message message)
     {
@@ -18,21 +18,30 @@ public static class MessagingManager
                     break;
                 }
 
-            case MessageTypes.Events.DEFENSE:
+            case MessageTypes.Events.ATTACK_RESPONSE:
                 {
-                    Debug.Log("Defend event sent!");
+                    Debug.Log("Attack response of type: " + message.success);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAttackResponse>();
                     foreach (MonoBehaviour o in objects)
                         o.SendMessage("AttackResponse", message);
                     break;
                 }
 
-            case MessageTypes.Events.ADD_DEFENSE:
+            case MessageTypes.Events.DEFENSE:
                 {
-                    Debug.Log("Defend event sent!");
+                    Debug.Log("Defend event of type: " + message.defense);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAddDefense>();
                     foreach (MonoBehaviour o in objects)
                         o.SendMessage("AddDefense", message);
+                    break;
+                }
+
+            case MessageTypes.Events.DEFENSE_RESPONSE:
+                {
+                    Debug.Log("Defend response of type: " + message.success);
+                    var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDefenseResponse>();
+                    foreach (MonoBehaviour o in objects)
+                        o.SendMessage("DefenseResponse", message);
                     break;
                 }
 
