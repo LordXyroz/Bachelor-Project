@@ -1,55 +1,42 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 //[RequireComponent(typeof(MeshRenderer))]
-public class HighlightObject : MonoBehaviour
+public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    public float animationTime = 1f;
-    public float threshold = 1.5f;
+    public Material mat;
+    public Color originalColor;
+    public Image image;
 
-    private Material material;
-    //public RectTransform uGuiElement;
-    private Color normalColor;
-    private Color highlightColor;
-
-    private void Awake()
+    public void Start()
     {
-        material = GetComponent<Image>().material;
-        normalColor = material.color;
-
-        highlightColor = Color.green;
-        //new Color(
-        //   Mathf.Clamp01(normalColor.r * threshold),
-        //   Mathf.Clamp01(normalColor.g * threshold),
-        //   Mathf.Clamp01(normalColor.b * threshold)
-        //   );
+        mat = GetComponent<Image>().material;
+        image = GetComponent<Image>();
+        originalColor = image.color;
     }
 
-    private void Start()
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        //highlightColor = Color.green;
-        StartHighlight();
+        //mat.color = Color.red;
+        image.color = Color.red;
+        Debug.Log("Cursor Entering--- " + name + " ---GameObject");
     }
 
-
-    public void StartHighlight()
+    public void OnMouseOver()
     {
-        if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
-        {
-            material.color = highlightColor;
-        }
-        //iTween.ColorTo(gameObject, iTween.Hash(
-        //    "color", highlightColor,
-        //    "time", animationTime,
-        //    "easetype", iTween.EaseType.linear,
-        //    "looptype", iTween.LoopType.pingPong
-        //    ));
+        mat.color -= new Color(0.1f, 0, 0) * Time.deltaTime;
     }
 
-    public void StopHighlight()
+    public void OnPointerExit(PointerEventData eventData)
     {
-        iTween.Stop(gameObject);
-        material.color = normalColor;
+        //mat.color = originalColor;
+        image.color = originalColor;
+        Debug.Log("Cursor Exiting--- " + name + " ---GameObject");
     }
 
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        throw new System.NotImplementedException();
+    }
 }

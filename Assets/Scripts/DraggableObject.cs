@@ -45,7 +45,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         {
             Debug.Log("Dropzone is present");
             EventSystem.current.SetSelectedGameObject(null);
-            this.gameObject.GetComponent<HighlightObject>().StartHighlight();
+            //this.gameObject.GetComponent<HighlightObject>().StartHighlight();
         }
     }
 
