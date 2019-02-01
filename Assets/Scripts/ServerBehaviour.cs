@@ -171,7 +171,7 @@ public class ServerBehaviour : MonoBehaviour
                     string data = Encoding.ASCII.GetString(bytes);
 
                     /// Create a temporary DataStreamWriter to write back a receival message to the client:
-                    var writer = new DataStreamWriter(100, Allocator.Temp);
+                    var writer = new DataStreamWriter(150, Allocator.Temp);
                     if (data.Contains("<UpdateConnection>"))
                     {
                         /*writer.Write(Encoding.ASCII.GetBytes("Connection updated<UpdateConnection>"));
@@ -182,24 +182,34 @@ public class ServerBehaviour : MonoBehaviour
                         Debug.Log("Server - Connecting client...");
                         writer.Write(Encoding.ASCII.GetBytes("<Connected>"));
 
-                        /// Send a message back to the client.
+                        /// Send a message back to the client, so it is known that connection is secured.
                         m_ServerDriver.Send(m_connections[i], writer);
                     }
                     else if (data.Contains("<Message>"))
                     {
-                        /// Send message received to all clients, which means the attacker/defender AND here in the server script to the host:
+                        /// Encode message received to for writer to write:
                         Debug.Log("Server - Got message: " + data);
+                        data = data.Substring(0, data.Length - 9);
                         writer.Write(Encoding.ASCII.GetBytes(data + "<MessageReply>"));
 
-                        /// Send a message to all clients:
-                        m_ServerDriver.Send(m_connections[i], writer);
+                        /// Send a message received to all clients:
+                        for (int j = 0; j < m_connections.Length; j++)
+                        {
+                            m_ServerDriver.Send(m_connections[j], writer);
+                        }
 
-                        data = data.Substring(0, data.Length - 9);
-                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetHostMessage(data);
+                        /// Give the message received to the host aswell:
+                        Debug.Log("Host has data: " + data);
                     }
-                    else if (data.Contains("<Class>"))
+                    else if (data.Contains("<Scenario>"))
                     {
-                        Debug.Log("Server - Got class: " + data);
+                        /// Send scenario wanted by the host to all clients:
+                        writer.Write(Encoding.ASCII.GetBytes(data));
+                        for (int j = 0; j < m_connections.Length; j++)
+                        {
+                            m_ServerDriver.Send(m_connections[j], writer);
+                        }
+                        Debug.Log("Server - Got scenario: " + data);
                     }
 
                     /// Dispose the writer when the message to client has been sent.

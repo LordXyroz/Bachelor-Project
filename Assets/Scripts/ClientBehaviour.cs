@@ -94,7 +94,7 @@ public class ClientBehaviour : MonoBehaviour
         }
     }
 
-
+    
     void Start()
     {
         StartCoroutine(UpdateConnection());
@@ -114,7 +114,7 @@ public class ClientBehaviour : MonoBehaviour
     /// <summary>
     /// A button runs this command to either connect or disconnect from the server.
     /// </summary>
-    public void ConnectToServer()
+    public void ConnectOrDisconnect()
     {
         if (connect)
         {
@@ -150,7 +150,7 @@ public class ClientBehaviour : MonoBehaviour
     }
 
     /// <summary>
-    /// UpdateConnection sends a update message to the server every 15 seconds to not lose the connection for being afk for a short period.
+    /// UpdateConnection sends a update message to the server every 10 seconds to not lose the connection for being afk for a short period.
     /// </summary
     /// <returns></returns>
     IEnumerator UpdateConnection()
@@ -167,7 +167,7 @@ public class ClientBehaviour : MonoBehaviour
                 m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
                 updateWriter.Dispose();
             }
-            yield return new WaitForSeconds(15);
+            yield return new WaitForSeconds(10);
         }
     }
 
@@ -187,7 +187,7 @@ public class ClientBehaviour : MonoBehaviour
         messageWriter.Dispose();
 
         // Example of sending a class object through the network:
-        /*TestClass testObj = new TestClass
+        /*Scenario testObj = new Scenario
         {
             playerName = "Chris",
             timeElapsed = 3.14f,
@@ -195,16 +195,16 @@ public class ClientBehaviour : MonoBehaviour
             position = new Vector2(5, 3),
             values = new int[]{ 5, 3, 6, 8, 2 }
         };
-        SendClass(testObj);*/
+        SendScenario(testObj);*/
 
     }
 
 
-    public void SendClass(dynamic obj)
+    public void SendScenario(dynamic obj)
     {
-        Debug.Log("Client - Sending classObject.");
+        Debug.Log("Client - Sending Scenario.");
         // Maybe change this to <Message> later on, as simple string messages won't be sent over the network then.
-        string classObj = JsonUtility.ToJson(obj) + "<Class>";
+        string classObj = JsonUtility.ToJson(obj) + "<Scenario>";
         var classWriter = new DataStreamWriter(classObj.Length + 2, Allocator.Temp);
         // Setting prefix for server to easily know what kind of msg is being written.
         byte[] msg = Encoding.ASCII.GetBytes(classObj);
@@ -213,7 +213,7 @@ public class ClientBehaviour : MonoBehaviour
         classWriter.Dispose();
     }
 
-    public class TestClass
+    public class Scenario
     {
         public int level;
         public float timeElapsed;
@@ -256,9 +256,18 @@ public class ClientBehaviour : MonoBehaviour
                 }
                 else if (data.Contains("<MessageReply>"))
                 {
-                    data = data.Substring(0, data.Length - 23);
+                    data = data.Substring(0, data.Length - 14);
+
+                    //Debug.Log("Client - Got message: " + data);
+                    // Send data to wherever needed:
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(data);
-                    Debug.Log("Client - Got message: " + data);
+                    // Put message in textbox for testing:
+                    GameObject.Find("MessageText").GetComponent<Text>().text = data;
+                }
+                else if (data.Contains("<Scenario>"))
+                {
+                    data = data.Substring(0, data.Length - 10);
+                    Debug.Log("Client - got scenario: " + data);
                 }
 
             }

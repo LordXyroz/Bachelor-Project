@@ -32,11 +32,16 @@ public class NetworkingManager : MonoBehaviour
          * This will either make the client be able to send and get messages as an attacker/defender
          * or receive messages as a host/spectator of the game.
          */
-
+        GameObject gm = GameObject.Find("GameManager");
         if (isSpectator)
         {
-            GameObject gm = GameObject.Find("GameManager");
             gm.AddComponent<ServerBehaviour>();
+        }
+        else
+        {
+            // Server here is used for testing.
+            //gm.AddComponent<ServerBehaviour>();
+            gm.AddComponent<ClientBehaviour>();
         }
     }
     
@@ -73,6 +78,9 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void CreateConnection()
     {
-        GameObject.Find("GameManager").GetComponent<ClientBehaviour>().ConnectToServer();
+        if (!isSpectator)
+        {
+            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().ConnectOrDisconnect();
+        }
     }
 }
