@@ -4,23 +4,24 @@ using UnityEngine.UI;
 
 public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    private Color mouseOverColor = Color.blue;
     private Color originalColor;
 
-    public float setupScreenWidth;
-    public float setupScreenHeight;
+    private float setupScreenWidth;
+    private float setupScreenHeight;
+    private Vector2 offset;
+    Vector2 objectPosition;
 
     private Camera mainCamera;
 
     public Transform parentToReturnTo = null;
-    public Image API;
+    private Image API;
 
-    private Vector2 offset;
-    Vector2 objectPosition;
 
     void Start()
     {
         mainCamera = Camera.main;
+        originalColor = GetComponent<Image>().color;
+        API = GetComponent<Image>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -29,11 +30,11 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
         {
             Image APIClone = (Image)Instantiate(API, parentToReturnTo);
+            APIClone.color = originalColor;
         }
 
         offset = (Vector2)this.transform.position - eventData.position;
         Cursor.visible = false;
-        originalColor = GetComponent<Image>().color;
 
         parentToReturnTo = this.transform.parent;
         this.transform.SetParent(this.transform.parent.parent);
@@ -45,14 +46,12 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         {
             Debug.Log("Dropzone is present");
             EventSystem.current.SetSelectedGameObject(null);
-            //this.gameObject.GetComponent<HighlightObject>().StartHighlight();
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         this.transform.position = eventData.position + offset;
-
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -79,8 +78,8 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         float objectWidth = this.GetComponent<RectTransform>().rect.width;
         float objectHeight = this.GetComponent<RectTransform>().rect.height;
 
-        Debug.Log("position: " + objectPosition.x + ", " + objectPosition.y +
-          "----, width low: " + (width * 0.5f - objectWidth * 0.33f) + " width high: " + (width * 1.5f - objectWidth * 1.3f));
+        //Debug.Log("position: " + objectPosition.x + ", " + objectPosition.y +
+        //  "----, width low: " + (width * 0.5f - objectWidth * 0.33f) + " width high: " + (width * 1.5f - objectWidth * 1.3f));
 
         if (objectPosition.x < width * 0.5f - objectWidth * 0.33f ||
             objectPosition.x > width * 1.5f - objectWidth * 1.3f ||
@@ -89,18 +88,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         {
             Destroy(this.gameObject);
         }
-    }
-
-
-    void OnMouseEnter()
-    {
-        GetComponent<Image>().material.color = mouseOverColor;
-        Debug.Log("OnMouseEnter (color change) " + GetComponent<Image>().material.color);
-    }
-
-    void OnMouseExit()
-    {
-        GetComponent<Image>().material.color = originalColor;
     }
 
     /// destroys objects outside of the screen (outside camera view)
