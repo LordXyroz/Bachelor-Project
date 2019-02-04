@@ -2,7 +2,7 @@
 using System.Linq;
 
 /// <summary>
-/// Static class to handle messaging between GameObjects.
+/// Static class to handle messaging between GameObjects in the scene.
 /// </summary>
 public static class MessagingManager
 {
@@ -10,8 +10,7 @@ public static class MessagingManager
     /// Sends the message to relevant GameObjects based on interfaces and MessageTypes.
     /// Uses FindObjectsOfType to find every MonoBehaviour (scripts that inherit it),
     /// and sorts out only those with the relevant interface using Linq.
-    /// Casts individual items in the IEnumerable to MonoBehaviour in order to 
-    /// send the message.
+    /// Calls the function listening directly.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
     public static void BroadcastMessage(Message message)
@@ -22,8 +21,8 @@ public static class MessagingManager
                 {
                     Debug.Log("Attack event of type: " + message.attack);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IUnderAttack>();
-                    foreach (MonoBehaviour o in objects)
-                        o.SendMessage("UnderAttack", message);
+                    foreach (var o in objects)
+                        o.UnderAttack(message);
                     break;
                 }
 
@@ -31,8 +30,8 @@ public static class MessagingManager
                 {
                     Debug.Log("Attack response of type: " + message.success);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAttackResponse>();
-                    foreach (MonoBehaviour o in objects)
-                        o.SendMessage("AttackResponse", message);
+                    foreach (var o in objects)
+                        o.AttackResponse(message);
                     break;
                 }
 
@@ -40,8 +39,8 @@ public static class MessagingManager
                 {
                     Debug.Log("Defend event of type: " + message.defense);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAddDefense>();
-                    foreach (MonoBehaviour o in objects)
-                        o.SendMessage("AddDefense", message);
+                    foreach (var o in objects)
+                        o.AddDefense(message);
                     break;
                 }
 
@@ -49,8 +48,8 @@ public static class MessagingManager
                 {
                     Debug.Log("Defend response of type: " + message.success);
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDefenseResponse>();
-                    foreach (MonoBehaviour o in objects)
-                        o.SendMessage("DefenseResponse", message);
+                    foreach (var o in objects)
+                        o.DefenseResponse(message);
                     break;
                 }
 
