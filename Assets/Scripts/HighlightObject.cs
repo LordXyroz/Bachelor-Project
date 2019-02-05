@@ -42,12 +42,12 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         if (selected && this.transform.parent.gameObject.GetComponent<DropZone>() != null)
         {
-            image.sprite = spriteHighlight;
+            //image.sprite = spriteHighlight;
             image.material = mat;
         }
         else
         {
-            image.sprite = sprite;
+            //image.sprite = sprite;
             image.material = default;
         }
     }

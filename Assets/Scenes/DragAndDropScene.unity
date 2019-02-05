@@ -133,6 +133,7 @@ MonoBehaviour:
   originalColor: {r: 0, g: 0, b: 0, a: 0}
   sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   spriteHighlight: {fileID: 21300000, guid: 87c82f23e76627346bc16bba001559f9, type: 3}
+  mat: {fileID: 2100000, guid: 695080963c892464ea16ce9748aae181, type: 2}
   selected: 0
 --- !u!1001 &452613012
 PrefabInstance:
@@ -671,7 +672,7 @@ GameObject:
   - component: {fileID: 1422625137}
   - component: {fileID: 1422625140}
   - component: {fileID: 1422625139}
-  - component: {fileID: 1422625141}
+  - component: {fileID: 1422625138}
   m_Layer: 5
   m_Name: SystemSetupScreen
   m_TagString: Untagged
@@ -698,6 +699,18 @@ RectTransform:
   m_AnchoredPosition: {x: 4.5999756, y: 0}
   m_SizeDelta: {x: -426.9, y: -120}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1422625138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422625136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 500adf0a898f1dc40a0f453304899cd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1422625139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -735,18 +748,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1422625136}
   m_CullTransparentMesh: 0
---- !u!114 &1422625141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1422625136}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 500adf0a898f1dc40a0f453304899cd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1424649458
 PrefabInstance:
   m_ObjectHideFlags: 0
