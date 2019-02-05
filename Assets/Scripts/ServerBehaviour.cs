@@ -185,11 +185,11 @@ public class ServerBehaviour : MonoBehaviour
                         /// Send a message back to the client, so it is known that connection is secured.
                         m_ServerDriver.Send(m_connections[i], writer);
                     }
-                    else if (data.Contains("<Message>"))
+                    else if (data.Contains("<ChatMessage>"))
                     {
                         /// Encode message received to for writer to write:
                         Debug.Log("Server - Got message: " + data);
-                        data = data.Substring(0, data.Length - 9);
+                        data = data.Substring(0, data.Length - 13);
                         writer.Write(Encoding.ASCII.GetBytes(data + "<MessageReply>"));
 
                         /// Send a message received to all clients:

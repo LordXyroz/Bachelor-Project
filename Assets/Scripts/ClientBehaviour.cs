@@ -30,8 +30,7 @@ public class ClientBehaviour : MonoBehaviour
     private UdpCNetworkDriver m_ClientDriver;
     private NetworkConnection m_clientToServerConnection;
 
-
-    // Testing thread:
+    
     public void FindHost()
     {
         // Data buffer for incoming data.  
@@ -101,6 +100,7 @@ public class ClientBehaviour : MonoBehaviour
         connect = false;
 
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
+        m_clientToServerConnection = default;
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public class ClientBehaviour : MonoBehaviour
     public void ConnectOrDisconnect()
     {
         if (connect)
-        {
+        { 
             connect = false;
 
             // Disconnect client from host:
@@ -135,17 +135,23 @@ public class ClientBehaviour : MonoBehaviour
             /// Could use thread, but testing showed that Task was more efficient to use in this scenario. Easy to wait for the task to finish before doing something else aswell.
             Task setupHostIp = Task.Run(FindHost);
             setupHostIp.Wait();
-
-            connect = true;
-            /// Connect to host if one is found and connection isn't already made.
-            if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
+            try
             {
-                m_clientToServerConnection = m_ClientDriver.Connect(ServerEndPoint);
-            }
+                /// Connect to host if one is found and connection isn't already made.
+                if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
+                {
+                    m_clientToServerConnection = m_ClientDriver.Connect(ServerEndPoint);
 
-            /// Change connectionText:
-            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
-            GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
+                    /// Change UI to show client that they are connected:
+                    connect = true;
+                    GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
+                    GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
+                }
+            }
+            catch(Exception e)
+            {
+                Debug.Log("Could not find a host!");
+            }
         }
     }
 
@@ -175,33 +181,33 @@ public class ClientBehaviour : MonoBehaviour
     /// SendMessage is used to send simple strings through the network, will later on use the type 'Message' to send more data through the network.
     /// </summary>
     /// <param name="message"></param>
-    public new void SendMessage(string message)
+    public new void SendChatMessage(string message)
     {
         // Example of sending a string through the network:
         var messageWriter = new DataStreamWriter(100, Allocator.Temp);
         // Setting prefix for server to easily know what kind of msg is being written.
-        message += "<Message>";
+        message += "<ChatMessage>";
         byte[] msg = Encoding.ASCII.GetBytes(message);
         messageWriter.Write(msg);
         m_ClientDriver.Send(m_clientToServerConnection, messageWriter);
         messageWriter.Dispose();
+    }
 
-        // Example of sending a class object through the network:
-        /*Scenario testObj = new Scenario
+    /// <summary>
+    /// Example of sending a class object through the network.
+    /// </summary>
+    public void SendScenario()
+    {
+
+        Scenario obj = new Scenario
         {
             playerName = "Chris",
             timeElapsed = 3.14f,
             level = 5,
             position = new Vector2(5, 3),
-            values = new int[]{ 5, 3, 6, 8, 2 }
+            values = new int[] { 5, 3, 6, 8, 2 }
         };
-        SendScenario(testObj);*/
 
-    }
-
-
-    public void SendScenario(dynamic obj)
-    {
         Debug.Log("Client - Sending Scenario.");
         // Maybe change this to <Message> later on, as simple string messages won't be sent over the network then.
         string classObj = JsonUtility.ToJson(obj) + "<Scenario>";
