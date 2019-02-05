@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-//[RequireComponent(typeof(MeshRenderer))]
+
 public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Color originalColor;
@@ -10,6 +10,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public Sprite sprite;
     public Sprite spriteHighlight;
+    public Material mat;
 
     public bool selected = false;
 
@@ -22,13 +23,11 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void OnPointerEnter(PointerEventData eventData)
     {
         image.color = Color.red;
-        //Debug.Log("Cursor Entering--- " + name + " ---GameObject");
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         image.color = originalColor;
-        //Debug.Log("Cursor Exiting--- " + name + " ---GameObject");
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -38,15 +37,18 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         Selected(selected);
     }
 
+    /// Only selectable if it is located in the setup screen editor area
     public void Selected(bool selected)
     {
-        if (selected)
+        if (selected && this.transform.parent.gameObject.GetComponent<DropZone>() != null)
         {
             image.sprite = spriteHighlight;
+            image.material = mat;
         }
         else
         {
             image.sprite = sprite;
+            image.material = default;
         }
     }
 }
