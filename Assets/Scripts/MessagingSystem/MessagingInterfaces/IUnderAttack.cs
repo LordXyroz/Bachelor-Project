@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IUnderAttack
 {
-    void UnderAttack(Message message);
+    void UnderAttack(AttackMessage message);
 }

@@ -51,7 +51,7 @@ public class Defense : MonoBehaviour, IDefenseResponse
     public void Effect()
     {
         triggered = true;
-        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.DEFENSE, defenseType));
+        MessagingManager.BroadcastMessage(new DefenseMessage(target.name, name, MessageTypes.Game.DEFENSE, defenseType));
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class Defense : MonoBehaviour, IDefenseResponse
     /// Destroys the gameobject once the function is done as the defense is done.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
-    public void DefenseResponse(Message message)
+    public void DefenseResponse(SuccessMessage message)
     {
         if (message.targetName == name)
         {

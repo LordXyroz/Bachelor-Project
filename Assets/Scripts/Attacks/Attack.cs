@@ -51,7 +51,7 @@ public class Attack : MonoBehaviour, IAttackResponse
     public void Effect()
     {
         triggered = true;
-        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.ATTACK, attackType));
+        MessagingManager.BroadcastMessage(new AttackMessage(target.name, name, MessageTypes.Game.ATTACK, attackType));
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class Attack : MonoBehaviour, IAttackResponse
     /// Destroys the gameobject once the function is done as the defense is done.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
-    public void AttackResponse(Message message)
+    public void AttackResponse(SuccessMessage message)
     {
         if (message.targetName == name)
         {

@@ -1,5 +1,5 @@
 ﻿
 public interface IDefenseResponse
 {
-    void DefenseResponse(Message message);
+    void DefenseResponse(SuccessMessage message);
 }

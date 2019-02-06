@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SuccessMessage : MonoBehaviour
+public class SuccessMessage : Message
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public bool success;
 
-    // Update is called once per frame
-    void Update()
+    public SuccessMessage(string target, string sender, ushort type, bool response) 
+        : base(target, sender, type)
     {
-        
+        success = response;
     }
 }

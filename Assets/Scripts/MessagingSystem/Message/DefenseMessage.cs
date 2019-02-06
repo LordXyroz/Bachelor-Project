@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DefenseMessage : MonoBehaviour
+public class DefenseMessage : Message
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public DefenseTypes defense;
 
-    // Update is called once per frame
-    void Update()
+    public DefenseMessage(string target, string sender, ushort type, DefenseTypes defenseEnum)
+        : base(target, sender, type)
     {
-        
+        defense = defenseEnum;
     }
 }

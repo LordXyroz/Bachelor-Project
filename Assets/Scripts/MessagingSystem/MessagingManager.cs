@@ -19,37 +19,37 @@ public static class MessagingManager
         {
             case MessageTypes.Game.ATTACK:
                 {
-                    Debug.Log("Attack event of type: " + message.attack);
+                    Debug.Log("Attack event!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IUnderAttack>();
                     foreach (var o in objects)
-                        o.UnderAttack(message);
+                        o.UnderAttack((AttackMessage) message);
                     break;
                 }
 
             case MessageTypes.Game.ATTACK_RESPONSE:
                 {
-                    Debug.Log("Attack response of type: " + message.success);
+                    Debug.Log("Attack response!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAttackResponse>();
                     foreach (var o in objects)
-                        o.AttackResponse(message);
+                        o.AttackResponse((SuccessMessage) message);
                     break;
                 }
 
             case MessageTypes.Game.DEFENSE:
                 {
-                    Debug.Log("Defend event of type: " + message.defense);
+                    Debug.Log("Defend event!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAddDefense>();
                     foreach (var o in objects)
-                        o.AddDefense(message);
+                        o.AddDefense((DefenseMessage) message);
                     break;
                 }
 
             case MessageTypes.Game.DEFENSE_RESPONSE:
                 {
-                    Debug.Log("Defend response of type: " + message.success);
+                    Debug.Log("Defend response!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDefenseResponse>();
                     foreach (var o in objects)
-                        o.DefenseResponse(message);
+                        o.DefenseResponse((SuccessMessage) message);
                     break;
                 }
 

@@ -35,7 +35,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     /// Broadcasts a message regarding the success of the attack.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
-    public void UnderAttack(Message message)
+    public void UnderAttack(AttackMessage message)
     {
         if (name == message.targetName)
         {
@@ -56,7 +56,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                         }
                     }
                 }
-                MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Game.ATTACK_RESPONSE, isVulnerable));
+                MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.ATTACK_RESPONSE, isVulnerable));
             }
         }
     }
@@ -71,7 +71,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     /// Broadcasts message regarding the success of adding the defense.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
-    public void AddDefense(Message message)
+    public void AddDefense(DefenseMessage message)
     {
         if (name == message.targetName)
         {
@@ -82,10 +82,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 if (availableDefenses.Remove(message.defense))
                 {
                     implementedDefenses.Add(message.defense);
-                    MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Game.DEFENSE_RESPONSE, true));
+                    MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DEFENSE_RESPONSE, true));
                 }
                 else
-                    MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Game.DEFENSE_RESPONSE, false));
+                    MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DEFENSE_RESPONSE, false));
             }
         }
     }
@@ -93,7 +93,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     public void OnDiscover(Message message)
     {
         Debug.Log("Discover received from: " + message.senderName + " to me: " + name);
-        MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, true));
+        MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, true));
         visible = true;
     }
 }

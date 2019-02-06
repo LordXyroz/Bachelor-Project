@@ -1,4 +1,4 @@
 ﻿public interface IAttackResponse
 {
-    void AttackResponse(Message message);
+    void AttackResponse(SuccessMessage message);
 }

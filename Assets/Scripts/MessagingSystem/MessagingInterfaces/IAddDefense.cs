@@ -1,4 +1,4 @@
 ﻿public interface IAddDefense
 {
-    void AddDefense(Message message);
+    void AddDefense(DefenseMessage message);
 }

@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DiscoverResponseMessage : MonoBehaviour
+public class DiscoverResponseMessage : Message
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public bool success;
 
-    // Update is called once per frame
-    void Update()
+    public DiscoverResponseMessage(string target, string sender, ushort type, bool response)
+        : base(target, sender, type)
     {
-        
+        targetName = target;
+        senderName = sender;
+        messageType = type;
+    
+        success = response;
     }
 }

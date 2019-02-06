@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackMessage : MonoBehaviour
+public class AttackMessage : Message
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public AttackTypes attack;
 
-    // Update is called once per frame
-    void Update()
+    public AttackMessage(string target, string sender, ushort type, AttackTypes attackType) 
+        : base(target, sender, type)
     {
-        
+        attack = attackType;
     }
 }
