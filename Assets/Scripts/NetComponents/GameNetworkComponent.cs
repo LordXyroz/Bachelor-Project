@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// The class used for creating components for the ingame network.
@@ -9,11 +10,20 @@ using UnityEngine;
 /// Tweak the lists in the Inspector tab in the Unity Editor to customize vulnerabilities,
 /// and available defenses that can be bought on to it.
 /// </summary>
-public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense
+public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, IDiscover
 {
     public List<AttackTypes> vulnerabilities;
     public List<DefenseTypes> availableDefenses;
     public List<DefenseTypes> implementedDefenses;
+
+    public bool visible = false;
+
+    public GameObject uiElement;
+
+    public void Update()
+    {
+        uiElement.SetActive(visible);
+    }
 
     /// <summary>
     /// From the IUnderAttack interface.
@@ -78,5 +88,12 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense
                     MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Game.DEFENSE_RESPONSE, false));
             }
         }
+    }
+
+    public void OnDiscover(Message message)
+    {
+        Debug.Log("Discover received from: " + message.senderName + " to me: " + name);
+        MessagingManager.BroadcastMessage(new Message(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, true));
+        visible = true;
     }
 }

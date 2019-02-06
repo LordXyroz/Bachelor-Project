@@ -17,7 +17,7 @@ public class Defender : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
             var go = Instantiate(defensePrefabs[0]);
             go.GetComponent<Defense>().target = GameObject.Find("GoogleAPI");

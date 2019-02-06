@@ -53,6 +53,33 @@ public static class MessagingManager
                     break;
                 }
 
+            case MessageTypes.Game.DISCOVER:
+                {
+                    Debug.Log("Discover event!");
+                    var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDiscover>();
+                    foreach (var o in objects)
+                        o.OnDiscover(message);
+                    break;
+                }
+
+            case MessageTypes.Game.DISCOVER_RESPONSE:
+                {
+                    Debug.Log("Discover response!");
+                    break;
+                }
+
+            case MessageTypes.Game.ANALYZE:
+                {
+                    Debug.Log("Analyze event!");
+                    break;
+                }
+
+            case MessageTypes.Game.ANALYZE_RESPONE:
+                {
+                    Debug.Log("Analyze response!");
+                    break;
+                }
+
             default:
                 throw new System.Exception("Unimplemented target!");
         }

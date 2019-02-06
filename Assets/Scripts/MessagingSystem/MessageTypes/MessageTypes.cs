@@ -41,6 +41,10 @@ namespace MessageTypes
         public const ushort ATTACK_RESPONSE = offset + 2;
         public const ushort DEFENSE = offset + 3;
         public const ushort DEFENSE_RESPONSE = offset + 4;
+        public const ushort DISCOVER = offset + 5;
+        public const ushort DISCOVER_RESPONSE = offset + 6;
+        public const ushort ANALYZE = offset + 7;
+        public const ushort ANALYZE_RESPONE = offset + 8;
     }
 
     [System.Serializable]
