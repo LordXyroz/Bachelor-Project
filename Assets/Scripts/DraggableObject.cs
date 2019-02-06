@@ -13,6 +13,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private Camera mainCamera;
 
+    /// Remember to set a parent to return to. This is usually the list the object belongs to.
     public Transform parentToReturnTo = null;
     private Image API;
 
@@ -89,12 +90,4 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             Destroy(this.gameObject);
         }
     }
-
-    /// destroys objects outside of the screen (outside camera view)
-    /// TODO sometimes deletes objects before exiting screen, needs debugging
-    /*void OnBecameInvisible()
-    {
-        Debug.Log("Outside of screen");
-        Destroy(gameObject);
-    }*/
 }

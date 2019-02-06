@@ -8,6 +8,8 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public Color originalColor;
     private Image image;
 
+    private SelectedObject objectSelect;
+
     public GameObject selectionBox;
     public Sprite sprite;
     public Sprite spriteHighlight;
@@ -19,7 +21,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         image = GetComponent<Image>();
         originalColor = image.color;
-        //selectionBox = GetComponent<SpriteRenderer>().sprite;
+        objectSelect = FindObjectOfType<SelectedObject>();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -36,23 +38,28 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         //throw new System.NotImplementedException();
         selected = !selected;
-        Selected(selected);
+        Selected();
     }
 
-    /// Only selectable if it is located in the setup screen editor area
-    public void Selected(bool selected)
+    /// Only selectable if it is located in the SystemSetupScreen editor area
+    public void Selected()
     {
-        if (selected && this.transform.parent.gameObject.GetComponent<DropZone>() != null)
+        if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
         {
-            //image.sprite = spriteHighlight;
-            image.material = mat;
-            selectionBox.SetActive(true);
+            ClearSelection();
+            objectSelect.SelectObject(this.gameObject, selectionBox, mat);
         }
         else
         {
-            //image.sprite = sprite;
-            image.material = default;
-            selectionBox.SetActive(false);
+            ClearSelection();
         }
+    }
+
+    /// Clear the selected object, resetting it to default visuals
+    void ClearSelection()
+    {
+        image.sprite = sprite;
+        image.material = default;
+        selectionBox.SetActive(false);
     }
 }

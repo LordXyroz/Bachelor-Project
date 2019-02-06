@@ -8,7 +8,7 @@ public class MouseManager : MonoBehaviour
     /// Will only detect objects that has a collider
     /// 
     /// </summary>
-    public GameObject selectedObject;
+   /* public GameObject selectedObject;
 
     private void Start()
     {
@@ -52,5 +52,5 @@ public class MouseManager : MonoBehaviour
         {
             selectedObject = null;
         }
-    }
+    }*/
 }
