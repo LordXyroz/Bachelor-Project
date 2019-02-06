@@ -41,17 +41,12 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         Selected();
     }
 
-    /// Only selectable if it is located in the SystemSetupScreen editor area
     public void Selected()
     {
+        /// Only selectable if it is located in the SystemSetupScreen editor area
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
         {
-            ClearSelection();
-            objectSelect.SelectObject(this.gameObject, selectionBox, mat);
-        }
-        else
-        {
-            ClearSelection();
+            objectSelect.SelectObject(this.gameObject, mat);
         }
     }
 
