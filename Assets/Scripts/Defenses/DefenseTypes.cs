@@ -9,5 +9,13 @@ public enum DefenseTypes
     Two_Factor_Auth,
     Firewall,
     Patch_Update,
-    Log_Failure
+    Log_Failure,
+    Update_Config,
+    Esacpe_Untrusted_HTTP,
+    Integrity_Check,
+    Reduce_Unused_Features,
+    Off_Site_Logging,
+    Use_Safe_API,
+    Enforce_PW_Policy,
+    Encrypt_Data
 }
