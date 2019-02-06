@@ -76,8 +76,12 @@ public class NetworkingManager : MonoBehaviour
     {
         if (!isSpectator)
         {
-            string msg = GameObject.Find("InputField").GetComponent<InputField>().text;
-            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().SendChatMessage(msg);
+            GameObject gm = GameObject.Find("GameManager");
+            if (gm.GetComponent<ClientBehaviour>() != null)
+            {
+                string msg = GameObject.Find("InputField").GetComponent<InputField>().text;
+                GetComponent<ClientBehaviour>().SendChatMessage(msg);
+            }
         }
     }
 
@@ -89,8 +93,24 @@ public class NetworkingManager : MonoBehaviour
     {
         if (!isSpectator)
         {
-            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().SendScenario();
+            GameObject gm = GameObject.Find("GameManager");
+            if (gm.GetComponent<ClientBehaviour>() != null)
+            {
+                GameObject.Find("GameManager").GetComponent<ClientBehaviour>().SendScenario();
+            }
         }
+    }
+
+
+    /// <summary>
+    /// ExitLobby is run when pressing the ExitButton, the client will return to the main menu and stop the connecting/connection or stop the hosting.
+    /// </summary>
+    public void ExitLobby()
+    {
+        /// TODO stop connecting...
+
+        /// Instead of exiting the game here in the future we will send the player back to main menu.
+        UnityEditor.EditorApplication.isPlaying = false;
     }
 
 

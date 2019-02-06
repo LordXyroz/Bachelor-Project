@@ -29,6 +29,7 @@ public class ClientBehaviour : MonoBehaviour
 
     private UdpCNetworkDriver m_ClientDriver;
     private NetworkConnection m_clientToServerConnection;
+    private bool m_clientWantsConnection;
 
     
     public void FindHost()
@@ -96,11 +97,17 @@ public class ClientBehaviour : MonoBehaviour
     
     void Start()
     {
+        /// Makes sure that the client updates connection every now and then to not lose connection;
+        /// Client will lose connection if pursuing actions that gives that effect.
         StartCoroutine(UpdateConnection());
-        connect = false;
 
+        /// Set values to default.
+        connect = false;
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
         m_clientToServerConnection = default;
+        m_clientWantsConnection = false;
+
+
     }
 
     /// <summary>
@@ -131,7 +138,37 @@ public class ClientBehaviour : MonoBehaviour
         }
         else
         {
+            /// TODO : set this to false when pressing a exit button
+            if (m_clientWantsConnection != true)
+            {
+                m_clientWantsConnection = true;
+                StartCoroutine("WaitForHost");
+            }
+        }
+    }
 
+    /// <summary>
+    /// WaitForHost is a routine where the client searches for a host until one is found, or the client stops the connecting.
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator WaitForHost()
+    {
+        /// Text visible to the client that shows the connection status.(Offline/Connecting/Online)
+        Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
+        Debug.Log("<color=blue>Looking for connection</color>");
+        
+
+        /// While the player still wants to connect to a host and no host is found, look for a new one:
+        while (m_clientToServerConnection.IsCreated == false && m_clientWantsConnection)
+        {
+
+            /// Cosmetics... Makes it look like there is a connection trying to be done in the background.
+            yield return new WaitForSeconds(1);
+            connectionText.text = "Connecting.";
+            yield return new WaitForSeconds(1);
+            connectionText.text = "Connecting..";
+            yield return new WaitForSeconds(0.15f);
+            connectionText.text = "Connecting...";
             /// Could use thread, but testing showed that Task was more efficient to use in this scenario. Easy to wait for the task to finish before doing something else aswell.
             Task setupHostIp = Task.Run(FindHost);
             setupHostIp.Wait();
@@ -140,18 +177,31 @@ public class ClientBehaviour : MonoBehaviour
                 /// Connect to host if one is found and connection isn't already made.
                 if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
                 {
+                    /// Try to connect to the ServerEndPoint.
                     m_clientToServerConnection = m_ClientDriver.Connect(ServerEndPoint);
 
-                    /// Change UI to show client that they are connected:
+                    /// When the client has connection there is no need to try and create a new, so we set that want to false.
+                    m_clientWantsConnection = false;
+
+                    /// Change UI to show client that they are connected, and stop the coroutine that shows a connecting version of the UI.
+                    //StopCoroutine("CosmeticConnecting");
                     connect = true;
-                    GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
-                    GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
+                    connectionText.text = "Online";
+                    connectionText.color = Color.green;
+                    
+                    /// Finish this instance of coroutines:
+                    yield break;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.Log("Could not find a host!");
             }
+        }
+        /// Change text to Offline if the connection failed/was closed.
+        if (!connect)
+        {
+            connectionText.text = "Offline";
         }
     }
 
@@ -161,18 +211,15 @@ public class ClientBehaviour : MonoBehaviour
     /// <returns></returns>
     IEnumerator UpdateConnection()
     {
-        while (true)
+        while (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
         {
-            if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
-            {
-                var updateWriter = new DataStreamWriter(30, Allocator.Temp);
-                // Setting prefix for server to easily know what kind of msg is being written.
-                string message = "<UpdateConnection>";
-                byte[] msg = Encoding.ASCII.GetBytes(message);
-                updateWriter.Write(msg);
-                m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
-                updateWriter.Dispose();
-            }
+            var updateWriter = new DataStreamWriter(30, Allocator.Temp);
+            // Setting prefix for server to easily know what kind of msg is being written.
+            string message = "<UpdateConnection>";
+            byte[] msg = Encoding.ASCII.GetBytes(message);
+            updateWriter.Write(msg);
+            m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
+            updateWriter.Dispose();
             yield return new WaitForSeconds(10);
         }
     }
@@ -183,14 +230,21 @@ public class ClientBehaviour : MonoBehaviour
     /// <param name="message"></param>
     public new void SendChatMessage(string message)
     {
-        // Example of sending a string through the network:
-        var messageWriter = new DataStreamWriter(100, Allocator.Temp);
-        // Setting prefix for server to easily know what kind of msg is being written.
-        message += "<ChatMessage>";
-        byte[] msg = Encoding.ASCII.GetBytes(message);
-        messageWriter.Write(msg);
-        m_ClientDriver.Send(m_clientToServerConnection, messageWriter);
-        messageWriter.Dispose();
+        if (m_ClientDriver.IsCreated)
+        {
+            Debug.Log("lol");
+        }
+        if (m_clientToServerConnection.IsCreated)
+        {
+            // Example of sending a string through the network:
+            var messageWriter = new DataStreamWriter(100, Allocator.Temp);
+            // Setting prefix for server to easily know what kind of msg is being written.
+            message += "<ChatMessage>";
+            byte[] msg = Encoding.ASCII.GetBytes(message);
+            messageWriter.Write(msg);
+            m_ClientDriver.Send(m_clientToServerConnection, messageWriter);
+            messageWriter.Dispose();
+        }
     }
 
     /// <summary>
@@ -198,25 +252,27 @@ public class ClientBehaviour : MonoBehaviour
     /// </summary>
     public void SendScenario()
     {
-
-        Scenario obj = new Scenario
+        if (m_clientToServerConnection.IsCreated)
         {
-            playerName = "Chris",
-            timeElapsed = 3.14f,
-            level = 5,
-            position = new Vector2(5, 3),
-            values = new int[] { 5, 3, 6, 8, 2 }
-        };
+            Scenario obj = new Scenario
+            {
+                playerName = "Chris",
+                timeElapsed = 3.14f,
+                level = 5,
+                position = new Vector2(5, 3),
+                values = new int[] { 5, 3, 6, 8, 2 }
+            };
 
-        Debug.Log("Client - Sending Scenario.");
-        // Maybe change this to <Message> later on, as simple string messages won't be sent over the network then.
-        string classObj = JsonUtility.ToJson(obj) + "<Scenario>";
-        var classWriter = new DataStreamWriter(classObj.Length + 2, Allocator.Temp);
-        // Setting prefix for server to easily know what kind of msg is being written.
-        byte[] msg = Encoding.ASCII.GetBytes(classObj);
-        classWriter.Write(msg);
-        m_ClientDriver.Send(m_clientToServerConnection, classWriter);
-        classWriter.Dispose();
+            Debug.Log("Client - Sending Scenario.");
+            // Maybe change this to <Message> later on, as simple string messages won't be sent over the network then.
+            string classObj = JsonUtility.ToJson(obj) + "<Scenario>";
+            var classWriter = new DataStreamWriter(classObj.Length + 2, Allocator.Temp);
+            // Setting prefix for server to easily know what kind of msg is being written.
+            byte[] msg = Encoding.ASCII.GetBytes(classObj);
+            classWriter.Write(msg);
+            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
+            classWriter.Dispose();
+        }
     }
 
     public class Scenario
