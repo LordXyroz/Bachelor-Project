@@ -7,6 +7,7 @@ public class DropZone : MonoBehaviour, IDropHandler
 
     public void OnDrop(PointerEventData eventData)
     {
+        /// Change the parent from the lists to the dropzone object, making it editable
         DraggableObject draggableObject = eventData.pointerDrag.GetComponent<DraggableObject>();
         if (draggableObject != null)
         {
