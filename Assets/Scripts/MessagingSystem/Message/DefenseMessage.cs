@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Child class of Message for storing defense event data.
+/// </summary>
 public class DefenseMessage : Message
 {
     public DefenseTypes defense;

@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AnalyzeResponeMessage : MonoBehaviour
+/// <summary>
+/// Child class of Message for storing response data from an analyze event.
+/// </summary>
+public class AnalyzeResponeMessage : Message
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public List<AttackTypes> attacks;
 
-    // Update is called once per frame
-    void Update()
+    public AnalyzeResponeMessage(string target, string sender, ushort type, List<AttackTypes> attackTypes)
+        : base(target, sender, type)
     {
-        
+        attacks = attackTypes;
     }
 }

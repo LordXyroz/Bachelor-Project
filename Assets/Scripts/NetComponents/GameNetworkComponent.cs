@@ -10,7 +10,7 @@ using UnityEngine.UI;
 /// Tweak the lists in the Inspector tab in the Unity Editor to customize vulnerabilities,
 /// and available defenses that can be bought on to it.
 /// </summary>
-public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, IDiscover
+public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, IDiscover, IAnalyze
 {
     public List<AttackTypes> vulnerabilities;
     public List<DefenseTypes> availableDefenses;
@@ -34,7 +34,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     /// implemented defenses (if any) if the attack can be stopped.
     /// Broadcasts a message regarding the success of the attack.
     /// </summary>
-    /// <param name="message">Message containing relevant info to be handled by the function</param>
+    /// <param name="message">Message containing relevant info to be handled by the function.</param>
     public void UnderAttack(AttackMessage message)
     {
         if (name == message.targetName)
@@ -62,15 +62,15 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     }
 
     /// <summary>
-    /// From the IAddDefense interface
+    /// From the IAddDefense interface.
     /// 
-    /// Listens to a MessageTypes.Events.DEFEND.
+    /// Listens to a MessageTypes.Events.DEFENSE.
     /// Checks if self is the target of this event and if the DefendType is valid.
     /// Removes the defense from availableDefenses list if possible, and add it to the
     /// implementedDefenses list.
     /// Broadcasts message regarding the success of adding the defense.
     /// </summary>
-    /// <param name="message">Message containing relevant info to be handled by the function</param>
+    /// <param name="message">Message containing relevant info to be handled by the function.</param>
     public void AddDefense(DefenseMessage message)
     {
         if (name == message.targetName)
@@ -90,10 +90,50 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         }
     }
 
+    /// <summary>
+    /// From the IDiscover interface.
+    /// 
+    /// Listens to a MessageTypes.Events.DISCOVER.
+    /// Makes itself visible on the UI and returns a response.
+    /// TODO: Implement linked list/tree structure for network components, and only reply/turn 
+    /// visible when the correct depth has been reached in the tree.
+    /// </summary>
+    /// <param name="message">Message containing relevant info to be handled by the function.</param>
     public void OnDiscover(Message message)
     {
         Debug.Log("Discover received from: " + message.senderName + " to me: " + name);
         MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, true));
         visible = true;
+    }
+
+    /// <summary>
+    /// From the IAnalyze interface
+    /// 
+    /// Listens to a MessageTypes.Events.ANALYZE.
+    /// If self is target, loops through vulnerabilities and defenses.
+    /// Sends a response containing the list of current (not defended) vulnerabilities
+    /// </summary>
+    /// <param name="message">Message containing relevant info to be handled by the function</param>
+    public void OnAnalyze(Message message)
+    {
+        if (message.targetName == name)
+        {
+            Debug.Log("Analyze received from: " + message.senderName + " to me: " + name);
+
+            List<AttackTypes> vulnList = new List<AttackTypes>();
+            foreach (var vuln in vulnerabilities)
+            {
+                bool vulnerable = true;
+                foreach (var def in implementedDefenses)
+                {
+                    if (VulnerabilityPairings.IsStoppedBy(vuln, def))
+                        vulnerable = false;
+                }
+                if (vulnerable)
+                    vulnList.Add(vuln);
+            }
+            MessagingManager.BroadcastMessage(new AnalyzeResponeMessage(message.senderName, name, MessageTypes.Game.ANALYZE_RESPONE, vulnList));
+        }
+
     }
 }

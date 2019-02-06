@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Handles the attacker's controls and capabilities.
 /// </summary>
-public class Attacker : MonoBehaviour
+public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
 {
     public GameObject[] attackPrefabs;
 
@@ -18,12 +18,6 @@ public class Attacker : MonoBehaviour
     private int analyzeDuration = 10;
     private float analyzeTimer = 0f;
     private bool analyzeCount = false;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -101,11 +95,19 @@ public class Attacker : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Changes the target for the next attack/analyze event.
+    /// </summary>
+    /// <param name="go">Gameobject set to be new target</param>
     public void SetTarget(GameObject go)
     {
         target = go;
     }
 
+    /// <summary>
+    /// Sends a discover message.
+    /// Resets timers/bools.
+    /// </summary>
     public void Discover()
     {
         discoverCount = false;
@@ -113,9 +115,38 @@ public class Attacker : MonoBehaviour
         MessagingManager.BroadcastMessage(new Message("", name, MessageTypes.Game.DISCOVER));
     }
 
+    /// <summary>
+    /// Sends an analyze message.
+    /// Rests timers/bools.
+    /// </summary>
     public void Analyze()
     {
         analyzeCount = false;
         analyzeTimer = 0f;
+        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.ANALYZE));
+    }
+
+    /// <summary>
+    /// TODO: Implement function
+    /// 
+    /// From the IOnDiscoverResponse interface.
+    /// </summary>
+    /// <param name="message">Message containing relevant info to be handled by the function.</param>
+    public void OnDiscoverResponse(DiscoverResponseMessage message)
+    {
+        
+    }
+    /// <summary>
+    /// From the IOnAnalyzeResponse interface.
+    /// 
+    /// Gets a list of vulnerabilities from the sender.
+    /// TODO: Use the list for game logic.
+    /// </summary>
+    /// <param name="message">Message containing relevant info to be handled by the function.</param>
+    public void OnAnalyzeResponse(AnalyzeResponeMessage message)
+    {
+        Debug.Log("Analyze response from: " + message.senderName + " to me: " + message.targetName);
+        foreach (var a in message.attacks)
+            Debug.Log(message.senderName + " is vulnerable vs: " + a);
     }
 }

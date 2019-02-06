@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Child class of Message for storing attack event data.
+/// </summary>
 public class AttackMessage : Message
 {
     public AttackTypes attack;

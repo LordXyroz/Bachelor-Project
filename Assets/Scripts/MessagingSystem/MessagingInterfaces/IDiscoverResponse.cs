@@ -1,4 +1,4 @@
 ﻿public interface IDiscoverResponse
 {
-    void OnDiscoverResponse(Message message);
+    void OnDiscoverResponse(DiscoverResponseMessage message);
 }

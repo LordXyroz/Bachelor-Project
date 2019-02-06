@@ -1,4 +1,4 @@
 ﻿public interface IAnalyzeResponse
 {
-    void OnAnalyzeResponse(Message message);
+    void OnAnalyzeResponse(AnalyzeResponeMessage message);
 }

@@ -10,7 +10,8 @@ public static class MessagingManager
     /// Sends the message to relevant GameObjects based on interfaces and MessageTypes.
     /// Uses FindObjectsOfType to find every MonoBehaviour (scripts that inherit it),
     /// and sorts out only those with the relevant interface using Linq.
-    /// Calls the function listening directly.
+    /// Casts the message to the required type for each interface.
+    /// Calls the interface function for each receiver.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
     public static void BroadcastMessage(Message message)
@@ -71,12 +72,18 @@ public static class MessagingManager
             case MessageTypes.Game.ANALYZE:
                 {
                     Debug.Log("Analyze event!");
+                    var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAnalyze>();
+                    foreach (var o in objects)
+                        o.OnAnalyze(message);
                     break;
                 }
 
             case MessageTypes.Game.ANALYZE_RESPONE:
                 {
                     Debug.Log("Analyze response!");
+                    var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAnalyzeResponse>();
+                    foreach (var o in objects)
+                        o.OnAnalyzeResponse((AnalyzeResponeMessage) message);
                     break;
                 }
 
