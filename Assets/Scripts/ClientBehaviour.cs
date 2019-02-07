@@ -132,9 +132,14 @@ public class ClientBehaviour : MonoBehaviour
             m_clientToServerConnection = default;
             ServerEndPoint = default;
 
-            /// Change connectionText:
+            /// Change connectionText according to connection status:
             GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
             GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.red;
+            
+            /// Set the UI for the user correctly according to the connection status:
+            GameObject gm = GameObject.Find("GameManager");
+            gm.GetComponent<NetworkingManager>().connectionField.SetActive(true);
+            gm.GetComponent<NetworkingManager>().chatField.SetActive(false);
         }
         else
         {
@@ -188,7 +193,11 @@ public class ClientBehaviour : MonoBehaviour
                     connect = true;
                     connectionText.text = "Online";
                     connectionText.color = Color.green;
-                    
+
+                    GameObject gm = GameObject.Find("GameManager");
+                    gm.GetComponent<NetworkingManager>().chatField.SetActive(true);
+                    gm.GetComponent<NetworkingManager>().connectionField.SetActive(false);
+
                     /// Finish this instance of coroutines:
                     yield break;
                 }
@@ -336,7 +345,7 @@ public class ClientBehaviour : MonoBehaviour
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
                 Debug.Log("Client - Disconnecting");
-                // If the server disconnected us we clear out connection
+                /// If the server disconnected us we clear out connection
                 m_clientToServerConnection = default(NetworkConnection);
             }
         }
