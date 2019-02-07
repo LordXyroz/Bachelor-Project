@@ -4,18 +4,18 @@ using UnityEngine.UI;
 
 public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    [Header("Refferenced objects")]
     private Color originalColor;
+    private Camera mainCamera;
+    private Image API;
 
-    private float setupScreenWidth;
-    private float setupScreenHeight;
+    [Header("Position objects")]
     private Vector2 offset;
     Vector2 objectPosition;
 
-    private Camera mainCamera;
 
-    /// Remember to set a parent to return to. This is usually the list the object belongs to.
+    [Header("The parent of the object (usually the list it is placed under)")]
     public Transform parentToReturnTo = null;
-    private Image API;
 
 
     void Start()
