@@ -139,7 +139,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4682973927837351195}
   - component: {fileID: 2057724370973650319}
-  - component: {fileID: 7729334524971656538}
   m_Layer: 5
   m_Name: GoogleAPI
   m_TagString: Untagged
@@ -156,7 +155,7 @@ RectTransform:
   m_GameObject: {fileID: 2047643180049438935}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 6044236622720022323}
   m_Father: {fileID: 0}
@@ -184,14 +183,6 @@ MonoBehaviour:
   implementedDefenses: 
   visible: 0
   uiElement: {fileID: 1881532719766092036}
---- !u!222 &7729334524971656538
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047643180049438935}
-  m_CullTransparentMesh: 0
 --- !u!1 &8404397175904579747
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,4 +261,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: GoogleAPI
