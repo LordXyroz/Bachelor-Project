@@ -11,7 +11,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
 
     public GameObject target;
 
-    private int discoverDuration = 10;
+    private int discoverDuration = 3;
     private float discoverTimer = 0f;
     private bool discoverCount = false;
 
@@ -112,7 +112,20 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
     {
         discoverCount = false;
         discoverTimer = 0f;
-        MessagingManager.BroadcastMessage(new Message("", name, MessageTypes.Game.DISCOVER));
+
+        int currentDepth = -1;
+        string targetName = "";
+        if (target == null)
+        {
+            currentDepth = 0;
+        }
+        else
+        {
+            currentDepth = target.GetComponent<GameNetworkComponent>().graphDepth;
+            targetName = target.GetComponent<GameNetworkComponent>().name;
+        }
+
+        MessagingManager.BroadcastMessage(new DiscoverMessage(targetName, name, MessageTypes.Game.DISCOVER, currentDepth));
     }
 
     /// <summary>
@@ -123,6 +136,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
     {
         analyzeCount = false;
         analyzeTimer = 0f;
+        
         MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.ANALYZE));
     }
 
@@ -134,7 +148,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
     /// <param name="message">Message containing relevant info to be handled by the function.</param>
     public void OnDiscoverResponse(DiscoverResponseMessage message)
     {
-        
+
     }
     /// <summary>
     /// From the IOnAnalyzeResponse interface.

@@ -1,4 +1,4 @@
 ﻿public interface IDiscover
 {
-    void OnDiscover(Message message);
+    void OnDiscover(DiscoverMessage message);
 }

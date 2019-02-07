@@ -7,15 +7,15 @@ using UnityEngine;
 /// </summary>
 public class DiscoverResponseMessage : Message
 {
-    public bool success;
+    public List<GameNetworkComponent> discovered;
 
-    public DiscoverResponseMessage(string target, string sender, ushort type, bool response)
+    public DiscoverResponseMessage(string target, string sender, ushort type, List<GameNetworkComponent> response)
         : base(target, sender, type)
     {
         targetName = target;
         senderName = sender;
         messageType = type;
     
-        success = response;
+        discovered = response;
     }
 }

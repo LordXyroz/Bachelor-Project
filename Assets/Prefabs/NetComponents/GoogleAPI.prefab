@@ -183,6 +183,9 @@ MonoBehaviour:
   implementedDefenses: 
   visible: 0
   uiElement: {fileID: 1881532719766092036}
+  graphDepth: 0
+  children:
+  - {fileID: 0}
 --- !u!1 &8404397175904579747
 GameObject:
   m_ObjectHideFlags: 0

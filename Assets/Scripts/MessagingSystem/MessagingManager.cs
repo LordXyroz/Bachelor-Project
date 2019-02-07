@@ -59,13 +59,16 @@ public static class MessagingManager
                     Debug.Log("Discover event!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDiscover>();
                     foreach (var o in objects)
-                        o.OnDiscover(message);
+                        o.OnDiscover((DiscoverMessage) message);
                     break;
                 }
 
             case MessageTypes.Game.DISCOVER_RESPONSE:
                 {
                     Debug.Log("Discover response!");
+                    var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDiscoverResponse>();
+                    foreach (var o in objects)
+                        o.OnDiscoverResponse((DiscoverResponseMessage) message);
                     break;
                 }
 

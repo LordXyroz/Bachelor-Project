@@ -16,9 +16,15 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     public List<DefenseTypes> availableDefenses;
     public List<DefenseTypes> implementedDefenses;
 
+    [HideInInspector]
     public bool visible = false;
 
+    [HideInInspector]
     public GameObject uiElement;
+
+
+    public int graphDepth;
+    public List<GameNetworkComponent> children;
 
     public void Update()
     {
@@ -99,11 +105,32 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     /// visible when the correct depth has been reached in the tree.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function.</param>
-    public void OnDiscover(Message message)
+    public void OnDiscover(DiscoverMessage message)
     {
-        Debug.Log("Discover received from: " + message.senderName + " to me: " + name);
-        MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, true));
-        visible = true;
+        if (message.depth == graphDepth)
+        {
+            Debug.Log("Discover received from: " + message.senderName + " to me: " + name);
+            Debug.Log("Depth asked: " + message.depth + " , my depth: " + graphDepth);
+
+            List<GameNetworkComponent> list = new List<GameNetworkComponent>();
+
+            if (message.targetName == "")
+            {
+                visible = true;
+                list.Add(this);
+            }
+            else if (message.targetName == name)
+            {
+                foreach (var child in children)
+                {
+                    list.Add(child);
+                    child.visible = true;
+
+                }
+            }
+            MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
+            
+        }
     }
 
     /// <summary>
