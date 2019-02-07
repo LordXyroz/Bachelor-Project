@@ -328,11 +328,11 @@ public class ClientBehaviour : MonoBehaviour
                 else if (data.Contains("<MessageReply>"))
                 {
                     data = data.Substring(0, data.Length - 14);
-
-                    //Debug.Log("Client - Got message: " + data);
+                    
                     // Send data to wherever needed:
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(data);
                     // Put message in textbox for testing:
+                    MoveChatBox();
                     GameObject.Find("MessageText").GetComponent<Text>().text = data;
                 }
                 else if (data.Contains("<Scenario>"))
@@ -349,5 +349,16 @@ public class ClientBehaviour : MonoBehaviour
                 m_clientToServerConnection = default(NetworkConnection);
             }
         }
+    }
+
+    /// <summary>
+    /// Moves every text in chatField one step up for the new message to be put at bottom.
+    /// </summary>
+    void MoveChatBox()
+    {
+        GameObject.Find("MessageText5").GetComponent<Text>().text = GameObject.Find("MessageText4").GetComponent<Text>().text;
+        GameObject.Find("MessageText4").GetComponent<Text>().text = GameObject.Find("MessageText3").GetComponent<Text>().text;
+        GameObject.Find("MessageText3").GetComponent<Text>().text = GameObject.Find("MessageText2").GetComponent<Text>().text;
+        GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
     }
 }

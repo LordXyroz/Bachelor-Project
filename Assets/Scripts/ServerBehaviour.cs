@@ -9,6 +9,7 @@ using System;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
+using UnityEngine.UI;
 
 public class ServerBehaviour : MonoBehaviour
 {
@@ -124,6 +125,42 @@ public class ServerBehaviour : MonoBehaviour
         m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
     }
 
+
+    /// <summary>
+    /// When in lobby view this function will put message wanted to be sent in messageField, and send it to all connected clients.
+    /// </summary>
+    /// <param name="message"></param>
+    public void SendChatMessage(string message)
+    {
+        MoveChatBox();
+        GameObject.Find("MessageText1").GetComponent<Text>().text = message;
+        /// If any client has joined the lobby, the host will send the message to them:
+        if (m_connections.IsCreated)
+        {
+            /// Go through all joined clients:
+            for (int i = 0; i < m_connections.Length; i++)
+            {
+                var messageWriter = new DataStreamWriter(message.Length+1, Allocator.Temp);
+
+                message += "<MessageReply>";
+                messageWriter.Write(Encoding.ASCII.GetBytes(message));
+
+                m_ServerDriver.Send(m_connections[i], messageWriter);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Moves every text in chatField one step up for the new message to be put at bottom.
+    /// </summary>
+    void MoveChatBox()
+    {
+        GameObject.Find("MessageText5").GetComponent<Text>().text = GameObject.Find("MessageText4").GetComponent<Text>().text;
+        GameObject.Find("MessageText4").GetComponent<Text>().text = GameObject.Find("MessageText3").GetComponent<Text>().text;
+        GameObject.Find("MessageText3").GetComponent<Text>().text = GameObject.Find("MessageText2").GetComponent<Text>().text;
+        GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
+    }
+
     void OnDestroy()
     {
         // All jobs must be completed before we can dispose the data they use
@@ -182,6 +219,10 @@ public class ServerBehaviour : MonoBehaviour
                         Debug.Log("Server - Connecting client...");
                         writer.Write(Encoding.ASCII.GetBytes("<Connected>"));
 
+                        /// Add new client to list of players in lobby:
+                        data = data.Substring(0, data.Length - 12);
+                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(data);
+
                         /// Send a message back to the client, so it is known that connection is secured.
                         m_ServerDriver.Send(m_connections[i], writer);
                     }
@@ -197,6 +238,8 @@ public class ServerBehaviour : MonoBehaviour
                         {
                             m_ServerDriver.Send(m_connections[j], writer);
                         }
+
+                        GameObject.Find("MessageText").GetComponent<Text>().text = data;
 
                         /// Give the message received to the host aswell:
                         Debug.Log("Host has data: " + data);
@@ -218,6 +261,8 @@ public class ServerBehaviour : MonoBehaviour
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
                     Debug.Log("Server - Disconnecting client...");
+                    
+                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().RemovePlayerName(i);
 
                     // This connection no longer exist, remove it from the list
                     // The next iteration will operate on the new connection we swapped in so as long as it exist the loop can continue.

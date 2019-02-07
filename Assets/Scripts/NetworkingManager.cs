@@ -4,13 +4,22 @@ using UnityEngine.UI;
 
 public class NetworkingManager : MonoBehaviour
 {
+    private string userName;
 
     public bool isSpectator;
     public GameObject chatField;
     public GameObject connectionField;
 
+    private GameObject playerName1;
+    private GameObject playerName2;
+    private GameObject playerName3;
+
     void Start()
     {
+        playerName1 = GameObject.Find("Player1");
+        playerName2 = GameObject.Find("Player2");
+        playerName3 = GameObject.Find("Player3");
+
         connectionField = GameObject.Find("ConnectionField");
         chatField = GameObject.Find("ChatField");
         chatField.SetActive(false);
@@ -37,13 +46,6 @@ public class NetworkingManager : MonoBehaviour
     public void SetupNetworkingManager(bool isSpec)
     {
         isSpectator = isSpec;
-        /*
-         * TODO
-         * 
-         * This function will add client or server script based upon bool sent in.
-         * This will either make the client be able to send and get messages as an attacker/defender
-         * or receive messages as a host/spectator of the game.
-         */
         GameObject gm = GameObject.Find("GameManager");
         if (isSpectator)
         {
@@ -53,12 +55,16 @@ public class NetworkingManager : MonoBehaviour
 
                 /// Get match name from user before changing view:
                 string matchName = GameObject.Find("MatchNameInputField").GetComponent<InputField>().text;
-                string userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
+                userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
 
-                /// Setting premade name of game if not user defined.
+                /// Setting premade names if none is already there.
                 if (matchName == null || matchName == "")
                 {
                     matchName = "Summoner's Rift";
+                }
+                if (userName == null || userName == "")
+                {
+                    userName = "Player 1";
                 }
 
                 /// Changing view:
@@ -67,7 +73,11 @@ public class NetworkingManager : MonoBehaviour
 
                 /// Set match name as title on new view, and username as first one in lobby:
                 GameObject.Find("MatchName").GetComponent<Text>().text = matchName;
-                GameObject.Find("Player1").transform.Find("Text").GetComponent<Text>().text = userName;
+                playerName1.transform.Find("Text").GetComponent<Text>().text = userName;
+
+                /// Set to false as host is the only one in lobby when it starts.
+                playerName2.SetActive(false);
+                playerName3.SetActive(false);
             }
         }
         else
@@ -82,6 +92,53 @@ public class NetworkingManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// When a player leaves the lobby their name is removed from the list.
+    /// </summary>s
+    public void RemovePlayerName(int listNr)
+    {
+        /// listNr gives the number in list after host(Host is always nr.1).
+
+        if (listNr == 1)
+        {
+            if (playerName2.activeSelf && playerName3.activeSelf)
+            {
+                playerName2.transform.Find("Text").GetComponent<Text>().text = playerName3.transform.Find("Text").GetComponent<Text>().text;
+            }
+            else
+            {
+                playerName2.SetActive(false);
+            }
+        }
+        else if (listNr == 2)
+        {
+            playerName3.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// When a player joins the lobby their name is added to the list.
+    /// </summary>
+    public void AddPlayerName(string newName)
+    {
+        if (playerName2.activeSelf)
+        {
+            if (playerName2.transform.Find("Text").GetComponent<Text>().text == "" || playerName2.transform.Find("Text").GetComponent<Text>().text == null)
+            {
+                playerName2.transform.Find("Text").GetComponent<Text>().text = newName;
+            }
+            else
+            {
+                playerName3.SetActive(true);
+                playerName3.transform.Find("Text").GetComponent<Text>().text = newName;
+            }
+        }
+        else
+        {
+            playerName2.SetActive(true);
+            playerName2.transform.Find("Text").GetComponent<Text>().text = newName;
+        }
+    }
 
     /// <summary>
     /// This function is run through a button that shows ONLY when user is online(connected to server), so it will result in user disconnecting.
@@ -108,19 +165,21 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void SendChatMessage()
     {
+        GameObject gm = GameObject.Find("GameManager");
+        string msg = userName + " - " + GameObject.Find("ChatInputField").GetComponent<InputField>().text;
         if (!isSpectator)
         {
-            GameObject gm = GameObject.Find("GameManager");
             if (gm.GetComponent<ClientBehaviour>() != null)
             {
-                string msg = GameObject.Find("ChatInputField").GetComponent<InputField>().text;
                 GetComponent<ClientBehaviour>().SendChatMessage(msg);
             }
         }
         else
         {
-            /// Let the host chat in the lobby aswell: :)
-
+            if (gm.GetComponent<ServerBehaviour>() != null)
+            {
+                GetComponent<ServerBehaviour>().SendChatMessage(msg);
+            }
         }
     }
 
@@ -159,7 +218,7 @@ public class NetworkingManager : MonoBehaviour
     /// <param name="msg"></param>
     public void GetMessage(string msg)
     {
-        GameObject.Find("MessageText").GetComponent<Text>().text = msg;
+        //GameObject.Find("MessageText").GetComponent<Text>().text = msg;
     }
 
     public void GetHostMessage(string msg)
