@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// TODO!!!!!!!
+/// Maybe use coroutines for handling discover/analyze/attack??
+
 /// <summary>
 /// Handles the attacker's controls and capabilities.
 /// </summary>
