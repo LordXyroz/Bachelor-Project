@@ -703,9 +703,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22849657ae3db3f4691ad3c52e679b56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userName: 
+  matchName: 
   isSpectator: 0
   chatField: {fileID: 0}
   connectionField: {fileID: 0}
+  playerName1: {fileID: 0}
+  playerName2: {fileID: 0}
+  playerName3: {fileID: 0}
 --- !u!1 &395243764
 GameObject:
   m_ObjectHideFlags: 0
@@ -738,7 +743,7 @@ RectTransform:
   m_Children:
   - {fileID: 1523014718}
   m_Father: {fileID: 1227806956}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1462,7 +1467,7 @@ RectTransform:
   - {fileID: 2106579257}
   - {fileID: 1275504981}
   m_Father: {fileID: 1227806956}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2329,9 +2334,9 @@ Transform:
   - {fileID: 656178003}
   - {fileID: 1250292516}
   - {fileID: 564759229}
+  - {fileID: 1587349610}
   - {fileID: 690339222}
   - {fileID: 395243765}
-  - {fileID: 1587349610}
   - {fileID: 1270792001}
   - {fileID: 2121204003}
   m_Father: {fileID: 1776835377}
@@ -3120,7 +3125,7 @@ RectTransform:
   - {fileID: 660410831}
   - {fileID: 154510281}
   m_Father: {fileID: 1227806956}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

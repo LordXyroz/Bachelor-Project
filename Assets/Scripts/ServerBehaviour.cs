@@ -140,7 +140,7 @@ public class ServerBehaviour : MonoBehaviour
             /// Go through all joined clients:
             for (int i = 0; i < m_connections.Length; i++)
             {
-                var messageWriter = new DataStreamWriter(message.Length+1, Allocator.Temp);
+                var messageWriter = new DataStreamWriter(message.Length+15, Allocator.Temp);
 
                 message += "<MessageReply>";
                 messageWriter.Write(Encoding.ASCII.GetBytes(message));
@@ -216,13 +216,23 @@ public class ServerBehaviour : MonoBehaviour
                     }
                     else if (data.Contains("<Connecting>"))
                     {
-                        Debug.Log("Server - Connecting client...");
-                        writer.Write(Encoding.ASCII.GetBytes("<Connected>"));
+                        Debug.Log("Server - Connecting client with name: " + data);
 
                         /// Add new client to list of players in lobby:
                         data = data.Substring(0, data.Length - 12);
                         GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(data);
 
+                        /// Send info back to client just connected about the lobby.
+                        NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
+                        string message = nm.matchName + "<Match>";
+                        message += nm.userName + "<HostName>";
+                        if (nm.playerName2.activeSelf)
+                        {
+                            message += nm.playerName2.transform.Find("Text").GetComponent<Text>().text + "<PlayerName>";
+                        }
+
+                        writer.Write(Encoding.ASCII.GetBytes(message + "<Connected>"));
+                        
                         /// Send a message back to the client, so it is known that connection is secured.
                         m_ServerDriver.Send(m_connections[i], writer);
                     }
@@ -239,7 +249,9 @@ public class ServerBehaviour : MonoBehaviour
                             m_ServerDriver.Send(m_connections[j], writer);
                         }
 
-                        GameObject.Find("MessageText").GetComponent<Text>().text = data;
+                        // Put message in textbox for testing:
+                        MoveChatBox();
+                        GameObject.Find("MessageText1").GetComponent<Text>().text = data;
 
                         /// Give the message received to the host aswell:
                         Debug.Log("Host has data: " + data);
@@ -262,7 +274,9 @@ public class ServerBehaviour : MonoBehaviour
                 {
                     Debug.Log("Server - Disconnecting client...");
                     
-                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().RemovePlayerName(i);
+                    /// Remove client that disconnected from list of people who ARE indeed connected.
+                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().RemovePlayerAtPosition(i);
+
 
                     // This connection no longer exist, remove it from the list
                     // The next iteration will operate on the new connection we swapped in so as long as it exist the loop can continue.

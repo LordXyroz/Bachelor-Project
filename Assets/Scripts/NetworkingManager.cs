@@ -4,15 +4,16 @@ using UnityEngine.UI;
 
 public class NetworkingManager : MonoBehaviour
 {
-    private string userName;
+    public string userName;
+    public string matchName;
 
     public bool isSpectator;
     public GameObject chatField;
     public GameObject connectionField;
 
-    private GameObject playerName1;
-    private GameObject playerName2;
-    private GameObject playerName3;
+    public GameObject playerName1;
+    public GameObject playerName2;
+    public GameObject playerName3;
 
     void Start()
     {
@@ -52,33 +53,36 @@ public class NetworkingManager : MonoBehaviour
             if (gm.GetComponent<ServerBehaviour>() == null && gm.GetComponent<ClientBehaviour>() == null)
             {
                 gm.AddComponent<ServerBehaviour>();
-
-                /// Get match name from user before changing view:
-                string matchName = GameObject.Find("MatchNameInputField").GetComponent<InputField>().text;
-                userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
-
-                /// Setting premade names if none is already there.
-                if (matchName == null || matchName == "")
-                {
-                    matchName = "Summoner's Rift";
-                }
-                if (userName == null || userName == "")
-                {
-                    userName = "Player 1";
-                }
-
-                /// Changing view:
-                chatField.SetActive(true);
-                connectionField.SetActive(false);
-
-                /// Set match name as title on new view, and username as first one in lobby:
-                GameObject.Find("MatchName").GetComponent<Text>().text = matchName;
-                playerName1.transform.Find("Text").GetComponent<Text>().text = userName;
-
-                /// Set to false as host is the only one in lobby when it starts.
-                playerName2.SetActive(false);
-                playerName3.SetActive(false);
             }
+
+            /// Get match name from user before changing view:
+            matchName = GameObject.Find("MatchNameInputField").GetComponent<InputField>().text;
+            userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
+
+            /// Setting premade names if none is already there.
+            if (matchName == null || matchName == "")
+            {
+                matchName = "Summoner's Rift";
+            }
+            if (userName == null || userName == "")
+            {
+                userName = "Player 1";
+            }
+
+            /// Changing view:
+            chatField.SetActive(true);
+            connectionField.SetActive(false);
+            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
+            GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
+
+            /// Set match name as title on new view, and username as first one in lobby:
+            GameObject.Find("MatchName").GetComponent<Text>().text = matchName;
+            playerName1.transform.Find("Text").GetComponent<Text>().text = userName;
+
+            /// Set to false as host is the only one in lobby when it starts.
+            playerName2.SetActive(false);
+            playerName3.SetActive(false);
+
         }
         else
         {
@@ -86,20 +90,24 @@ public class NetworkingManager : MonoBehaviour
             if (gm.GetComponent<ClientBehaviour>() == null && gm.GetComponent<ServerBehaviour>() == null)
             {
                 gm.AddComponent<ClientBehaviour>();
-                
-                StartCoroutine(ConnectOrDisconnect());
             }
+
+            /// Get username from user before changing view to lobby view if host is found.
+            userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
+            playerName3.SetActive(false);
+
+            StartCoroutine(ConnectOrDisconnect());
         }
     }
 
     /// <summary>
     /// When a player leaves the lobby their name is removed from the list.
-    /// </summary>s
-    public void RemovePlayerName(int listNr)
+    /// </summary>
+    public void RemovePlayerAtPosition(int listNr)
     {
         /// listNr gives the number in list after host(Host is always nr.1).
 
-        if (listNr == 1)
+        if (listNr == 0)
         {
             if (playerName2.activeSelf && playerName3.activeSelf)
             {
@@ -110,7 +118,7 @@ public class NetworkingManager : MonoBehaviour
                 playerName2.SetActive(false);
             }
         }
-        else if (listNr == 2)
+        else if (listNr == 1)
         {
             playerName3.SetActive(false);
         }
@@ -155,8 +163,20 @@ public class NetworkingManager : MonoBehaviour
     private IEnumerator ConnectOrDisconnect()
     {
         yield return new WaitForSeconds(0.01f);
-        /// Make client connect or disconnect to a host found:
-        GameObject.Find("GameManager").GetComponent<ClientBehaviour>().ConnectOrDisconnect();
+
+        if (isSpectator)
+        {
+            /// Stop hosting the game: TODO
+
+            /// Change view to not be in a lobby:
+            chatField.SetActive(false);
+            connectionField.SetActive(true);
+        }
+        else
+        {
+            /// Make client connect or disconnect to a host found:
+            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().ConnectOrDisconnect();
+        }
     }
 
     /// <summary>
@@ -198,19 +218,7 @@ public class NetworkingManager : MonoBehaviour
             }
         }
     }
-
-
-    /// <summary>
-    /// ExitLobby is run when pressing the ExitButton, the client will return to the main menu and stop the connecting/connection or stop the hosting.
-    /// </summary>
-    public void ExitLobby()
-    {
-        /// TODO stop connecting...
-
-        /// Instead of exiting the game here in the future we will send the player back to main menu.
-        UnityEditor.EditorApplication.isPlaying = false;
-    }
-
+    
 
     /// <summary>
     /// GetMessage will receive message collected through the server/client script.

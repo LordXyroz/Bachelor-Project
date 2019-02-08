@@ -126,6 +126,7 @@ public class ClientBehaviour : MonoBehaviour
         if (connect)
         { 
             connect = false;
+            Debug.Log("Disconnecting");
 
             // Disconnect client from host:
             m_clientToServerConnection.Disconnect(m_ClientDriver);
@@ -140,6 +141,13 @@ public class ClientBehaviour : MonoBehaviour
             GameObject gm = GameObject.Find("GameManager");
             gm.GetComponent<NetworkingManager>().connectionField.SetActive(true);
             gm.GetComponent<NetworkingManager>().chatField.SetActive(false);
+
+            /// Delete past chat:
+            int amountOfTexts = 5;  /// Can change in future.
+            for (int i = 0; i < amountOfTexts; i++)
+            {
+                GameObject.Find("MessageText" + i.ToString()).GetComponent<Text>().text = "";
+            }
         }
         else
         {
@@ -179,6 +187,7 @@ public class ClientBehaviour : MonoBehaviour
             setupHostIp.Wait();
             try
             {
+                //Debug.Log("IP address: " + ServerEndPoint.GetIp());
                 /// Connect to host if one is found and connection isn't already made.
                 if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
                 {
@@ -229,7 +238,7 @@ public class ClientBehaviour : MonoBehaviour
             updateWriter.Write(msg);
             m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
             updateWriter.Dispose();
-            yield return new WaitForSeconds(10);
+            yield return new WaitForSeconds(4);
         }
     }
 
@@ -239,10 +248,6 @@ public class ClientBehaviour : MonoBehaviour
     /// <param name="message"></param>
     public new void SendChatMessage(string message)
     {
-        if (m_ClientDriver.IsCreated)
-        {
-            Debug.Log("lol");
-        }
         if (m_clientToServerConnection.IsCreated)
         {
             // Example of sending a string through the network:
@@ -307,7 +312,8 @@ public class ClientBehaviour : MonoBehaviour
             {
                 // Create a 4 byte data stream which we can store our ping sequence number in
                 var connectionWriter = new DataStreamWriter(100, Allocator.Temp);
-                byte[] msg = Encoding.ASCII.GetBytes("<Connecting>");
+                string name = GameObject.Find("GameManager").GetComponent<NetworkingManager>().userName;
+                byte[] msg = Encoding.ASCII.GetBytes(name + "<Connecting>");
                 connectionWriter.Write(msg);
                 m_clientToServerConnection.Send(m_ClientDriver, connectionWriter);
 
@@ -323,6 +329,27 @@ public class ClientBehaviour : MonoBehaviour
 
                 if (data.Contains("<Connected>"))
                 {
+                    NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
+                    /// Receives matchname:
+                    nm.matchName = data.Substring(0, data.IndexOf("<Match>"));
+                    data = data.Substring(data.IndexOf("<Match>"), data.Length - (data.IndexOf("<Match>") + 1));
+
+                    /// Receives hostname:
+                    nm.playerName1.transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<HostName>"));
+                    data = data.Substring(data.IndexOf("<HostName>"), data.Length - (data.IndexOf("<HostName>") + 1));
+
+                    /// Receives names of other people in lobby(if any):
+                    if (data.Contains("<PlayerName>"))
+                    {
+                        nm.playerName3.transform.Find("Text").GetComponent<Text>().text = nm.playerName2.transform.Find("Text").GetComponent<Text>().text;
+                        nm.playerName2.transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<PlayerName>"));
+                        data = data.Substring(data.IndexOf("<PlayerName>"), data.Length - (data.IndexOf("<PlayerName>") + 1));
+                    }
+                    else
+                    {
+                        nm.playerName3.SetActive(false);
+                    }
+
                     Debug.Log("Client - You are connected to server!");
                 }
                 else if (data.Contains("<MessageReply>"))
@@ -333,18 +360,19 @@ public class ClientBehaviour : MonoBehaviour
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(data);
                     // Put message in textbox for testing:
                     MoveChatBox();
-                    GameObject.Find("MessageText").GetComponent<Text>().text = data;
+                    GameObject.Find("MessageText1").GetComponent<Text>().text = data;
                 }
                 else if (data.Contains("<Scenario>"))
                 {
                     data = data.Substring(0, data.Length - 10);
                     Debug.Log("Client - got scenario: " + data);
                 }
-
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
                 Debug.Log("Client - Disconnecting");
+                
+
                 /// If the server disconnected us we clear out connection
                 m_clientToServerConnection = default(NetworkConnection);
             }
