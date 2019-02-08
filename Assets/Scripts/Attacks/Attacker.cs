@@ -153,6 +153,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
     {
 
     }
+
     /// <summary>
     /// From the IOnAnalyzeResponse interface.
     /// 
@@ -162,8 +163,13 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
     /// <param name="message">Message containing relevant info to be handled by the function.</param>
     public void OnAnalyzeResponse(AnalyzeResponeMessage message)
     {
-        Debug.Log("Analyze response from: " + message.senderName + " to me: " + message.targetName);
-        foreach (var a in message.attacks)
-            Debug.Log(message.senderName + " is vulnerable vs: " + a);
+        if (message.targetName == name)
+        {
+            Debug.Log("Analyze response from: " + message.senderName + " to me: " + message.targetName);
+            if (message.attacks.Count == 0)
+                Debug.Log(message.senderName + " has no vulnerabilities");
+            foreach (var a in message.attacks)
+                Debug.Log(message.senderName + " is vulnerable vs: " + a);
+        }
     }
 }
