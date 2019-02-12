@@ -11,79 +11,72 @@ public class Defender : MonoBehaviour, IAnalyzeResponse
 
     public GameObject target;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private int analyzeDuration = 10;
+    private float analyzeTimer = 0f;
+    private bool analyzeCount = false;
+
+    private bool workInProgress = false;
 
     // Update is called once per frame
     void Update()
     {
+        if (analyzeCount)
+            analyzeTimer += Time.deltaTime;
+
+        if (analyzeTimer >= analyzeDuration)
+            Analyze();
+
         if (Input.GetKeyDown(KeyCode.A))
         {
-            var go = Instantiate(defensePrefabs[0]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(0);
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
-            var go = Instantiate(defensePrefabs[1]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(1);
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
-            var go = Instantiate(defensePrefabs[2]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(2);
         }
         if (Input.GetKeyDown(KeyCode.F))
         {
-            var go = Instantiate(defensePrefabs[3]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(3);
         }
         if (Input.GetKeyDown(KeyCode.G))
         {
-            var go = Instantiate(defensePrefabs[4]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(4);
         }
         if (Input.GetKeyDown(KeyCode.H))
         {
-            var go = Instantiate(defensePrefabs[5]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(5);
         }
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            var go = Instantiate(defensePrefabs[6]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(6);
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
-            var go = Instantiate(defensePrefabs[7]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(7);
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            var go = Instantiate(defensePrefabs[8]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(8);
         }
         if (Input.GetKeyDown(KeyCode.V))
         {
-            var go = Instantiate(defensePrefabs[9]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(9);
         }
         if (Input.GetKeyDown(KeyCode.B))
         {
-            var go = Instantiate(defensePrefabs[10]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(10);
         }
         if (Input.GetKeyDown(KeyCode.N))
         {
-            var go = Instantiate(defensePrefabs[11]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(11);
         }
         if (Input.GetKeyDown(KeyCode.M))
         {
-            var go = Instantiate(defensePrefabs[12]);
-            go.GetComponent<Defense>().target = target;
+            StartDefense(12);
         }
     }
 
@@ -96,6 +89,45 @@ public class Defender : MonoBehaviour, IAnalyzeResponse
         target = go;
     }
 
+    /// <summary>
+    /// Function to be hooked up to a button. Starts timer for Analyzing
+    /// </summary>
+    public void StartAnalyze()
+    {
+        if (!workInProgress)
+        {
+            workInProgress = true;
+            analyzeCount = true;
+        }
+    }
+
+    /// <summary>
+    /// Function to be hooked up to a button. Starts a Defense implementation.
+    /// </summary>
+    /// <param name="id"></param>
+    public void StartDefense(int id)
+    {
+        if (!workInProgress)
+        {
+            workInProgress = true;
+
+            var go = Instantiate(defensePrefabs[id]);
+            go.GetComponent<Defense>().target = target;
+        }
+    }
+
+    /// <summary>
+    /// Sends an Analyze message.
+    /// Resets timers/bools.
+    /// </summary>
+    public void Analyze()
+    {
+        analyzeCount = false;
+        analyzeTimer = 0f;
+
+        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.ANALYZE));
+    }
+    
     /// <summary>
     /// From the IOnAnalyzeResponse interface.
     /// 
@@ -112,6 +144,8 @@ public class Defender : MonoBehaviour, IAnalyzeResponse
                 Debug.Log(message.senderName + " has no vulnerabilities");
             foreach (var a in message.attacks)
                 Debug.Log(message.senderName + " is vulnerable vs: " + a);
+
+            workInProgress = false;
         }
     }
 }
