@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Child class of Message for storing msg for logging events.
+/// </summary>
 public class LoggingMessage : Message
 {
     public string message;

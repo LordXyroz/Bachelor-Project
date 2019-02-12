@@ -43,55 +43,50 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         {
             StartDiscover();
         }
-    
-
-        if (target)
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                StartAnalyze();
-            }
+            StartAnalyze();
+        }
 
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                StartAttack(0);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                StartAttack(1);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                StartAttack(2);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                StartAttack(3);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                StartAttack(4);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha6))
-            {
-                StartAttack(5);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha7))
-            {
-                StartAttack(6);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha8))
-            {
-                StartAttack(7);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha9))
-            {
-                StartAttack(8);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha0))
-            {
-                StartAttack(9);
-            }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            StartAttack(0);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            StartAttack(1);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            StartAttack(2);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            StartAttack(3);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            StartAttack(4);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            StartAttack(5);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            StartAttack(6);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            StartAttack(7);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            StartAttack(8);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            StartAttack(9);
         }
     }
 
@@ -127,6 +122,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         if (!workInProgress)
         {
+            if (target == null)
+                return;
+
             workInProgress = true;
             analyzeCount = true;
 
@@ -144,6 +142,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         if (!workInProgress)
         {
+            if (target == null)
+                return;
+
             workInProgress = true;
 
             var go = Instantiate(attackPrefabs[id]);
@@ -244,11 +245,11 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     }
 
     /// <summary>
-    /// From the IOnAttackResponse interface.
+    /// From the IAttackResponse interface.
     /// 
-    /// Lets the player do something again. 
+    /// Listens to a MessageTypes.Events.ATTACK_RESPONSE
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">Message containing relevant info to be handled by the function</param>
     public void AttackResponse(SuccessMessage message)
     {
         workInProgress = false;

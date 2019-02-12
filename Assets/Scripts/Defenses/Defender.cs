@@ -113,6 +113,9 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
     {
         if (!workInProgress)
         {
+            if (target == null)
+                return;
+
             workInProgress = true;
 
             var go = Instantiate(defensePrefabs[id]);
@@ -163,7 +166,12 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         }
     }
-
+    /// <summary>
+    /// From the IDefenseResponse interface.
+    /// 
+    /// Listens to a MessageTypes.Events.DEFENSE_RESPONSE
+    /// </summary>
+    /// <param name="message">Message containing relevant info to be handled by the function</param>
     public void DefenseResponse(SuccessMessage message)
     {
         workInProgress = false;

@@ -59,7 +59,6 @@ public class Defense : MonoBehaviour, IDefenseResponse
     /// 
     /// Listens to a MessageTypes.Events.DEFENSE_RESPONSE
     /// Checks whether self is the target of the message.
-    /// Does stuff based on the success or failure of the response.
     /// Destroys the gameobject once the function is done as the defense is done.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
