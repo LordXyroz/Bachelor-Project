@@ -38,10 +38,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         if (analyzeTimer >= analyzeDuration)
             Analyze();
-
-        if (!workInProgress)
-        {
-
+        
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 StartDiscover();
@@ -52,48 +49,47 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
                 StartAnalyze();
             }
 
-            if (target)
+        if (target)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                if (Input.GetKeyDown(KeyCode.Alpha1))
-                {
-                    StartAttack(0);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha2))
-                {
-                    StartAttack(1);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha3))
-                {
-                    StartAttack(2);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha4))
-                {
-                    StartAttack(3);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha5))
-                {
-                    StartAttack(4);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha6))
-                {
-                    StartAttack(5);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha7))
-                {
-                    StartAttack(6);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha8))
-                {
-                    StartAttack(7);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha9))
-                {
-                    StartAttack(8);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha0))
-                {
-                    StartAttack(9);
-                }
+                StartAttack(0);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                StartAttack(1);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                StartAttack(2);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                StartAttack(3);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                StartAttack(4);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                StartAttack(5);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                StartAttack(6);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                StartAttack(7);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                StartAttack(8);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha0))
+            {
+                StartAttack(9);
             }
         }
     }
@@ -107,24 +103,43 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         target = go;
     }
 
+    /// <summary>
+    /// Function to be hooked up with a button. Starts timer for Discovering.
+    /// </summary>
     public void StartDiscover()
     {
-        workInProgress = true;
-        discoverCount = true;
+        if (!workInProgress)
+        {
+            workInProgress = true;
+            discoverCount = true;
+        }
     }
 
+    /// <summary>
+    /// Function to be hooked up with a button. Starts timer for Analyzing.
+    /// </summary>
     public void StartAnalyze()
     {
-        workInProgress = true;
-        discoverCount = true;
+        if (!workInProgress)
+        {
+            workInProgress = true;
+            discoverCount = true;
+        }
     }
 
+    /// <summary>
+    /// Function to be hooked up with a button. Starts an Attack.
+    /// </summary>
+    /// <param name="id"></param>
     public void StartAttack(int id)
     {
-        workInProgress = true;
-                
-        var go = Instantiate(attackPrefabs[id]);
-        go.GetComponent<Attack>().target = target;
+        if (!workInProgress)
+        {
+            workInProgress = true;
+
+            var go = Instantiate(attackPrefabs[id]);
+            go.GetComponent<Attack>().target = target;
+        }
     }
 
     /// <summary>
@@ -195,7 +210,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         }
     }
 
-
+    /// <summary>
+    /// From the IOnAttackResponse interface.
+    /// 
+    /// Lets the player do something again. 
+    /// </summary>
+    /// <param name="message"></param>
     public void AttackResponse(SuccessMessage message)
     {
         workInProgress = false;
