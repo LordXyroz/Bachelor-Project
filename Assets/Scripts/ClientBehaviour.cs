@@ -347,7 +347,7 @@ public class ClientBehaviour
                 {
                     NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                     /// Receives matchname:
-                    nm.matchName = data.Substring(0, data.IndexOf("<Match>"));
+                    GameObject.Find("MatchName").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<Match>"));
                     data = data.Substring(data.IndexOf("<Match>") + 7, data.Length - (data.IndexOf("<Match>") + 7));
 
                     /// Receives hostname:
