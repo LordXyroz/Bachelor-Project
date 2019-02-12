@@ -38,7 +38,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         if (analyzeTimer >= analyzeDuration)
             Analyze();
-
+        
         if (Input.GetKeyDown(KeyCode.Q))
         {
             StartDiscover();
@@ -47,7 +47,6 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         {
             StartAnalyze();
         }
-
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             StartAttack(0);

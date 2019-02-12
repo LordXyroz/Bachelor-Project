@@ -90,8 +90,18 @@ public static class MessagingManager
                     break;
                 }
 
+            case MessageTypes.Logging.ERROR:
+                {
+                    var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IError>();
+                    foreach (var o in objects)
+                        o.OnError((LoggingMessage) message);
+                    break;
+                }
+
             default:
-                throw new System.Exception("Unimplemented target!");
+                string msg = "Unimplemented event sent!";
+                BroadcastMessage(new LoggingMessage("", message.senderName, MessageTypes.Logging.ERROR, msg));
+                break;
         }
     }
 }
