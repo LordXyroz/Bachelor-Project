@@ -96,6 +96,9 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
     {
         if (!workInProgress)
         {
+            if (target == null)
+                return;
+
             workInProgress = true;
             analyzeCount = true;
 
