@@ -8,7 +8,7 @@ using UnityEngine;
 /// <summary>
 /// Handles the attacker's controls and capabilities.
 /// </summary>
-public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
+public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAttackResponse
 {
     public GameObject[] attackPrefabs;
 
@@ -21,7 +21,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
     private int analyzeDuration = 10;
     private float analyzeTimer = 0f;
     private bool analyzeCount = false;
-    
+
+    private bool workInProgress = false;
+
     // Update is called once per frame
     void Update()
     {
@@ -37,63 +39,61 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
         if (analyzeTimer >= analyzeDuration)
             Analyze();
 
-        if (Input.GetKeyDown(KeyCode.Q))
-            discoverCount = true;
-
-        if (Input.GetKeyDown(KeyCode.W))
-            analyzeCount = true;
-
-        if (target)
+        if (!workInProgress)
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+
+            if (Input.GetKeyDown(KeyCode.Q))
             {
-                var go = Instantiate(attackPrefabs[0]);
-                go.GetComponent<Attack>().target = target;
+                StartDiscover();
             }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
+
+            if (Input.GetKeyDown(KeyCode.W))
             {
-                var go = Instantiate(attackPrefabs[1]);
-                go.GetComponent<Attack>().target = target;
+                StartAnalyze();
             }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
+
+            if (target)
             {
-                var go = Instantiate(attackPrefabs[2]);
-                go.GetComponent<Attack>().target = target;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                var go = Instantiate(attackPrefabs[3]);
-                go.GetComponent<Attack>().target = target;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                var go = Instantiate(attackPrefabs[4]);
-                go.GetComponent<Attack>().target = target;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha6))
-            {
-                var go = Instantiate(attackPrefabs[5]);
-                go.GetComponent<Attack>().target = target;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha7))
-            {
-                var go = Instantiate(attackPrefabs[6]);
-                go.GetComponent<Attack>().target = target;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha8))
-            {
-                var go = Instantiate(attackPrefabs[7]);
-                go.GetComponent<Attack>().target = target;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha9))
-            {
-                var go = Instantiate(attackPrefabs[8]);
-                go.GetComponent<Attack>().target = target;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha0))
-            {
-                var go = Instantiate(attackPrefabs[9]);
-                go.GetComponent<Attack>().target = target;
+                if (Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    StartAttack(0);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    StartAttack(1);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    StartAttack(2);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    StartAttack(3);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha5))
+                {
+                    StartAttack(4);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha6))
+                {
+                    StartAttack(5);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha7))
+                {
+                    StartAttack(6);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha8))
+                {
+                    StartAttack(7);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha9))
+                {
+                    StartAttack(8);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha0))
+                {
+                    StartAttack(9);
+                }
             }
         }
     }
@@ -105,6 +105,26 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
     public void SetTarget(GameObject go)
     {
         target = go;
+    }
+
+    public void StartDiscover()
+    {
+        workInProgress = true;
+        discoverCount = true;
+    }
+
+    public void StartAnalyze()
+    {
+        workInProgress = true;
+        discoverCount = true;
+    }
+
+    public void StartAttack(int id)
+    {
+        workInProgress = true;
+                
+        var go = Instantiate(attackPrefabs[id]);
+        go.GetComponent<Attack>().target = target;
     }
 
     /// <summary>
@@ -151,7 +171,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
     /// <param name="message">Message containing relevant info to be handled by the function.</param>
     public void OnDiscoverResponse(DiscoverResponseMessage message)
     {
-
+        workInProgress = false;
     }
 
     /// <summary>
@@ -170,6 +190,14 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
                 Debug.Log(message.senderName + " has no vulnerabilities");
             foreach (var a in message.attacks)
                 Debug.Log(message.senderName + " is vulnerable vs: " + a);
+
+            workInProgress = false;
         }
+    }
+
+
+    public void AttackResponse(SuccessMessage message)
+    {
+        workInProgress = false;
     }
 }
