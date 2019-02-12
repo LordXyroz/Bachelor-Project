@@ -62,7 +62,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         this.transform.SetParent(parentToReturnTo);
 
-
+        /// delete the game object if it is placed outside the drop zone
         if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
         {
             Destroy(this.gameObject);

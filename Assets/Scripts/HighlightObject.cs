@@ -3,6 +3,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// 
+/// This script is added to all drag-and-drop UI elements that are supposed to be selectable and highlighted
+/// 
+/// </summary>
 
 public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
@@ -46,16 +51,12 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        //throw new System.NotImplementedException();
-        Selected();
-    }
 
-    public void Selected()
-    {
         /// Only selectable if it is located in the SystemSetupScreen editor area
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
         {
             objectSelect.SelectObject(this.gameObject, mat);
+            //objectSelect.StartConnection();
         }
     }
 
