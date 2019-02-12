@@ -39,6 +39,19 @@ public class NetworkingManager : MonoBehaviour
     }
 
 
+    void FixedUpdate()
+    {
+        if (cb != null)
+        {
+            cb.FixedUpdate();
+        }
+        /*else if (sbyte != null)
+        {
+            sbyte.FixedUpdate();
+        }*/
+    }
+
+
 
     public void ValueChangeCheck()
     {
@@ -60,7 +73,7 @@ public class NetworkingManager : MonoBehaviour
         GameObject gm = GameObject.Find("GameManager");
         if (isSpectator)
         {
-            if (gm.GetComponent<ServerBehaviour>() == null && gm.GetComponent<ClientBehaviour>() == null)
+            if (gm.GetComponent<ServerBehaviour>() == null && cb == null)
             {
                 gm.AddComponent<ServerBehaviour>();
             }
@@ -97,9 +110,9 @@ public class NetworkingManager : MonoBehaviour
         else
         {
             /// Add client behaviour and try to find a host.
-            if (gm.GetComponent<ClientBehaviour>() == null && gm.GetComponent<ServerBehaviour>() == null)
+            if (cb == null && gm.GetComponent<ServerBehaviour>() == null)
             {
-                gm.AddComponent<ClientBehaviour>();
+                cb = new ClientBehaviour(this);
             }
 
             /// Get username from user before changing view to lobby view if host is found.
@@ -108,7 +121,7 @@ public class NetworkingManager : MonoBehaviour
 
             
             /// Make client connect to host or disconnect.
-            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().Connect();
+            cb.Connect(this);
         }
     }
 
@@ -116,6 +129,7 @@ public class NetworkingManager : MonoBehaviour
 
     /// <summary>
     /// This function is run through a button that shows ONLY when user is online(connected to server), so it will result in user disconnecting.
+    /// TODO stop connecting function before starting new coroutine.
     /// </summary>
     public void DisconnectFromServer()
     {
@@ -152,7 +166,8 @@ public class NetworkingManager : MonoBehaviour
             }
 
             /// Make client connect to host or disconnect.
-            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().Disconnect(messageTexts);
+            cb.Disconnect(messageTexts);
+            yield return new WaitForSeconds(1);
         }
     }
 
@@ -216,9 +231,9 @@ public class NetworkingManager : MonoBehaviour
         string msg = userName + " - " + GameObject.Find("ChatInputField").GetComponent<InputField>().text;
         if (!isSpectator)
         {
-            if (gm.GetComponent<ClientBehaviour>() != null)
+            if (cb != null)
             {
-                GetComponent<ClientBehaviour>().SendChatMessage(msg);
+                cb.SendChatMessage(msg);
             }
         }
         else

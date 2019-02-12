@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections;
 
-public class ClientBehaviour : MonoBehaviour
+public class ClientBehaviour
 {
     /// <summary>
     /// Debug.Log($"{DateTime.Now:HH:mm:ss.fff}: starting a new callback.");
@@ -31,7 +31,34 @@ public class ClientBehaviour : MonoBehaviour
     private NetworkConnection m_clientToServerConnection;
     private bool m_clientWantsConnection;
 
+    public ClientBehaviour(MonoBehaviour myMonoBehaviour)
+    {
+        /// Makes sure that the client updates connection every now and then to not lose connection;
+        /// Client will lose connection if pursuing actions that gives that effect.
+        myMonoBehaviour.StartCoroutine(UpdateConnection());
+
+        /// Set values to default.
+        connect = false;
+        m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
+        m_clientToServerConnection = default;
+        m_clientWantsConnection = false;
+    }
+
     
+
+    ~ClientBehaviour()
+    {
+        m_ClientDriver.ScheduleUpdate().Complete();
+        
+        m_ClientDriver.Dispose();
+    }
+
+    void OnDestroy()
+    {
+        Debug.Log("ondestroy");
+        m_ClientDriver.Dispose();
+    }
+
     public void FindHost()
     {
         // Data buffer for incoming data.  
@@ -94,8 +121,9 @@ public class ClientBehaviour : MonoBehaviour
         }
     }
 
+
     
-    void Start()
+    /*void Start()
     {
         /// Makes sure that the client updates connection every now and then to not lose connection;
         /// Client will lose connection if pursuing actions that gives that effect.
@@ -106,17 +134,11 @@ public class ClientBehaviour : MonoBehaviour
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
         m_clientToServerConnection = default;
         m_clientWantsConnection = false;
+        
+    }*/
+    
 
-
-    }
-
-    /// <summary>
-    /// Dispose stuff when not needed anymore.
-    /// </summary>
-    void OnDestroy()
-    {
-        m_ClientDriver.Dispose();
-    }
+    
 
 
     public void Disconnect(List<GameObject> messageTexts)
@@ -125,7 +147,6 @@ public class ClientBehaviour : MonoBehaviour
 
         // Disconnect client from host:
         m_clientToServerConnection.Disconnect(m_ClientDriver);
-        m_clientToServerConnection = default;
         ServerEndPoint = default;
 
         /// Change connectionText according to connection status:
@@ -144,56 +165,16 @@ public class ClientBehaviour : MonoBehaviour
         }
     }
 
-    public void Connect()
+    public void Connect(MonoBehaviour myMonoBehaviour)
     {
         /// TODO : set this to false when pressing a exit button
         if (m_clientWantsConnection != true)
         {
             m_clientWantsConnection = true;
-            StartCoroutine("WaitForHost");
+            myMonoBehaviour.StartCoroutine(WaitForHost());
         }
     }
 
-    /// <summary>
-    /// A button runs this command to either connect or disconnect from the server.
-    /// </summary>
-    /*public void ConnectOrDisconnect(List<GameObject> messageTexts)
-    {
-        if (connect)
-        { 
-            connect = false;
-            Debug.Log("Disconnecting");
-
-            // Disconnect client from host:
-            m_clientToServerConnection.Disconnect(m_ClientDriver);
-            m_clientToServerConnection = default;
-            ServerEndPoint = default;
-
-            /// Change connectionText according to connection status:
-            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
-            GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.red;
-            
-            /// Set the UI for the user correctly according to the connection status:
-            GameObject gm = GameObject.Find("GameManager");
-            gm.GetComponent<NetworkingManager>().connectionField.SetActive(true);
-            gm.GetComponent<NetworkingManager>().chatField.SetActive(false);
-
-            /// Delete past chat:
-            for (int i = 1; i < messageTexts.Count; i++)
-            {
-                messageTexts[i].GetComponent<Text>().text = "";
-            }
-        }
-        else
-        {
-            /// TODO : set this to false when pressing a exit button
-            if (m_clientWantsConnection != true)
-            {
-                m_clientWantsConnection = true;
-                StartCoroutine("WaitForHost");
-            }
-        }
-    }*/
 
     /// <summary>
     /// WaitForHost is a routine where the client searches for a host until one is found, or the client stops the connecting.
@@ -246,7 +227,7 @@ public class ClientBehaviour : MonoBehaviour
                     yield break;
                 }
             }
-            catch (Exception e)
+            catch
             {
                 Debug.Log("Could not find a host!");
             }
@@ -333,7 +314,7 @@ public class ClientBehaviour : MonoBehaviour
         public int[] values;
     }
 
-    void FixedUpdate()
+    public void FixedUpdate()
     {
         // Update the NetworkDriver. Needs to be done before trying to pop events.
         m_ClientDriver.ScheduleUpdate().Complete();
@@ -367,18 +348,18 @@ public class ClientBehaviour : MonoBehaviour
                     NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                     /// Receives matchname:
                     nm.matchName = data.Substring(0, data.IndexOf("<Match>"));
-                    data = data.Substring(data.IndexOf("<Match>"), data.Length - (data.IndexOf("<Match>") + 1));
+                    data = data.Substring(data.IndexOf("<Match>") + 7, data.Length - (data.IndexOf("<Match>") + 7));
 
                     /// Receives hostname:
                     nm.playerName1.transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<HostName>"));
-                    data = data.Substring(data.IndexOf("<HostName>"), data.Length - (data.IndexOf("<HostName>") + 1));
+                    data = data.Substring(data.IndexOf("<HostName>") + 10, data.Length - (data.IndexOf("<HostName>") + 10));
 
                     /// Receives names of other people in lobby(if any):
                     if (data.Contains("<PlayerName>"))
                     {
                         nm.playerName3.transform.Find("Text").GetComponent<Text>().text = nm.playerName2.transform.Find("Text").GetComponent<Text>().text;
                         nm.playerName2.transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<PlayerName>"));
-                        data = data.Substring(data.IndexOf("<PlayerName>"), data.Length - (data.IndexOf("<PlayerName>") + 1));
+                        data = data.Substring(data.IndexOf("<PlayerName>") + 10, data.Length - (data.IndexOf("<PlayerName>") + 10));
                     }
                     else
                     {
@@ -416,6 +397,7 @@ public class ClientBehaviour : MonoBehaviour
                     }
                 }
                 Disconnect(messageTexts);
+                
 
                 /// If the server disconnected us we clear out connection
                 m_clientToServerConnection = default(NetworkConnection);

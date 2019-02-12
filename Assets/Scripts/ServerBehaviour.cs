@@ -148,6 +148,7 @@ public class ServerBehaviour : MonoBehaviour
                 messageWriter.Write(Encoding.ASCII.GetBytes(message));
 
                 m_ServerDriver.Send(m_connections[i], messageWriter);
+                messageWriter.Dispose();
             }
         }
     }
