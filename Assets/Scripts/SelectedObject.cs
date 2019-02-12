@@ -77,10 +77,17 @@ public class SelectedObject : MonoBehaviour
     {
         if (!connectionStarted)
         {
+            /// checks double to make sure function is not called from elsewhere
             return;
         }
         else
         {
+            GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
+            connectionLineClone.transform.SetAsFirstSibling();
+            //horizontalLine = connectionLineClone.transform.Find("HorizontalLine").GetComponent<RectTransform>();
+            connectionLineClone.transform.position = oldSelected.transform.position;
+
+
             connectionStartPos = oldSelected.transform.position;
             connectionEndPos = selected.transform.position;
 
@@ -91,12 +98,14 @@ public class SelectedObject : MonoBehaviour
                 /// connection down
                 if (connectionStartPos.y >= connectionEndPos.y)
                 {
+                    //connectionLineClone.transform.rotation = rotate;
                     //Debug.Log("Connection down--");
                 }
                 ///connection up
                 else
                 {
-                    //Debug.Log("Connection --up");
+                    connectionLineClone.transform.Rotate(new Vector3(0, 180, 180));
+                    //Debug.Log("Connection --up " + rotate);
                 }
             }
             /// connection to the left
@@ -106,19 +115,17 @@ public class SelectedObject : MonoBehaviour
                 /// connection down
                 if (connectionStartPos.y >= connectionEndPos.y)
                 {
+                    connectionLineClone.transform.Rotate(new Vector3(0, 0, 270));
                     //Debug.Log("Connection down--");
                 }
                 ///connection up
                 else
                 {
+                    connectionLineClone.transform.Rotate(new Vector3(180, 0, 270));
                     //Debug.Log("Connection --up    start: " + connectionStartPos.y + " end: " + connectionEndPos.y);
                 }
             }
 
-            GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
-            //horizontalLine = connectionLineClone.transform.Find("HorizontalLine").GetComponent<RectTransform>();
-            connectionLineClone.transform.position = oldSelected.transform.position;
-            Debug.Log("Horizontal line position: " + connectionLineClone.transform.position);
 
             ///reset after connection is esablished
             connectionStarted = false;

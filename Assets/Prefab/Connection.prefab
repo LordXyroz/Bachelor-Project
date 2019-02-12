@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1233773393529174357}
   - component: {fileID: 1233773393529174315}
   - component: {fileID: 1233773393529174356}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: HorizontalLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,9 +83,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1233773393581119613}
-  - component: {fileID: 2779568794375008976}
   - component: {fileID: 1354176535}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Connection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -113,19 +112,6 @@ RectTransform:
   m_AnchoredPosition: {x: -165.3855, y: 150.96176}
   m_SizeDelta: {x: 201.86, y: 7.46}
   m_Pivot: {x: 0.024267457, y: 26.756275}
---- !u!114 &2779568794375008976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1233773393581119614}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b8604c846de115489bc7b064b6111e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  connectionLine: {fileID: 0}
 --- !u!222 &1354176535
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -145,7 +131,7 @@ GameObject:
   - component: {fileID: 1233773393782900269}
   - component: {fileID: 1233773393782900259}
   - component: {fileID: 1233773393782900268}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: VerticalLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}

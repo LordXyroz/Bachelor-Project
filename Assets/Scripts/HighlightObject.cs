@@ -56,7 +56,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
         {
             objectSelect.SelectObject(this.gameObject, mat);
-            //objectSelect.StartConnection();
         }
     }
 
