@@ -118,10 +118,46 @@ public class ClientBehaviour : MonoBehaviour
         m_ClientDriver.Dispose();
     }
 
+
+    public void Disconnect(List<GameObject> messageTexts)
+    {
+        Debug.Log("Disconnecting");
+
+        // Disconnect client from host:
+        m_clientToServerConnection.Disconnect(m_ClientDriver);
+        m_clientToServerConnection = default;
+        ServerEndPoint = default;
+
+        /// Change connectionText according to connection status:
+        GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
+        GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.red;
+
+        /// Set the UI for the user correctly according to the connection status:
+        GameObject gm = GameObject.Find("GameManager");
+        gm.GetComponent<NetworkingManager>().connectionField.SetActive(true);
+        gm.GetComponent<NetworkingManager>().chatField.SetActive(false);
+
+        /// Delete past chat:
+        for (int i = 1; i < messageTexts.Count; i++)
+        {
+            messageTexts[i].GetComponent<Text>().text = "";
+        }
+    }
+
+    public void Connect()
+    {
+        /// TODO : set this to false when pressing a exit button
+        if (m_clientWantsConnection != true)
+        {
+            m_clientWantsConnection = true;
+            StartCoroutine("WaitForHost");
+        }
+    }
+
     /// <summary>
     /// A button runs this command to either connect or disconnect from the server.
     /// </summary>
-    public void ConnectOrDisconnect()
+    /*public void ConnectOrDisconnect(List<GameObject> messageTexts)
     {
         if (connect)
         { 
@@ -143,10 +179,9 @@ public class ClientBehaviour : MonoBehaviour
             gm.GetComponent<NetworkingManager>().chatField.SetActive(false);
 
             /// Delete past chat:
-            int amountOfTexts = 5;  /// Can change in future.
-            for (int i = 0; i < amountOfTexts; i++)
+            for (int i = 1; i < messageTexts.Count; i++)
             {
-                GameObject.Find("MessageText" + i.ToString()).GetComponent<Text>().text = "";
+                messageTexts[i].GetComponent<Text>().text = "";
             }
         }
         else
@@ -158,7 +193,7 @@ public class ClientBehaviour : MonoBehaviour
                 StartCoroutine("WaitForHost");
             }
         }
-    }
+    }*/
 
     /// <summary>
     /// WaitForHost is a routine where the client searches for a host until one is found, or the client stops the connecting.
@@ -355,12 +390,9 @@ public class ClientBehaviour : MonoBehaviour
                 else if (data.Contains("<MessageReply>"))
                 {
                     data = data.Substring(0, data.Length - 14);
-                    
-                    // Send data to wherever needed:
+
+                    /// Send message to the chat field.
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(data);
-                    // Put message in textbox for testing:
-                    MoveChatBox();
-                    GameObject.Find("MessageText1").GetComponent<Text>().text = data;
                 }
                 else if (data.Contains("<Scenario>"))
                 {
@@ -371,7 +403,19 @@ public class ClientBehaviour : MonoBehaviour
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
                 Debug.Log("Client - Disconnecting");
+
                 
+                /// Get reference to chatfield for client to disconnect.
+                List<GameObject> messageTexts = new List<GameObject>();
+                Transform trans = GameObject.Find("MessageField").transform;
+                foreach (Transform child in trans)
+                {
+                    if (child != trans)
+                    {
+                        messageTexts.Add(child.gameObject);
+                    }
+                }
+                Disconnect(messageTexts);
 
                 /// If the server disconnected us we clear out connection
                 m_clientToServerConnection = default(NetworkConnection);

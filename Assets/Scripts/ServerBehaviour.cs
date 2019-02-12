@@ -68,7 +68,7 @@ public class ServerBehaviour : MonoBehaviour
                     connectionAmount = m_connections.Length;
                 }
 
-                // Program is suspended while waiting for an incoming connection.  
+                /// Program is suspended while waiting for an incoming connection.
                 Socket handler = listener.Accept();
                 data = null;
 
@@ -132,8 +132,10 @@ public class ServerBehaviour : MonoBehaviour
     /// <param name="message"></param>
     public void SendChatMessage(string message)
     {
+        // Put message in textbox for chat:
         MoveChatBox();
         GameObject.Find("MessageText1").GetComponent<Text>().text = message;
+
         /// If any client has joined the lobby, the host will send the message to them:
         if (m_connections.IsCreated)
         {

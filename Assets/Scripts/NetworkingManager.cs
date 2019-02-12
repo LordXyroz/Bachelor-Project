@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,8 +16,17 @@ public class NetworkingManager : MonoBehaviour
     public GameObject playerName2;
     public GameObject playerName3;
 
+    private ClientBehaviour cb;
+    //private ServerBehaviour sb;
+
     void Start()
     {
+        QualitySettings.vSyncCount = 0;
+
+        cb = null;
+        //sb = null;
+
+        /// Get playername positions from the beginning for use in future.
         playerName1 = GameObject.Find("Player1");
         playerName2 = GameObject.Find("Player2");
         playerName3 = GameObject.Find("Player3");
@@ -96,9 +106,56 @@ public class NetworkingManager : MonoBehaviour
             userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
             playerName3.SetActive(false);
 
-            StartCoroutine(ConnectOrDisconnect());
+            
+            /// Make client connect to host or disconnect.
+            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().Connect();
         }
     }
+
+    
+
+    /// <summary>
+    /// This function is run through a button that shows ONLY when user is online(connected to server), so it will result in user disconnecting.
+    /// </summary>
+    public void DisconnectFromServer()
+    {
+        StartCoroutine(Disconnect());
+    }
+
+    /// <summary>
+    /// WaitForConnection is used for clients that needs to wait a moment for the client behaviour to be set before trying to connect to host.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator Disconnect()
+    {
+        yield return new WaitForSeconds(0.01f);
+
+        if (isSpectator)
+        {
+            /// Stop hosting the game: TODO
+
+            /// Change view to not be in a lobby:
+            chatField.SetActive(false);
+            connectionField.SetActive(true);
+        }
+        else
+        {
+            /// Get reference to chatfield for client connection to host:
+            List<GameObject> messageTexts = new List<GameObject>();
+            Transform trans = chatField.transform.Find("MessageField").transform;
+            foreach (Transform child in trans)
+            {
+                if (child != trans)
+                {
+                    messageTexts.Add(child.gameObject);
+                }
+            }
+
+            /// Make client connect to host or disconnect.
+            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().Disconnect(messageTexts);
+        }
+    }
+
 
     /// <summary>
     /// When a player leaves the lobby their name is removed from the list.
@@ -148,36 +205,6 @@ public class NetworkingManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// This function is run through a button that shows ONLY when user is online(connected to server), so it will result in user disconnecting.
-    /// </summary>
-    public void Disconnect()
-    {
-        StartCoroutine(ConnectOrDisconnect());
-    }
-
-    /// <summary>
-    /// WaitForConnection is used for clients that needs to wait a moment for the client behaviour to be set before trying to connect to host.
-    /// </summary>
-    /// <returns></returns>
-    private IEnumerator ConnectOrDisconnect()
-    {
-        yield return new WaitForSeconds(0.01f);
-
-        if (isSpectator)
-        {
-            /// Stop hosting the game: TODO
-
-            /// Change view to not be in a lobby:
-            chatField.SetActive(false);
-            connectionField.SetActive(true);
-        }
-        else
-        {
-            /// Make client connect or disconnect to a host found:
-            GameObject.Find("GameManager").GetComponent<ClientBehaviour>().ConnectOrDisconnect();
-        }
-    }
 
     /// <summary>
     /// SendMessage will use the Message given through parameter(temporarily set as string, will be of type 'Message' later)
@@ -202,24 +229,8 @@ public class NetworkingManager : MonoBehaviour
             }
         }
     }
-
-    /// <summary>
-    /// SendScenario is an example of how to send a scenario through the network so all players have updated version of a match.
-    /// TODO when this branch is merged with the branch that as scenario types that will be sent as parameters.
-    /// </summary>
-    public void SendScenario()
-    {
-        if (!isSpectator)
-        {
-            GameObject gm = GameObject.Find("GameManager");
-            if (gm.GetComponent<ClientBehaviour>() != null)
-            {
-                GameObject.Find("GameManager").GetComponent<ClientBehaviour>().SendScenario();
-            }
-        }
-    }
     
-
+    
     /// <summary>
     /// GetMessage will receive message collected through the server/client script.
     /// </summary>
@@ -227,6 +238,21 @@ public class NetworkingManager : MonoBehaviour
     public void GetMessage(string msg)
     {
         //GameObject.Find("MessageText").GetComponent<Text>().text = msg;
+
+        // Put message in textbox for testing:
+        MoveChatBox();
+        GameObject.Find("MessageText1").GetComponent<Text>().text = msg;
+    }
+
+    /// <summary>
+    /// Moves every text in chatField one step up for the new message to be put at bottom.
+    /// </summary>
+    void MoveChatBox()
+    {
+        GameObject.Find("MessageText5").GetComponent<Text>().text = GameObject.Find("MessageText4").GetComponent<Text>().text;
+        GameObject.Find("MessageText4").GetComponent<Text>().text = GameObject.Find("MessageText3").GetComponent<Text>().text;
+        GameObject.Find("MessageText3").GetComponent<Text>().text = GameObject.Find("MessageText2").GetComponent<Text>().text;
+        GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
     }
 
     public void GetHostMessage(string msg)
