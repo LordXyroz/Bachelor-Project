@@ -15,6 +15,10 @@ namespace MessageTypes
     {
         private const ushort offset = 0x0000;
 
+        public const ushort LOG = offset + 1;
+        public const ushort DEBUG = offset + 2;
+        public const ushort WARNING = offset + 3;
+        public const ushort ERROR = offset + 4;
 
     }
 

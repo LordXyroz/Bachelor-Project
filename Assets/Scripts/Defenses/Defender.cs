@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Handles the defender's controls and capabilities.
 /// </summary>
-public class Defender : MonoBehaviour, IAnalyzeResponse
+public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
 {
     public GameObject[] defensePrefabs;
 
@@ -98,6 +98,10 @@ public class Defender : MonoBehaviour, IAnalyzeResponse
         {
             workInProgress = true;
             analyzeCount = true;
+
+            string msg = "Started analyzing on: " + target.name;
+
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         }
     }
 
@@ -113,6 +117,10 @@ public class Defender : MonoBehaviour, IAnalyzeResponse
 
             var go = Instantiate(defensePrefabs[id]);
             go.GetComponent<Defense>().target = target;
+
+            string msg = "Started implementing defense: " + go.GetComponent<Defense>().defenseType + ", on: " + target.name;
+
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         }
     }
 
@@ -139,13 +147,29 @@ public class Defender : MonoBehaviour, IAnalyzeResponse
     {
         if (message.targetName == name)
         {
-            Debug.Log("Analyze response from: " + message.senderName + " to me: " + message.targetName);
-            if (message.attacks.Count == 0)
-                Debug.Log(message.senderName + " has no vulnerabilities");
-            foreach (var a in message.attacks)
-                Debug.Log(message.senderName + " is vulnerable vs: " + a);
-
             workInProgress = false;
+
+            string msg = "Analyze response: ";
+
+            if (message.attacks.Count == 0)
+                msg += "no vulnerabilities found";
+            else
+            {
+                msg += "found - ";
+                foreach (var entry in message.attacks)
+                    msg += entry + ", ";
+            }
+
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         }
+    }
+
+    public void DefenseResponse(SuccessMessage message)
+    {
+        workInProgress = false;
+
+        string msg = "Defense response: " + ((message.success) ? "Success" : "Failed");
+
+        MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
     }
 }

@@ -20,7 +20,6 @@ public static class MessagingManager
         {
             case MessageTypes.Game.ATTACK:
                 {
-                    Debug.Log("Attack event!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IUnderAttack>();
                     foreach (var o in objects)
                         o.UnderAttack((AttackMessage) message);
@@ -29,7 +28,6 @@ public static class MessagingManager
 
             case MessageTypes.Game.ATTACK_RESPONSE:
                 {
-                    Debug.Log("Attack response!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAttackResponse>();
                     foreach (var o in objects)
                         o.AttackResponse((SuccessMessage) message);
@@ -38,7 +36,6 @@ public static class MessagingManager
 
             case MessageTypes.Game.DEFENSE:
                 {
-                    Debug.Log("Defend event!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAddDefense>();
                     foreach (var o in objects)
                         o.AddDefense((DefenseMessage) message);
@@ -47,7 +44,6 @@ public static class MessagingManager
 
             case MessageTypes.Game.DEFENSE_RESPONSE:
                 {
-                    Debug.Log("Defend response!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDefenseResponse>();
                     foreach (var o in objects)
                         o.DefenseResponse((SuccessMessage) message);
@@ -56,7 +52,6 @@ public static class MessagingManager
 
             case MessageTypes.Game.DISCOVER:
                 {
-                    Debug.Log("Discover event!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDiscover>();
                     foreach (var o in objects)
                         o.OnDiscover((DiscoverMessage) message);
@@ -65,7 +60,6 @@ public static class MessagingManager
 
             case MessageTypes.Game.DISCOVER_RESPONSE:
                 {
-                    Debug.Log("Discover response!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDiscoverResponse>();
                     foreach (var o in objects)
                         o.OnDiscoverResponse((DiscoverResponseMessage) message);
@@ -74,7 +68,6 @@ public static class MessagingManager
 
             case MessageTypes.Game.ANALYZE:
                 {
-                    Debug.Log("Analyze event!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAnalyze>();
                     foreach (var o in objects)
                         o.OnAnalyze(message);
@@ -83,10 +76,17 @@ public static class MessagingManager
 
             case MessageTypes.Game.ANALYZE_RESPONE:
                 {
-                    Debug.Log("Analyze response!");
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAnalyzeResponse>();
                     foreach (var o in objects)
                         o.OnAnalyzeResponse((AnalyzeResponeMessage) message);
+                    break;
+                }
+
+            case MessageTypes.Logging.LOG:
+                {
+                    var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<ILogging>();
+                    foreach (var o in objects)
+                        o.OnLog((LoggingMessage) message);
                     break;
                 }
 

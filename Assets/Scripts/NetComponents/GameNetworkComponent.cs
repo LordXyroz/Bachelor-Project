@@ -45,8 +45,6 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     {
         if (name == message.targetName)
         {
-            Debug.Log("Message recieved from: " + message.senderName + " to me: " + name);
-
             if (message.attack != AttackTypes.zero)
             {
                 bool isVulnerable = false;
@@ -81,8 +79,6 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     {
         if (name == message.targetName)
         {
-            Debug.Log("Defense received from: " + message.senderName + " to me: " + name);
-
             if (message.defense != DefenseTypes.zero)
             {
                 if (availableDefenses.Remove(message.defense))
@@ -109,23 +105,25 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     {
         if (message.depth == graphDepth)
         {
-            Debug.Log("Discover received from: " + message.senderName + " to me: " + name);
-            Debug.Log("Depth asked: " + message.depth + " , my depth: " + graphDepth);
-
             List<GameNetworkComponent> list = new List<GameNetworkComponent>();
 
             if (message.targetName == "")
             {
-                visible = true;
-                list.Add(this);
+                if (!visible)
+                {
+                    visible = true;
+                    list.Add(this);
+                }
             }
             else if (message.targetName == name)
             {
                 foreach (var child in children)
                 {
-                    list.Add(child);
-                    child.visible = true;
-
+                    if (child.visible == false)
+                    {
+                        list.Add(child);
+                        child.visible = true;
+                    }
                 }
             }
             MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
@@ -145,8 +143,6 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     {
         if (message.targetName == name)
         {
-            Debug.Log("Analyze received from: " + message.senderName + " to me: " + name);
-
             List<AttackTypes> vulnList = new List<AttackTypes>();
             foreach (var vuln in vulnerabilities)
             {

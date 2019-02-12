@@ -67,11 +67,6 @@ public class Defense : MonoBehaviour, IDefenseResponse
     {
         if (message.targetName == name)
         {
-            if (message.success)
-                Debug.Log("Defense implemented!");
-            else
-                Debug.Log("Defense failed");
-
             Destroy(gameObject);
         }
     }

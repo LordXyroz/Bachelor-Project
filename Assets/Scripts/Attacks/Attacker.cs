@@ -38,19 +38,20 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         if (analyzeTimer >= analyzeDuration)
             Analyze();
-        
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                StartDiscover();
-            }
 
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            StartDiscover();
+        }
+    
+
+        if (target)
+        {
             if (Input.GetKeyDown(KeyCode.W))
             {
                 StartAnalyze();
             }
 
-        if (target)
-        {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 StartAttack(0);
@@ -112,6 +113,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         {
             workInProgress = true;
             discoverCount = true;
+
+            string msg = "Started discovering" + ((target != null) ? " on: "  + target.name : "");
+
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         }
     }
 
@@ -123,7 +128,11 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (!workInProgress)
         {
             workInProgress = true;
-            discoverCount = true;
+            analyzeCount = true;
+
+            string msg = "Started analyzing on: " + target.name;
+
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         }
     }
 
@@ -139,6 +148,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             var go = Instantiate(attackPrefabs[id]);
             go.GetComponent<Attack>().target = target;
+
+            string msg = "Started attack of type: " + go.GetComponent<Attack>().attackType + ", on: " + target.name;
+
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         }
     }
 
@@ -187,6 +200,19 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     public void OnDiscoverResponse(DiscoverResponseMessage message)
     {
         workInProgress = false;
+
+        string msg = "Discover response: ";
+
+        if (message.discovered.Count == 0)
+            msg += "nothing discovered";
+        else
+        {
+            msg += "discovered - ";
+            foreach (var entry in message.discovered)
+                msg += entry.name + ", ";
+        }
+
+        MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
     }
 
     /// <summary>
@@ -200,13 +226,20 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         if (message.targetName == name)
         {
-            Debug.Log("Analyze response from: " + message.senderName + " to me: " + message.targetName);
-            if (message.attacks.Count == 0)
-                Debug.Log(message.senderName + " has no vulnerabilities");
-            foreach (var a in message.attacks)
-                Debug.Log(message.senderName + " is vulnerable vs: " + a);
-
             workInProgress = false;
+
+            string msg = "Analyze response: ";
+
+            if (message.attacks.Count == 0)
+                msg += "no vulnerabilities found";
+            else
+            {
+                msg += "found - ";
+                foreach (var entry in message.attacks)
+                    msg += entry + ", ";
+            }
+
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         }
     }
 
@@ -219,5 +252,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     public void AttackResponse(SuccessMessage message)
     {
         workInProgress = false;
+
+        string msg = "Attack response: " + ((message.success) ? "Success" : "Failed");
+
+        MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
     }
 }

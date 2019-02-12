@@ -67,11 +67,6 @@ public class Attack : MonoBehaviour, IAttackResponse
     {
         if (message.targetName == name)
         {
-            if (message.success)
-                Debug.Log("Attack was successful!");
-            else
-                Debug.Log("Attack failed!");
-
             Destroy(gameObject);
         }
     }
