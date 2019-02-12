@@ -21,7 +21,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse
     private int analyzeDuration = 10;
     private float analyzeTimer = 0f;
     private bool analyzeCount = false;
-
+    
     // Update is called once per frame
     void Update()
     {
