@@ -5,8 +5,8 @@ public class SelectedObject : MonoBehaviour
 {
     [Header("Connection line elements")]
     public GameObject connectionLine;
-    private RectTransform horizontalLine;
-    private RectTransform verticalLine;
+    private RectTransform lineToEnd;
+    private RectTransform lineFromStart;
     private bool connectionStarted;
     private Vector3 connectionStartPos;
     private Vector3 connectionEndPos;
@@ -84,22 +84,31 @@ public class SelectedObject : MonoBehaviour
         {
             GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
             connectionLineClone.transform.SetAsFirstSibling();
-            //horizontalLine = connectionLineClone.transform.Find("HorizontalLine").GetComponent<RectTransform>();
             connectionLineClone.transform.position = oldSelected.transform.position;
+            lineToEnd = connectionLineClone.transform.Find("LineToEnd").GetComponent<RectTransform>();
+            lineFromStart = connectionLineClone.transform.Find("LineFromStart").GetComponent<RectTransform>();
 
 
             connectionStartPos = oldSelected.transform.position;
             connectionEndPos = selected.transform.position;
+            float XPosDiff = Mathf.Abs(connectionStartPos.x - connectionEndPos.x) / 100;        //100 pixels per unit
+            float YPosDiff = Mathf.Abs(connectionStartPos.y - connectionEndPos.y) / 100;        //100 pixels per unit
+            Debug.Log("XPosDiff: " + XPosDiff + "YPosDiff: " + YPosDiff);
+
+            lineToEnd.transform.localScale = new Vector3(XPosDiff, 0.05f, 1.0f);
+            lineFromStart.transform.localScale = new Vector3(0.05f, YPosDiff, 1.0f);
+
+            Vector2 lineFromStartCenterPos = lineFromStart.rect.size;
+            Vector2 lineToEndCenterPos = lineToEnd.rect.size;
 
             /// connection to the right
             if (connectionStartPos.x <= connectionEndPos.x)
             {
-                //Debug.Log("Connection right--    start: " + connectionStartPos.x + " end: " + connectionEndPos.x);
                 /// connection down
                 if (connectionStartPos.y >= connectionEndPos.y)
                 {
-                    //connectionLineClone.transform.rotation = rotate;
-                    //Debug.Log("Connection down--");
+                    lineToEnd.transform.position = new Vector3(lineFromStart.transform.position.x + XPosDiff * 50, connectionEndPos.y);
+                    lineFromStart.transform.position = new Vector3(connectionStartPos.x, selected.transform.position.y + YPosDiff * 50);
                 }
                 ///connection up
                 else
@@ -116,6 +125,7 @@ public class SelectedObject : MonoBehaviour
                 if (connectionStartPos.y >= connectionEndPos.y)
                 {
                     connectionLineClone.transform.Rotate(new Vector3(0, 0, 270));
+                    //lineToEnd.transform.position = new Vector3(lineToEnd.transform.position.x, connectionEndPos.y);
                     //Debug.Log("Connection down--");
                 }
                 ///connection up
@@ -125,6 +135,8 @@ public class SelectedObject : MonoBehaviour
                     //Debug.Log("Connection --up    start: " + connectionStartPos.y + " end: " + connectionEndPos.y);
                 }
             }
+
+
 
 
             ///reset after connection is esablished
