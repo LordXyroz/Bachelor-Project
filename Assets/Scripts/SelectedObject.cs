@@ -1,6 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+
+/// <TODO>
+/// 
+/// Reference all connections to selected object (List<GameObject>)
+/// Delete selected objects
+///     - If selected object is a system component, delete all connections
+///     
+/// 
+/// </TODO>
+
 public class SelectedObject : MonoBehaviour
 {
     [Header("Connection line elements")]
@@ -10,14 +20,14 @@ public class SelectedObject : MonoBehaviour
     private bool connectionStarted;
     private Vector3 connectionStartPos;
     private Vector3 connectionEndPos;
+    private ConnectionReferences connectionReferences;
 
     [Header("Selected object elements")]
     public GameObject selected;
+    public Canvas canvas;
     private GameObject oldSelected;
-    private GameObject selectionBox;
     private Image image;
     private Image imageBox;
-    public Canvas canvas;
 
 
     void Start()
@@ -26,6 +36,7 @@ public class SelectedObject : MonoBehaviour
         selected = null;
         imageBox = null;
         connectionStarted = false;
+        connectionReferences = null;
     }
 
     public void SelectObject(GameObject newSelected, Material mat)
@@ -57,8 +68,6 @@ public class SelectedObject : MonoBehaviour
             image.material = mat;
             imageBox.gameObject.SetActive(true);
 
-
-            Debug.Log("Status of connectionStarted:  " + connectionStarted);
             /// If button pressed for starting a connection
             if (oldSelected != null && connectionStarted)
             {
@@ -90,7 +99,9 @@ public class SelectedObject : MonoBehaviour
             connectionEndPos = selected.transform.position;
 
             GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
+            connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
             connectionLineClone.transform.SetAsFirstSibling();
+            connectionReferences.SetReferences(oldSelected, selected);
             connectionLineClone.transform.position = connectionStartPos;
 
             lineToEnd = connectionLineClone.transform.Find("LineToEnd").GetComponent<RectTransform>().transform;
@@ -142,7 +153,6 @@ public class SelectedObject : MonoBehaviour
                     lineToEnd.position = new Vector3(lineFromStart.position.x - XPosDiff * 50, connectionEndPos.y - YPosDiff * 50);
                 }
             }
-            ///reset after connection is esablished
             connectionStarted = false;
         }
     }

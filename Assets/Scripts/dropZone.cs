@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Script placed on the dropzone (SystemSetupScreen) in order to make objects editable
+/// </summary>
+
 public class DropZone : MonoBehaviour, IDropHandler
 {
     Vector2 objectPosition;
 
     public void OnDrop(PointerEventData eventData)
     {
-        /// Change the parent from the lists to the dropzone object, making it editable
         DraggableObject draggableObject = eventData.pointerDrag.GetComponent<DraggableObject>();
         if (draggableObject != null)
         {

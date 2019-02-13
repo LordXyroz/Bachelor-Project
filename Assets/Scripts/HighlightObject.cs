@@ -4,9 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// 
 /// This script is added to all drag-and-drop UI elements that are supposed to be selectable and highlighted
-/// 
 /// </summary>
 
 public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
