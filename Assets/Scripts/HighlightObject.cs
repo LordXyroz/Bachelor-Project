@@ -25,6 +25,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [Header("The text displayed at the bottom of the screen for this object")]
     public string tooltipText;
 
+
     public void Start()
     {
         image = GetComponent<Image>();
@@ -35,17 +36,20 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         currentToolTipText.text = "";
     }
 
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         image.color = Color.red;
         currentToolTipText.text = tooltipText;
     }
 
+
     public void OnPointerExit(PointerEventData eventData)
     {
         image.color = originalColor;
         currentToolTipText.text = "";
     }
+
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -56,6 +60,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
             objectSelect.SelectObject(this.gameObject, mat);
         }
     }
+
 
     /// Clear the selected object, resetting it to default visuals
     void ClearSelection()

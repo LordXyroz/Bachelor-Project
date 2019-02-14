@@ -6,6 +6,7 @@ public class ConnectionReferences : MonoBehaviour
     public GameObject referenceFromObject;
     public GameObject referenceToObject;
 
+
     public void SetReferences(GameObject from, GameObject to)
     {
         referenceFromObject = from;

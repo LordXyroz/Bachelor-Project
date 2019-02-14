@@ -32,6 +32,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         Cursor.visible = false;
@@ -44,19 +45,14 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         offset = (Vector2)this.transform.position - eventData.position;
         GetComponent<CanvasGroup>().blocksRaycasts = false;
-
-        //parentToReturnTo = this.transform.parent;
-        //this.transform.SetParent(this.transform.parent.parent);
-        //if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
-        //{
-        //    EventSystem.current.SetSelectedGameObject(null);
-        //}
     }
+
 
     public void OnDrag(PointerEventData eventData)
     {
         this.transform.position = eventData.position + offset;
     }
+
 
     public void OnEndDrag(PointerEventData eventData)
     {

@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 
 public class DropZone : MonoBehaviour, IDropHandler
 {
-    Vector2 objectPosition;
 
     public void OnDrop(PointerEventData eventData)
     {

@@ -87,6 +87,7 @@ public class SelectedObject : MonoBehaviour
     /// This function does the logic behind connecting two objects in the editor. 
     /// It takes the previously selected gameobject and connects it with a visible line (2 image gameobjects) 
     /// if a new gameobject is selected after the "connect" button is pressed.
+    /// Alternatively, if no object is selected when the button is pressed, the two next objects selected will be connected
     /// </summary>
     public void ConnectObjects()
     {
@@ -101,6 +102,7 @@ public class SelectedObject : MonoBehaviour
             connectionEndPos = selected.transform.position;
 
             GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
+            connectionLineClone.transform.SetParent(oldSelected.transform.parent);
             connectionLineClone.transform.SetAsFirstSibling();
             connectionLineClone.transform.position = connectionStartPos;
 
@@ -112,6 +114,7 @@ public class SelectedObject : MonoBehaviour
 
             float XPosDiff = Mathf.Abs(connectionStartPos.x - connectionEndPos.x) / 100;        //100 pixels per unit
             float YPosDiff = Mathf.Abs(connectionStartPos.y - connectionEndPos.y) / 100;        //100 pixels per unit
+
 
             /// connection to the right
             if (connectionStartPos.x <= connectionEndPos.x)
