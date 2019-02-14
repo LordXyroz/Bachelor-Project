@@ -10,9 +10,14 @@ using UnityEngine;
 /// </summary>
 public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAttackResponse
 {
-    public GameObject[] attackPrefabs;
+    [SerializeField]
+    private GameObject[] attackPrefabs;
 
-    public GameObject target;
+    [SerializeField]
+    private GameObject target;
+
+    [SerializeField]
+    private AttackerUI uiScript;
 
     private int discoverDuration = 3;
     private float discoverTimer = 0f;
@@ -23,6 +28,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private bool analyzeCount = false;
 
     private bool workInProgress = false;
+
+    private float attackProbability = 0.4f;
+    private float analyzeProbability = 0.6f;
+    private float discoverProbability = 0.6f;
 
     // Update is called once per frame
     void Update()
@@ -111,6 +120,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Started discovering" + ((target != null) ? " on: "  + target.name : "");
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+            uiScript.UpdateInfo(msg);
         }
     }
 
@@ -130,6 +140,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Started analyzing on: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+            uiScript.UpdateInfo(msg);
         }
     }
 
@@ -148,10 +159,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             var go = Instantiate(attackPrefabs[id]);
             go.GetComponent<Attack>().target = target;
+            go.GetComponent<Attack>().probability = attackProbability;
 
             string msg = "Started attack of type: " + go.GetComponent<Attack>().attackType + ", on: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+            uiScript.UpdateInfo(msg);
         }
     }
 
@@ -163,7 +176,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         discoverCount = false;
         discoverTimer = 0f;
-
+        
         int currentDepth = -1;
         string targetName = "";
         if (target == null)
@@ -175,8 +188,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             currentDepth = target.GetComponent<GameNetworkComponent>().graphDepth;
             targetName = target.GetComponent<GameNetworkComponent>().name;
         }
-
-        MessagingManager.BroadcastMessage(new DiscoverMessage(targetName, name, MessageTypes.Game.DISCOVER, currentDepth));
+        
+        MessagingManager.BroadcastMessage(new DiscoverMessage(targetName, name, MessageTypes.Game.DISCOVER, currentDepth, discoverProbability));
     }
 
     /// <summary>
@@ -188,7 +201,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         analyzeCount = false;
         analyzeTimer = 0f;
         
-        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.ANALYZE));
+        MessagingManager.BroadcastMessage(new AnalyzeMessage(target.name, name, MessageTypes.Game.ANALYZE, analyzeProbability));
     }
 
     /// <summary>
@@ -213,6 +226,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         }
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+        uiScript.UpdateInfo(msg);
     }
 
     /// <summary>
@@ -240,6 +254,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             }
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+            uiScript.UpdateInfo(msg);
         }
     }
 
@@ -256,5 +271,6 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         string msg = "Attack response: " + ((message.success) ? "Success" : "Failed");
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+        uiScript.UpdateInfo(msg);
     }
 }

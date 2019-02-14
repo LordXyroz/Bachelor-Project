@@ -8,10 +8,12 @@ using UnityEngine;
 public class AttackMessage : Message
 {
     public AttackTypes attack;
+    public float probability;
 
-    public AttackMessage(string target, string sender, ushort type, AttackTypes attackType) 
+    public AttackMessage(string target, string sender, ushort type, AttackTypes attackType, float prob) 
         : base(target, sender, type)
     {
         attack = attackType;
+        probability = prob;
     }
 }

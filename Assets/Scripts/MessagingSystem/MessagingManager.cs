@@ -70,7 +70,7 @@ public static class MessagingManager
                 {
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAnalyze>();
                     foreach (var o in objects)
-                        o.OnAnalyze(message);
+                        o.OnAnalyze((AnalyzeMessage) message);
                     break;
                 }
 

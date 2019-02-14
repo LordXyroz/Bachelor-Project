@@ -12,9 +12,14 @@ using UnityEngine.UI;
 /// </summary>
 public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, IDiscover, IAnalyze
 {
+    [Header("Lists")]
     public List<AttackTypes> vulnerabilities;
     public List<DefenseTypes> availableDefenses;
     public List<DefenseTypes> implementedDefenses;
+
+    [Header("Variables")]
+    [Range(0f, 1f)]
+    public float dificulty = 0f;
 
     [HideInInspector]
     public bool visible = false;
@@ -22,7 +27,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     [HideInInspector]
     public GameObject uiElement;
 
-
+    [Header("Network depth")]
     public int graphDepth;
     public List<GameNetworkComponent> children;
 
@@ -58,6 +63,8 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                             if (VulnerabilityPairings.IsStoppedBy(message.attack, def))
                                 isVulnerable = false;
                         }
+                        if (Random.Range(0f, 1f) < message.probability * dificulty)
+                            isVulnerable = false;
                     }
                 }
                 MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.ATTACK_RESPONSE, isVulnerable));
@@ -119,7 +126,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             {
                 foreach (var child in children)
                 {
-                    if (child.visible == false)
+                    if (child.visible == false && Random.Range(0f, 1f) < message.probability * dificulty)
                     {
                         list.Add(child);
                         child.visible = true;
@@ -127,7 +134,6 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 }
             }
             MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
-            
         }
     }
 
@@ -139,7 +145,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     /// Sends a response containing the list of current (not defended) vulnerabilities
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
-    public void OnAnalyze(Message message)
+    public void OnAnalyze(AnalyzeMessage message)
     {
         if (message.targetName == name)
         {
@@ -147,6 +153,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             foreach (var vuln in vulnerabilities)
             {
                 bool vulnerable = true;
+
+                if (Random.Range(0f, 1f) < message.probability * dificulty)
+                    vulnerable = false;
+
                 foreach (var def in implementedDefenses)
                 {
                     if (VulnerabilityPairings.IsStoppedBy(vuln, def))

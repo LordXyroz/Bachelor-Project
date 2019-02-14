@@ -28,6 +28,8 @@ public class Attack : MonoBehaviour, IAttackResponse
     /// </summary>
     [HideInInspector]
     public GameObject target;
+    [HideInInspector]
+    public float probability;
 
     private float timer = 0f;
     private bool triggered = false;
@@ -51,7 +53,7 @@ public class Attack : MonoBehaviour, IAttackResponse
     public void Effect()
     {
         triggered = true;
-        MessagingManager.BroadcastMessage(new AttackMessage(target.name, name, MessageTypes.Game.ATTACK, attackType));
+        MessagingManager.BroadcastMessage(new AttackMessage(target.name, name, MessageTypes.Game.ATTACK, attackType, probability));
     }
 
     /// <summary>
