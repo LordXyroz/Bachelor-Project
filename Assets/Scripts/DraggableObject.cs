@@ -11,7 +11,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     [Header("Refferenced objects")]
     private Color originalColor;
     private Camera mainCamera;
-    private Image API;
+    private Image systemComponent;
 
     [Header("Position objects")]
     private Vector2 offset;
@@ -25,32 +25,32 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     void Start()
     {
         mainCamera = Camera.main;
-        originalColor = GetComponent<Image>().color;
-        API = GetComponent<Image>();
+        if (GetComponent<Image>() != null)
+        {
+            originalColor = GetComponent<Image>().color;
+            systemComponent = GetComponent<Image>();
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        /// if the object is not dragged from a dropzone, make a clone of it.
-        if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
+        Cursor.visible = false;
+        /// if the object is not dragged from a dropzone and is a system component, make a clone of it.
+        if (this.transform.parent.gameObject.GetComponent<DropZone>() == null && GetComponent<Image>() != null)
         {
-            Image APIClone = (Image)Instantiate(API, parentToReturnTo);
-            APIClone.color = originalColor;
+            Image systemComponentClone = (Image)Instantiate(systemComponent, parentToReturnTo);
+            systemComponentClone.color = originalColor;
         }
 
         offset = (Vector2)this.transform.position - eventData.position;
-        Cursor.visible = false;
-
-        parentToReturnTo = this.transform.parent;
-        this.transform.SetParent(this.transform.parent.parent);
-
         GetComponent<CanvasGroup>().blocksRaycasts = false;
 
-
-        if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
-        {
-            EventSystem.current.SetSelectedGameObject(null);
-        }
+        //parentToReturnTo = this.transform.parent;
+        //this.transform.SetParent(this.transform.parent.parent);
+        //if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
+        //{
+        //    EventSystem.current.SetSelectedGameObject(null);
+        //}
     }
 
     public void OnDrag(PointerEventData eventData)

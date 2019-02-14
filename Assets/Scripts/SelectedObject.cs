@@ -21,6 +21,7 @@ public class SelectedObject : MonoBehaviour
     private Vector3 connectionStartPos;
     private Vector3 connectionEndPos;
     private ConnectionReferences connectionReferences;
+    private SystemComponent systemComponents;
 
     [Header("Selected object elements")]
     public GameObject selected;
@@ -37,6 +38,7 @@ public class SelectedObject : MonoBehaviour
         imageBox = null;
         connectionStarted = false;
         connectionReferences = null;
+        systemComponents = null;
     }
 
     public void SelectObject(GameObject newSelected, Material mat)
@@ -99,10 +101,11 @@ public class SelectedObject : MonoBehaviour
             connectionEndPos = selected.transform.position;
 
             GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
-            connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
             connectionLineClone.transform.SetAsFirstSibling();
-            connectionReferences.SetReferences(oldSelected, selected);
             connectionLineClone.transform.position = connectionStartPos;
+
+            connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
+            connectionReferences.SetReferences(oldSelected, selected);
 
             lineToEnd = connectionLineClone.transform.Find("LineToEnd").GetComponent<RectTransform>().transform;
             lineFromStart = connectionLineClone.transform.Find("LineFromStart").GetComponent<RectTransform>().transform;
@@ -154,6 +157,11 @@ public class SelectedObject : MonoBehaviour
                 }
             }
             connectionStarted = false;
+            systemComponents = selected.GetComponent<SystemComponent>();
+            systemComponents.AddReference(connectionLineClone);
+            systemComponents = oldSelected.GetComponent<SystemComponent>();
+            systemComponents.AddReference(connectionLineClone);
+
         }
     }
 }
