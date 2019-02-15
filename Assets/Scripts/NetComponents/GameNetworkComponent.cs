@@ -18,8 +18,8 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     public List<DefenseTypes> implementedDefenses;
 
     [Header("Variables")]
-    [Range(0f, 1f)]
-    public float dificulty = 0f;
+    [Range(1f, 5f)]
+    public int difficulty = 1;
 
     [HideInInspector]
     public bool visible = false;
@@ -63,7 +63,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                             if (VulnerabilityPairings.IsStoppedBy(message.attack, def))
                                 isVulnerable = false;
                         }
-                        if (Random.Range(0f, 1f) < message.probability * dificulty)
+                        if (Random.Range(0f, 1f) < message.probability * (1f / difficulty))
                             isVulnerable = false;
                     }
                 }
@@ -126,7 +126,9 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             {
                 foreach (var child in children)
                 {
-                    if (child.visible == false && Random.Range(0f, 1f) < message.probability * dificulty)
+                    float temp = Random.Range(0f, 1f);
+                    Debug.Log(temp);
+                    if (child.visible == false && temp < (message.probability * (1f / difficulty)))
                     {
                         list.Add(child);
                         child.visible = true;
@@ -152,10 +154,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             List<AttackTypes> vulnList = new List<AttackTypes>();
             foreach (var vuln in vulnerabilities)
             {
-                bool vulnerable = true;
+                bool vulnerable = false;
 
-                if (Random.Range(0f, 1f) < message.probability * dificulty)
-                    vulnerable = false;
+                if (Random.Range(0f, 1f) < message.probability * (1f / difficulty))
+                    vulnerable = true;
 
                 foreach (var def in implementedDefenses)
                 {
