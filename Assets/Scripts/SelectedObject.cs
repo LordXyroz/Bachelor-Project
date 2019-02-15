@@ -25,8 +25,9 @@ public class SelectedObject : MonoBehaviour
 
     [Header("Selected object elements")]
     public GameObject selected;
+    public GameObject oldSelected;
     public Canvas canvas;
-    private GameObject oldSelected;
+    public Material selectMat;
     private Image image;
     private Image imageBox;
 
@@ -41,7 +42,7 @@ public class SelectedObject : MonoBehaviour
         systemComponents = null;
     }
 
-    public void SelectObject(GameObject newSelected, Material mat)
+    public void SelectObject(GameObject newSelected, bool dragged)
     {
         /// Reset the selected properties of the previously selected object, if there is one
         if (selected != null)
@@ -52,22 +53,25 @@ public class SelectedObject : MonoBehaviour
 
         if (newSelected != null)
         {
-            /// Reset and set active to null if the selected object is clicked again
-            if (selected == newSelected)
+            /// Reset and set active to null if the selected object is clicked again (not dragged)
+            if (selected == newSelected && !dragged)
             {
                 image.material = default;
                 imageBox.gameObject.SetActive(false);
+                oldSelected = selected;
                 selected = null;
                 connectionStarted = false;
                 return;
             }
 
+            if (newSelected != selected && selected != null)
+            {
+                oldSelected = selected;
+            }
+            selected = newSelected;
+
             image = newSelected.GetComponent<Image>();
             imageBox = newSelected.transform.Find("selectionBox").GetComponent<Image>();
-
-            oldSelected = selected;
-            selected = newSelected;
-            image.material = mat;
             imageBox.gameObject.SetActive(true);
 
             /// If button pressed for starting a connection

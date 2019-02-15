@@ -20,7 +20,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private Color originalColor;
     public Sprite spriteDefault;
     public Sprite spriteHighlight;
-    public Material mat;
 
     [Header("The text displayed at the bottom of the screen for this object")]
     public string tooltipText;
@@ -57,7 +56,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         /// Only selectable if it is located in the SystemSetupScreen editor area
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
         {
-            objectSelect.SelectObject(this.gameObject, mat);
+            objectSelect.SelectObject(this.gameObject, false);
         }
     }
 

@@ -12,6 +12,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Color originalColor;
     private Camera mainCamera;
     private Image systemComponent;
+    private SelectedObject objectSelect;
 
     [Header("Position objects")]
     private Vector2 offset;
@@ -25,6 +26,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     void Start()
     {
         mainCamera = Camera.main;
+        objectSelect = FindObjectOfType<SelectedObject>();
         if (GetComponent<Image>() != null)
         {
             originalColor = GetComponent<Image>().color;
@@ -36,6 +38,12 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnBeginDrag(PointerEventData eventData)
     {
         Cursor.visible = false;
+        /// Only selectable if it is located in the SystemSetupScreen editor area
+        if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
+        {
+            objectSelect.SelectObject(this.gameObject, true);
+        }
+
         /// if the object is not dragged from a dropzone and is a system component, make a clone of it.
         if (this.transform.parent.gameObject.GetComponent<DropZone>() == null && GetComponent<Image>() != null)
         {
