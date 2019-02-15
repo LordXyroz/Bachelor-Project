@@ -28,6 +28,10 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void Start()
     {
         image = GetComponent<Image>();
+        if (image == null)
+        {
+            image = GetComponentInChildren<Image>();
+        }
         originalColor = image.color;
         objectSelect = FindObjectOfType<SelectedObject>();
         canvas = GetComponentInParent<Canvas>();
@@ -61,7 +65,9 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
 
 
-    /// Clear the selected object, resetting it to default visuals
+    /// <summary>
+    /// Clear the selected object, resetting it to default visual settings
+    /// </summary>
     void ClearSelection()
     {
         image.sprite = spriteDefault;

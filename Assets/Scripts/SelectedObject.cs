@@ -4,11 +4,9 @@ using UnityEngine.UI;
 
 /// <TODO>
 /// 
-/// Delete selected objects
-///     - If selected object is a system component, delete all connections
-///     - Make a "RemoveObject" function for the connection line
+/// Delete selected connection line
+///     - Have visual display of what line will be deleted
 ///     
-/// 
 /// </TODO>
 
 public class SelectedObject : MonoBehaviour
@@ -51,46 +49,52 @@ public class SelectedObject : MonoBehaviour
     /// <param name="dragged">Check if the object is dragged or clicked</param>
     public void SelectObject(GameObject newSelected, bool dragged)
     {
-        /// Reset the selected properties of the previously selected object, if there is one
-        if (selected != null)
+        if (newSelected.GetComponent<Image>() != null)
         {
-            image.material = default;
-            imageBox.gameObject.SetActive(false);
-        }
-
-        if (newSelected != null)
-        {
-            /// Reset and set active to null if the selected object is clicked again (not dragged)
-            if (selected == newSelected && !dragged)
+            /// Reset the selected properties of the previously selected object, if there is one
+            if (selected != null)
             {
                 image.material = default;
                 imageBox.gameObject.SetActive(false);
-                oldSelected = selected;
-                selected = null;
-                connectionStarted = false;
-                return;
             }
 
-            if (newSelected != selected && selected != null)
+            if (newSelected != null)
             {
-                oldSelected = selected;
-            }
-            selected = newSelected;
+                /// Reset and set active to null if the selected object is clicked again (not dragged)
+                if (selected == newSelected && !dragged)
+                {
+                    image.material = default;
+                    imageBox.gameObject.SetActive(false);
+                    oldSelected = selected;
+                    selected = null;
+                    connectionStarted = false;
+                    return;
+                }
 
-            image = newSelected.GetComponent<Image>();
-            image.material = selectMat;
-            imageBox = newSelected.transform.Find("selectionBox").GetComponent<Image>();
-            imageBox.gameObject.SetActive(true);
+                if (newSelected != selected && selected != null)
+                {
+                    oldSelected = selected;
+                }
+                selected = newSelected;
 
-            /// If button pressed for starting a connection
-            if (oldSelected != null && connectionStarted)
-            {
-                ConnectObjects();
+                image = newSelected.GetComponent<Image>();
+                image.material = selectMat;
+                imageBox = newSelected.transform.Find("selectionBox").GetComponent<Image>();
+                imageBox.gameObject.SetActive(true);
+
+                /// If button pressed for starting a connection
+                if (oldSelected != null && connectionStarted)
+                {
+                    ConnectObjects();
+                }
             }
         }
     }
 
 
+    /// <summary>
+    /// Activate the flag for connecting two GameObjects
+    /// </summary>
     public void StartConnectionButton()
     {
         connectionStarted = true;
@@ -123,6 +127,20 @@ public class SelectedObject : MonoBehaviour
 
             systemComponentsFromObject.SetConnectionLines(oldSelected.transform.position, selected.transform.position, connectionLineClone);
             connectionStarted = false;
+        }
+    }
+
+
+    /// <summary>
+    /// This function starts the chain to delete a system component object.
+    /// Needs to be in a publicly available script to easily be asccesible for the button.
+    /// </summary>
+    public void DeleteSelectedObject()
+    {
+        if (selected != null)
+        {
+            systemComponentsToObject = selected.GetComponent<SystemComponent>();
+            systemComponentsToObject.DeleteSystemComponent();
         }
     }
 }

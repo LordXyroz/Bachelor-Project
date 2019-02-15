@@ -5,7 +5,6 @@ using UnityEngine;
 /// This script is to be places on all system components.
 /// It keeps a list of all lines connected to the component.
 /// </summary>
-
 public class SystemComponent : MonoBehaviour
 {
     [Header("List of reference lines connected to this system component")]
@@ -13,17 +12,18 @@ public class SystemComponent : MonoBehaviour
 
     [Header("Items for moving the connection lines when the system components are moved")]
     private GameObject connectedSystemCommponent;
-    private SelectedObject selectedObject;
 
     [Header("Items for calculating size of the connection lines")]
     private Transform lineToEnd;
     private Transform lineFromStart;
 
+    [Header("Items needed for deleting a system component")]
+    private SystemComponent systemComponent;
+
 
     private void Start()
     {
         connectedReferenceLines = new List<GameObject>();
-        selectedObject = null;
     }
 
 
@@ -90,22 +90,28 @@ public class SystemComponent : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Adds the connecting line reference to the list of the GameObject references
+    /// </summary>
+    /// <param name="reference"></param>
     public void AddReference(GameObject reference)
     {
         connectedReferenceLines.Add(reference);
     }
 
+
+    /// <summary>
+    /// Move the connecting lines with the movement of the GameObjects they are connected to
+    /// </summary>
     public void MoveConnections()
     {
         if (connectedReferenceLines != null)
         {
             foreach (GameObject line in connectedReferenceLines)
             {
-                selectedObject = GetComponent<SelectedObject>();
                 if (line.GetComponent<ConnectionReferences>().referenceFromObject == this.gameObject)
                 {
                     connectedSystemCommponent = line.GetComponent<ConnectionReferences>().referenceToObject;
-                    Debug.Log("From: " + this.gameObject.name + "To: " + connectedSystemCommponent.name + "Line: " + line.name);
                     SetConnectionLines(this.gameObject.transform.position, connectedSystemCommponent.transform.position, line);
                 }
                 else if (line.GetComponent<ConnectionReferences>().referenceToObject == this.gameObject)
@@ -114,6 +120,31 @@ public class SystemComponent : MonoBehaviour
                     SetConnectionLines(connectedSystemCommponent.transform.position, this.gameObject.transform.position, line);
                 }
             }
+        }
+    }
+
+
+    /// <summary>
+    /// Delete the selected GameObject, connected reference lines
+    /// as well as the reference to those lines in the other connected GameObjects
+    /// </summary>
+    public void DeleteSystemComponent()
+    {
+        foreach (GameObject line in connectedReferenceLines)
+        {
+            if (line.GetComponent<ConnectionReferences>().referenceFromObject == this.gameObject)
+            {
+                connectedSystemCommponent = line.GetComponent<ConnectionReferences>().referenceToObject;
+            }
+            else if (line.GetComponent<ConnectionReferences>().referenceToObject == this.gameObject)
+            {
+                connectedSystemCommponent = line.GetComponent<ConnectionReferences>().referenceFromObject;
+            }
+
+            systemComponent = connectedSystemCommponent.GetComponent<SystemComponent>();
+            systemComponent.connectedReferenceLines.Remove(line);
+            Destroy(line);
+            Destroy(this.gameObject);
         }
     }
 }

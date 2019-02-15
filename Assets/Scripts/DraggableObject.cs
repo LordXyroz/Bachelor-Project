@@ -62,7 +62,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnDrag(PointerEventData eventData)
     {
         this.transform.position = eventData.position + offset;
-        //Debug.Log("Calling MoveConnections from DraggableObject - " + this.name);
         this.systemComponent.MoveConnections();
     }
 
@@ -74,11 +73,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         this.transform.SetParent(parentToReturnTo);
 
-        /// delete the game object if it is placed outside the drop zone
-        if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
-        {
-            Destroy(this.gameObject);
-        }
 
         /// Setting up the area for the drop zone, deleting objects dropped outside of the drop zone
         GameObject dropZone = GameObject.Find("SystemSetupScreen");
@@ -90,10 +84,16 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         float objectWidth = this.GetComponent<RectTransform>().rect.width;
         float objectHeight = this.GetComponent<RectTransform>().rect.height;
 
+        /// Delete the object if it is placed outside of the editing screen field
         if (objectPosition.x < width * 0.5f - objectWidth * 0.33f ||
             objectPosition.x > width * 1.5f - objectWidth * 1.3f ||
             objectPosition.y < height * 0.32f - objectHeight ||
             objectPosition.y > height + 10)
+        {
+            Destroy(this.gameObject);
+        }
+        /// delete the game object if it is placed outside the drop zone
+        else if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
         {
             Destroy(this.gameObject);
         }

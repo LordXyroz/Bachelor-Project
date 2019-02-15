@@ -85,7 +85,7 @@ GameObject:
   - component: {fileID: 1233773393581119613}
   - component: {fileID: 1354176535}
   - component: {fileID: 2680789621835697153}
-  - component: {fileID: 8233394788535118396}
+  - component: {fileID: 6678967591499923603}
   m_Layer: 8
   m_Name: Connection
   m_TagString: Untagged
@@ -106,13 +106,14 @@ RectTransform:
   m_Children:
   - {fileID: 1233773393782900269}
   - {fileID: 1233773393529174357}
+  - {fileID: 1979075969703484345}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -165.3855, y: 150.96176}
-  m_SizeDelta: {x: 201.86, y: 7.46}
+  m_AnchoredPosition: {x: -163.78, y: 96.11}
+  m_SizeDelta: {x: 200.21, y: 5.4}
   m_Pivot: {x: 0.024267457, y: 26.756275}
 --- !u!222 &1354176535
 CanvasRenderer:
@@ -136,19 +137,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   referenceFromObject: {fileID: 0}
   referenceToObject: {fileID: 0}
---- !u!114 &8233394788535118396
-MonoBehaviour:
+--- !u!225 &6678967591499923603
+CanvasGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1233773393581119614}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c207e7bb0600e4c41b18d4ac9bd2778e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parentToReturnTo: {fileID: 0}
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1233773393782900270
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,6 +215,80 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+--- !u!1 &6337745317039568503
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1979075969703484345}
+  - component: {fileID: 3151397960797053681}
+  - component: {fileID: 4386208910716852274}
+  m_Layer: 5
+  m_Name: selectionBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1979075969703484345
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6337745317039568503}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1233773393581119613}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -73.2, y: 23.1}
+  m_SizeDelta: {x: 88.7, y: 98.1}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &3151397960797053681
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6337745317039568503}
+  m_CullTransparentMesh: 0
+--- !u!114 &4386208910716852274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6337745317039568503}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: 921c9196648b106408404bdebd3e7a15, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

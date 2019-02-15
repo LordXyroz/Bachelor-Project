@@ -245,13 +245,12 @@ GameObject:
   - component: {fileID: 6201401287291897867}
   - component: {fileID: 6864296987043369145}
   - component: {fileID: 3415658965620823297}
-  - component: {fileID: 4589833514971006676}
   - component: {fileID: 1703820451025206596}
   - component: {fileID: 7318957760875405838}
   - component: {fileID: 1409145902364234028}
   - component: {fileID: 6842138192445636597}
   m_Layer: 5
-  m_Name: APIPrefab
+  m_Name: SystemComponentPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -315,26 +314,6 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &4589833514971006676
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8997441772062502934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: 0
-  m_FlexibleHeight: 0
-  m_LayoutPriority: 1
 --- !u!225 &1703820451025206596
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -375,7 +354,6 @@ MonoBehaviour:
   selectionBox: {fileID: 6421525998260924880}
   spriteDefault: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   spriteHighlight: {fileID: 21300000, guid: 87c82f23e76627346bc16bba001559f9, type: 3}
-  mat: {fileID: 2100000, guid: 695080963c892464ea16ce9748aae181, type: 2}
   tooltipText: Default tooltip text from prefab
 --- !u!114 &6842138192445636597
 MonoBehaviour:
