@@ -1,5 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Unity.Collections;
+using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,19 +17,21 @@ public class NetworkingManager : MonoBehaviour
     public GameObject chatField;
     public GameObject connectionField;
 
+    
+    // TODO make these into one array - easier to scale further then.
     public GameObject playerName1;
     public GameObject playerName2;
     public GameObject playerName3;
 
     private ClientBehaviour cb;
-    //private ServerBehaviour sb;
+    private ServerBehaviour sb;
 
     void Start()
     {
         QualitySettings.vSyncCount = 0;
 
         cb = null;
-        //sb = null;
+        sb = null;
 
         /// Get playername positions from the beginning for use in future.
         playerName1 = GameObject.Find("Player1");
@@ -45,10 +52,10 @@ public class NetworkingManager : MonoBehaviour
         {
             cb.FixedUpdate();
         }
-        /*else if (sbyte != null)
+        else if (sb != null)
         {
-            sbyte.FixedUpdate();
-        }*/
+            sb.FixedUpdate();
+        }
     }
 
 
@@ -73,9 +80,9 @@ public class NetworkingManager : MonoBehaviour
         GameObject gm = GameObject.Find("GameManager");
         if (isSpectator)
         {
-            if (gm.GetComponent<ServerBehaviour>() == null && cb == null)
+            if (sb == null && cb == null)
             {
-                gm.AddComponent<ServerBehaviour>();
+                sb = new ServerBehaviour();
             }
 
             /// Get match name from user before changing view:
@@ -110,7 +117,7 @@ public class NetworkingManager : MonoBehaviour
         else
         {
             /// Add client behaviour and try to find a host.
-            if (cb == null && gm.GetComponent<ServerBehaviour>() == null)
+            if (cb == null && sb == null)
             {
                 cb = new ClientBehaviour(this);
             }
@@ -146,8 +153,54 @@ public class NetworkingManager : MonoBehaviour
 
         if (isSpectator)
         {
-            /// Stop hosting the game: TODO
+            /// Disconnect clients from server:
+            
+            if (sb.m_ServerDriver.IsCreated)
+            {
+                sb.m_ServerDriver.ScheduleUpdate().Complete();
+                
+                if (sb.m_connections.IsCreated)
+                {
+                    for (int i = 0; i < sb.m_connections.Length; ++i)
+                    {
+                        /// Send message for client to disconnect:
+                        string message = "<Disconnect>";
+                        var messageWriter = new DataStreamWriter(message.Length, Allocator.Temp);
+                        
+                        messageWriter.Write(Encoding.ASCII.GetBytes(message));
 
+                        sb.m_ServerDriver.Send(sb.m_connections[i], messageWriter);
+                        messageWriter.Dispose();
+
+
+                        /// Wait for client to disconnect:
+                        Thread.Sleep(100);
+                        /// Disconnect server:
+                        sb.m_ServerDriver.Disconnect(sb.m_connections[i]);
+                    }
+                }
+            }
+            sb.StopListening();
+            sb.m_connections.Clear();
+            sb.m_connections.Dispose();
+            sb.m_ServerDriver.Dispose();
+            sb = null;
+
+            /// Delete chat from lobby exiting:
+            Transform trans = chatField.transform.Find("MessageField").transform;
+            foreach (Transform child in trans)
+            {
+                if (child != trans)
+                {
+                    child.gameObject.GetComponent<Text>().text = "";
+                }
+            }
+
+
+            /// Change connection text:
+            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
+            GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.red;
+            
             /// Change view to not be in a lobby:
             chatField.SetActive(false);
             connectionField.SetActive(true);
@@ -165,8 +218,14 @@ public class NetworkingManager : MonoBehaviour
                 }
             }
 
-            /// Make client connect to host or disconnect.
+            /// Delete chat text as client is disconnecting from lobby.
             cb.Disconnect(messageTexts);
+
+            /// Disconnect client from host.
+            cb.m_clientToServerConnection.Disconnect(cb.m_ClientDriver);
+            cb.m_clientToServerConnection = default;
+            cb.m_ClientDriver.Dispose();
+            cb = null;
             yield return new WaitForSeconds(1);
         }
     }
@@ -238,9 +297,9 @@ public class NetworkingManager : MonoBehaviour
         }
         else
         {
-            if (gm.GetComponent<ServerBehaviour>() != null)
+            if (sb != null)
             {
-                GetComponent<ServerBehaviour>().SendChatMessage(msg);
+                sb.SendChatMessage(msg);
             }
         }
     }
@@ -268,10 +327,5 @@ public class NetworkingManager : MonoBehaviour
         GameObject.Find("MessageText4").GetComponent<Text>().text = GameObject.Find("MessageText3").GetComponent<Text>().text;
         GameObject.Find("MessageText3").GetComponent<Text>().text = GameObject.Find("MessageText2").GetComponent<Text>().text;
         GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
-    }
-
-    public void GetHostMessage(string msg)
-    {
-        Debug.Log("Host message: " + msg);
     }
 }

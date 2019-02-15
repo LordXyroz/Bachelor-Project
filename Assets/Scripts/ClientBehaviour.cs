@@ -27,8 +27,8 @@ public class ClientBehaviour
     public static NetworkEndPoint ServerEndPoint { get; private set; }
     private bool connect;
 
-    private UdpCNetworkDriver m_ClientDriver;
-    private NetworkConnection m_clientToServerConnection;
+    public UdpCNetworkDriver m_ClientDriver;
+    public NetworkConnection m_clientToServerConnection;
     private bool m_clientWantsConnection;
 
     public ClientBehaviour(MonoBehaviour myMonoBehaviour)
@@ -49,7 +49,8 @@ public class ClientBehaviour
     ~ClientBehaviour()
     {
         m_ClientDriver.ScheduleUpdate().Complete();
-        
+        m_clientToServerConnection.Close(m_ClientDriver);
+        m_clientToServerConnection = default;
         m_ClientDriver.Dispose();
     }
 
@@ -121,8 +122,63 @@ public class ClientBehaviour
         }
     }
 
+    public void FindHostNew()
+    {
+        string server = "10.22.210.138";
+        // TODO use arp -a to get all possible server ips...
+        string message = "Connecting bro :)";
+        try
+        {
+            // Create a TcpClient.
+            // Note, for this client to work you need to have a TcpServer 
+            // connected to the same address as specified by the server, port
+            // combination.
+            Int32 port = 13000;
+            TcpClient client = new TcpClient(server, port);
 
-    
+            // Translate the passed message into ASCII and store it as a Byte array.
+            Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
+
+            // Get a client stream for reading and writing.
+            //  Stream stream = client.GetStream();
+            
+
+            NetworkStream stream = client.GetStream();
+
+            // Send the message to the connected TcpServer. 
+            stream.Write(data, 0, data.Length);
+
+            Debug.Log("newconnection - client sending message");
+
+            // Receive the TcpServer.response.
+
+            // Buffer to store the response bytes.
+            data = new Byte[256];
+
+            // String to store the response ASCII representation.
+            String responseData = String.Empty;
+
+            // Read the first batch of the TcpServer response bytes.
+            Int32 bytes = stream.Read(data, 0, data.Length);
+            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            Debug.Log("newconnection - client received: " + responseData);
+
+            // Close everything.
+            stream.Close();
+            client.Close();
+            Debug.Log("client closed");
+            ServerEndPoint = new IPEndPoint(IPAddress.Parse(server), 9000);
+        }
+        catch (ArgumentNullException e)
+        {
+            Debug.Log("ArgumentNullException:" + e);
+        }
+        catch (SocketException e)
+        {
+            Debug.Log("SocketException:" + e);
+        }
+    }
+
     /*void Start()
     {
         /// Makes sure that the client updates connection every now and then to not lose connection;
@@ -136,9 +192,9 @@ public class ClientBehaviour
         m_clientWantsConnection = false;
         
     }*/
-    
 
-    
+
+
 
 
     public void Disconnect(List<GameObject> messageTexts)
@@ -148,6 +204,7 @@ public class ClientBehaviour
         // Disconnect client from host:
         m_clientToServerConnection.Disconnect(m_ClientDriver);
         ServerEndPoint = default;
+        
 
         /// Change connectionText according to connection status:
         GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
@@ -185,7 +242,8 @@ public class ClientBehaviour
         /// Text visible to the client that shows the connection status.(Offline/Connecting/Online)
         Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
         Debug.Log("<color=blue>Looking for connection</color>");
-        
+
+        Debug.Log("m_clienttoserver Connection: " + m_clientToServerConnection.IsCreated);
 
         /// While the player still wants to connect to a host and no host is found, look for a new one:
         while (m_clientToServerConnection.IsCreated == false && m_clientWantsConnection)
@@ -199,7 +257,7 @@ public class ClientBehaviour
             yield return new WaitForSeconds(0.15f);
             connectionText.text = "Connecting...";
             /// Could use thread, but testing showed that Task was more efficient to use in this scenario. Easy to wait for the task to finish before doing something else aswell.
-            Task setupHostIp = Task.Run(FindHost);
+            Task setupHostIp = Task.Run(FindHostNew);
             setupHostIp.Wait();
             try
             {
@@ -214,7 +272,6 @@ public class ClientBehaviour
                     m_clientWantsConnection = false;
 
                     /// Change UI to show client that they are connected, and stop the coroutine that shows a connecting version of the UI.
-                    //StopCoroutine("CosmeticConnecting");
                     connect = true;
                     connectionText.text = "Online";
                     connectionText.color = Color.green;
@@ -254,7 +311,7 @@ public class ClientBehaviour
             updateWriter.Write(msg);
             m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
             updateWriter.Dispose();
-            yield return new WaitForSeconds(4);
+            yield return new WaitForSeconds(10);
         }
     }
 
@@ -379,6 +436,26 @@ public class ClientBehaviour
                 {
                     data = data.Substring(0, data.Length - 10);
                     Debug.Log("Client - got scenario: " + data);
+                }
+                else if (data.Contains("<Disconnect>"))
+                {
+                    Debug.Log("Client - host wants me to disconnect!");
+
+                    /// Get reference to chatfield for client to disconnect.
+                    List<GameObject> messageTexts = new List<GameObject>();
+                    Transform trans = GameObject.Find("MessageField").transform;
+                    foreach (Transform child in trans)
+                    {
+                        if (child != trans)
+                        {
+                            messageTexts.Add(child.gameObject);
+                        }
+                    }
+                    Disconnect(messageTexts);
+
+
+                    /// If the server disconnected us we clear out connection
+                    m_clientToServerConnection = default(NetworkConnection);
                 }
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
