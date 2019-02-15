@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 /// <TODO>
 /// 
-/// Reference all connections to selected object (List<GameObject>)
 /// Delete selected objects
 ///     - If selected object is a system component, delete all connections
+///     - Make a "RemoveObject" function for the connection line
 ///     
 /// 
 /// </TODO>
@@ -18,10 +18,9 @@ public class SelectedObject : MonoBehaviour
     private Transform lineToEnd;
     private Transform lineFromStart;
     private bool connectionStarted;
-    private Vector3 connectionStartPos;
-    private Vector3 connectionEndPos;
     private ConnectionReferences connectionReferences;
-    private SystemComponent systemComponents;
+    private SystemComponent systemComponentsFromObject;
+    private SystemComponent systemComponentsToObject;
 
     [Header("Selected object elements")]
     public GameObject selected;
@@ -39,9 +38,17 @@ public class SelectedObject : MonoBehaviour
         imageBox = null;
         connectionStarted = false;
         connectionReferences = null;
-        systemComponents = null;
+        systemComponentsFromObject = null;
+        systemComponentsToObject = null;
     }
 
+
+    /// <summary>
+    /// This function recieves the selected system component GameObject, and marks this as the newly selected object.
+    /// If there is already an object selected, this gets saved as the oldSelected object, and the visuals are set to default.
+    /// </summary>
+    /// <param name="newSelected">The newly selected system component GameObject</param>
+    /// <param name="dragged">Check if the object is dragged or clicked</param>
     public void SelectObject(GameObject newSelected, bool dragged)
     {
         /// Reset the selected properties of the previously selected object, if there is one
@@ -71,6 +78,7 @@ public class SelectedObject : MonoBehaviour
             selected = newSelected;
 
             image = newSelected.GetComponent<Image>();
+            image.material = selectMat;
             imageBox = newSelected.transform.Find("selectionBox").GetComponent<Image>();
             imageBox.gameObject.SetActive(true);
 
@@ -82,10 +90,12 @@ public class SelectedObject : MonoBehaviour
         }
     }
 
-    public void StartConnection()
+
+    public void StartConnectionButton()
     {
         connectionStarted = true;
     }
+
 
     /// <summary>
     /// This function does the logic behind connecting two objects in the editor. 
@@ -95,80 +105,24 @@ public class SelectedObject : MonoBehaviour
     /// </summary>
     public void ConnectObjects()
     {
-        if (!connectionStarted)
+        /// checks again to make sure function is not called from somewhere it should not
+        if (connectionStarted)
         {
-            /// checks again to make sure function is not called from somewhere it should not
-            return;
-        }
-        else
-        {
-            connectionStartPos = oldSelected.transform.position;
-            connectionEndPos = selected.transform.position;
-
             GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
             connectionLineClone.transform.SetParent(oldSelected.transform.parent);
             connectionLineClone.transform.SetAsFirstSibling();
-            connectionLineClone.transform.position = connectionStartPos;
+            connectionLineClone.transform.position = oldSelected.transform.position;
 
             connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
             connectionReferences.SetReferences(oldSelected, selected);
 
-            lineToEnd = connectionLineClone.transform.Find("LineToEnd").GetComponent<RectTransform>().transform;
-            lineFromStart = connectionLineClone.transform.Find("LineFromStart").GetComponent<RectTransform>().transform;
+            systemComponentsToObject = selected.GetComponent<SystemComponent>();
+            systemComponentsFromObject = oldSelected.GetComponent<SystemComponent>();
+            systemComponentsToObject.AddReference(connectionLineClone);
+            systemComponentsFromObject.AddReference(connectionLineClone);
 
-            float XPosDiff = Mathf.Abs(connectionStartPos.x - connectionEndPos.x) / 100;        //100 pixels per unit
-            float YPosDiff = Mathf.Abs(connectionStartPos.y - connectionEndPos.y) / 100;        //100 pixels per unit
-
-
-            /// connection to the right
-            if (connectionStartPos.x <= connectionEndPos.x)
-            {
-                lineToEnd.localScale = new Vector3(XPosDiff, 0.05f, 1.0f);
-                lineFromStart.localScale = new Vector3(0.05f, YPosDiff, 1.0f);
-                /// connection down
-                if (connectionStartPos.y >= connectionEndPos.y)
-                {
-                    lineFromStart.position = new Vector3(connectionStartPos.x, connectionEndPos.y + YPosDiff * 50);
-                    lineToEnd.position = new Vector3(lineFromStart.position.x + XPosDiff * 50, connectionEndPos.y);
-                }
-                ///connection up
-                else
-                {
-                    connectionLineClone.transform.Rotate(new Vector3(0, 180, 180));
-
-                    lineFromStart.position = new Vector3(connectionStartPos.x, connectionEndPos.y - YPosDiff * 50);
-                    lineToEnd.position = new Vector3(lineFromStart.position.x + XPosDiff * 50, connectionEndPos.y);
-                }
-            }
-            /// connection to the left
-            else
-            {
-                lineFromStart.localScale = new Vector3(0.05f, XPosDiff, 1.0f);
-                lineToEnd.localScale = new Vector3(YPosDiff, 0.05f, 1.0f);
-
-                /// connection down
-                if (connectionStartPos.y >= connectionEndPos.y)
-                {
-                    connectionLineClone.transform.Rotate(new Vector3(180, 180, 90));
-
-                    lineFromStart.position = new Vector3(connectionStartPos.x - XPosDiff * 50, connectionStartPos.y);
-                    lineToEnd.position = new Vector3(lineFromStart.position.x - XPosDiff * 50, connectionEndPos.y + YPosDiff * 50);
-                }
-                ///connection up
-                else
-                {
-                    connectionLineClone.transform.Rotate(new Vector3(180, 0, 270));
-
-                    lineFromStart.position = new Vector3(connectionStartPos.x - XPosDiff * 50, connectionStartPos.y);
-                    lineToEnd.position = new Vector3(lineFromStart.position.x - XPosDiff * 50, connectionEndPos.y - YPosDiff * 50);
-                }
-            }
+            systemComponentsFromObject.SetConnectionLines(oldSelected.transform.position, selected.transform.position, connectionLineClone);
             connectionStarted = false;
-            systemComponents = selected.GetComponent<SystemComponent>();
-            systemComponents.AddReference(connectionLineClone);
-            systemComponents = oldSelected.GetComponent<SystemComponent>();
-            systemComponents.AddReference(connectionLineClone);
-
         }
     }
 }

@@ -12,4 +12,10 @@ public class ConnectionReferences : MonoBehaviour
         referenceFromObject = from;
         referenceToObject = to;
     }
+
+
+    public void RemoveConnectionComponent()
+    {
+
+    }
 }

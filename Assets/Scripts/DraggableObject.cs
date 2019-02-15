@@ -11,8 +11,9 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     [Header("Refferenced objects")]
     private Color originalColor;
     private Camera mainCamera;
-    private Image systemComponent;
+    private Image systemComponentImage;
     private SelectedObject objectSelect;
+    private SystemComponent systemComponent;
 
     [Header("Position objects")]
     private Vector2 offset;
@@ -27,10 +28,11 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         mainCamera = Camera.main;
         objectSelect = FindObjectOfType<SelectedObject>();
+        systemComponent = GetComponent<SystemComponent>();
         if (GetComponent<Image>() != null)
         {
             originalColor = GetComponent<Image>().color;
-            systemComponent = GetComponent<Image>();
+            systemComponentImage = GetComponent<Image>();
         }
     }
 
@@ -47,18 +49,21 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         /// if the object is not dragged from a dropzone and is a system component, make a clone of it.
         if (this.transform.parent.gameObject.GetComponent<DropZone>() == null && GetComponent<Image>() != null)
         {
-            Image systemComponentClone = (Image)Instantiate(systemComponent, parentToReturnTo);
+            Image systemComponentClone = (Image)Instantiate(systemComponentImage, parentToReturnTo);
             systemComponentClone.color = originalColor;
         }
 
         offset = (Vector2)this.transform.position - eventData.position;
         GetComponent<CanvasGroup>().blocksRaycasts = false;
+
     }
 
 
     public void OnDrag(PointerEventData eventData)
     {
         this.transform.position = eventData.position + offset;
+        //Debug.Log("Calling MoveConnections from DraggableObject - " + this.name);
+        this.systemComponent.MoveConnections();
     }
 
 
