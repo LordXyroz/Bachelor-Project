@@ -126,9 +126,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             {
                 foreach (var child in children)
                 {
-                    float temp = Random.Range(0f, 1f);
-                    Debug.Log(temp);
-                    if (child.visible == false && temp < (message.probability * (1f / difficulty)))
+                    if (child.visible == false && Random.Range(0f, 1f) < (message.probability * (1f / difficulty)))
                     {
                         list.Add(child);
                         child.visible = true;
