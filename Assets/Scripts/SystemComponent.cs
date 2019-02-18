@@ -90,10 +90,6 @@ public class SystemComponent : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Adds the connecting line reference to the list of the GameObject references
-    /// </summary>
-    /// <param name="reference"></param>
     public void AddReference(GameObject reference)
     {
         connectedReferenceLines.Add(reference);
@@ -124,10 +120,6 @@ public class SystemComponent : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Delete the selected GameObject, connected reference lines
-    /// as well as the reference to those lines in the other connected GameObjects
-    /// </summary>
     public void DeleteSystemComponent()
     {
         foreach (GameObject line in connectedReferenceLines)

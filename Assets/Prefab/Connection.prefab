@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 1354176535}
   - component: {fileID: 2680789621835697153}
   - component: {fileID: 6678967591499923603}
+  - component: {fileID: 329845540068049796}
   m_Layer: 8
   m_Name: Connection
   m_TagString: Untagged
@@ -149,6 +150,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &329845540068049796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233773393581119614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68c6e1aee5da5484ab03090fc2d16085, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectionBox: {fileID: 0}
+  spriteDefault: {fileID: 0}
+  spriteHighlight: {fileID: 0}
+  tooltipText: Connection
 --- !u!1 &1233773393782900270
 GameObject:
   m_ObjectHideFlags: 0

@@ -43,7 +43,16 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         /// Only selectable if it is located in the SystemSetupScreen editor area
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
         {
-            objectSelect.SelectObject(this.gameObject, true);
+            // TODO Adjust dragging for connection lines
+
+            if (this.GetComponent<Image>() != null)
+            {
+                objectSelect.SelectObject(this.gameObject, true, true);
+            }
+            else
+            {
+                objectSelect.SelectObject(this.gameObject, true, false);
+            }
         }
 
         /// if the object is not dragged from a dropzone and is a system component, make a clone of it.

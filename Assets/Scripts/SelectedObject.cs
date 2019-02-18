@@ -19,6 +19,7 @@ public class SelectedObject : MonoBehaviour
     private ConnectionReferences connectionReferences;
     private SystemComponent systemComponentsFromObject;
     private SystemComponent systemComponentsToObject;
+    private ConnectionReferences connectionReferencesOfObject;
 
     [Header("Selected object elements")]
     public GameObject selected;
@@ -26,6 +27,7 @@ public class SelectedObject : MonoBehaviour
     public Canvas canvas;
     public Material selectMat;
     private Image image;
+    private Image[] images;
     private Image imageBox;
 
 
@@ -38,6 +40,8 @@ public class SelectedObject : MonoBehaviour
         connectionReferences = null;
         systemComponentsFromObject = null;
         systemComponentsToObject = null;
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        images = GetComponentsInChildren<Image>();
     }
 
 
@@ -47,57 +51,101 @@ public class SelectedObject : MonoBehaviour
     /// </summary>
     /// <param name="newSelected">The newly selected system component GameObject</param>
     /// <param name="dragged">Check if the object is dragged or clicked</param>
-    public void SelectObject(GameObject newSelected, bool dragged)
+    /// <param name="systemComponent">Flag for system component</param>
+    public void SelectObject(GameObject newSelected, bool dragged, bool systemComponent)
     {
-        if (newSelected.GetComponent<Image>() != null)
+        if (newSelected != null)
         {
             /// Reset the selected properties of the previously selected object, if there is one
             if (selected != null)
             {
                 image.material = default;
+                foreach (Image img in images)
+                {
+                    img.material = default;
+                }
+
                 imageBox.gameObject.SetActive(false);
             }
+            images = GetComponentsInChildren<Image>();
 
             if (newSelected != null)
             {
-                /// Reset and set active to null if the selected object is clicked again (not dragged)
-                if (selected == newSelected && !dragged)
+                if (systemComponent)
                 {
-                    image.material = default;
-                    imageBox.gameObject.SetActive(false);
-                    oldSelected = selected;
-                    selected = null;
-                    connectionStarted = false;
-                    return;
+                    /// Reset and set active to null if the selected object is clicked again (not dragged)
+                    if (selected == newSelected && !dragged)
+                    {
+                        image.material = default;
+                        imageBox.gameObject.SetActive(false);
+                        oldSelected = selected;
+                        selected = null;
+                        connectionStarted = false;
+                        return;
+                    }
+
+                    if (newSelected != selected && selected != null)
+                    {
+                        oldSelected = selected;
+                    }
+                    selected = newSelected;
+
+                    image = newSelected.GetComponent<Image>();
+                    image.material = selectMat;
+                    imageBox = newSelected.transform.Find("selectionBox").GetComponent<Image>();
+                    imageBox.gameObject.SetActive(true);
+
+                    /// If button pressed for starting a connection
+                    if (oldSelected != null && connectionStarted)
+                    {
+                        ConnectObjects();
+                    }
+                }
+                else if (!systemComponent)
+                {
+                    images = newSelected.GetComponentsInChildren<Image>();
+
+                    /// Reset and set active to null if the selected object is clicked again (not dragged)
+                    if (selected == newSelected && !dragged)
+                    {
+                        foreach (Image img in images)   // Connection line
+                        {
+                            img.material = default;
+                        }
+                        oldSelected = selected;
+                        selected = null;
+                        connectionStarted = false;
+                        Debug.Log("Same selected line, resetting selection visuals: " + newSelected);
+                        return;
+                    }
+
+                    if (newSelected != selected && selected != null)
+                    {
+                        oldSelected = selected;
+                    }
+                    selected = newSelected;
+
+                    foreach (Image img in images)
+                    {
+                        img.material = selectMat;
+                    }
                 }
 
-                if (newSelected != selected && selected != null)
-                {
-                    oldSelected = selected;
-                }
-                selected = newSelected;
-
-                image = newSelected.GetComponent<Image>();
-                image.material = selectMat;
-                imageBox = newSelected.transform.Find("selectionBox").GetComponent<Image>();
-                imageBox.gameObject.SetActive(true);
-
-                /// If button pressed for starting a connection
-                if (oldSelected != null && connectionStarted)
-                {
-                    ConnectObjects();
-                }
             }
+        }
+        else
+        {
+            Debug.Log("Selected connection line:  " + newSelected.name);
         }
     }
 
 
-    /// <summary>
-    /// Activate the flag for connecting two GameObjects
-    /// </summary>
     public void StartConnectionButton()
     {
-        connectionStarted = true;
+        if (selected.GetComponent<SystemComponent>() != null)
+        {
+            connectionStarted = true;
+        }
     }
 
 
@@ -110,7 +158,9 @@ public class SelectedObject : MonoBehaviour
     public void ConnectObjects()
     {
         /// checks again to make sure function is not called from somewhere it should not
-        if (connectionStarted)
+        if (connectionStarted
+            && selected.GetComponent<SystemComponent>() != null
+            && oldSelected.GetComponent<SystemComponent>() != null)
         {
             GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
             connectionLineClone.transform.SetParent(oldSelected.transform.parent);
@@ -140,7 +190,15 @@ public class SelectedObject : MonoBehaviour
         if (selected != null)
         {
             systemComponentsToObject = selected.GetComponent<SystemComponent>();
-            systemComponentsToObject.DeleteSystemComponent();
+            if (systemComponentsToObject != null)
+            {
+                systemComponentsToObject.DeleteSystemComponent();
+            }
+            else
+            {
+                connectionReferencesOfObject = selected.GetComponent<ConnectionReferences>();
+                connectionReferencesOfObject.RemoveConnectionComponent();
+            }
         }
     }
 }

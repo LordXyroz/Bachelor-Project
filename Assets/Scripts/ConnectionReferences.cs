@@ -10,12 +10,10 @@ public class ConnectionReferences : MonoBehaviour
     public GameObject referenceFromObject;
     public GameObject referenceToObject;
 
+    [Header("Items needed for deleting references to the connecting line")]
+    private SystemComponent systemComponent;
 
-    /// <summary>
-    /// Set the references to the two GameObjects the line is connecting
-    /// </summary>
-    /// <param name="from">The GameObject the connecting line originates from</param>
-    /// <param name="to">The GameObject the connecting line ends in</param>
+
     public void SetReferences(GameObject from, GameObject to)
     {
         referenceFromObject = from;
@@ -23,11 +21,14 @@ public class ConnectionReferences : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Remove the references to the selected connection line
-    /// </summary>
     public void RemoveConnectionComponent()
     {
+        Debug.Log("Deleting connecting line: " + this.gameObject.name);
 
+        systemComponent = referenceFromObject.GetComponent<SystemComponent>();
+        systemComponent.connectedReferenceLines.Remove(this.gameObject);
+        systemComponent = referenceToObject.GetComponent<SystemComponent>();
+        systemComponent.connectedReferenceLines.Remove(this.gameObject);
+        Destroy(this.gameObject);
     }
 }
