@@ -39,8 +39,8 @@ public class Attack : MonoBehaviour, IAttackResponse
     public void Start()
     {
         uiScript = FindObjectOfType<AttackerUI>();
-        uiScript.ToggleProgressbar(true);
-        uiScript.UpdateProgressbar(timer, duration, "Attacking", "Attacking " + target.name);
+        uiScript.ToggleProgressbar(true, "Attacking", "Attacking " + target.name);
+        uiScript.UpdateProgressbar(timer, duration);
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class Attack : MonoBehaviour, IAttackResponse
         if (timer >= duration && !triggered)
             Effect();
 
-        uiScript.UpdateProgressbar(timer, duration, "Attacking", "Attacking " + target.name);
+        uiScript.UpdateProgressbar(timer, duration);
     }
 
     /// <summary>

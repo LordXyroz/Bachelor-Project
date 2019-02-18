@@ -43,7 +43,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (discoverInProgress)
         {
             discoverTimer += Time.deltaTime;
-            uiScript.UpdateProgressbar(discoverTimer, discoverDuration, "Discover", "Discovering new locations..");
+            uiScript.UpdateProgressbar(discoverTimer, discoverDuration);
         }
 
         if (discoverTimer >= discoverDuration)
@@ -52,7 +52,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (analyzeInProgress)
         {
             analyzeTimer += Time.deltaTime;
-            uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration, "Analyze", "Analyzing location...");
+            uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration);
         }
 
         if (analyzeTimer >= analyzeDuration)
@@ -62,7 +62,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (probeInProgress)
         {
             probeTimer += Time.deltaTime;
-            uiScript.UpdateProgressbar(probeTimer, probeDuration, "Probe", "Probing " + target.name);
+            uiScript.UpdateProgressbar(probeTimer, probeDuration);
         }
 
         if (probeTimer >= probeDuration)
@@ -145,9 +145,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Started discovering" + ((target != null) ? " on: "  + target.name : "");
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-            uiScript.UpdateProgressbar(discoverTimer, discoverDuration, "Discover", "Discovering new locations..");
+            uiScript.UpdateProgressbar(discoverTimer, discoverDuration);
             //uiScript.UpdateInfo(msg);
-            uiScript.ToggleProgressbar(true);
+            uiScript.ToggleProgressbar(true, "Discover", "Discovering new locations..");
         }
     }
 
@@ -167,9 +167,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Started analyzing on: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-            uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration, "Analyze", "Analyzing " + target.name);
+            uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration);
             //uiScript.UpdateInfo(msg);
-            uiScript.ToggleProgressbar(true);
+            uiScript.ToggleProgressbar(true, "Analyze", "Analyzing " + target.name);
         }
     }
 
@@ -211,8 +211,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Started probing: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage(target.name, name, MessageTypes.Logging.LOG, msg));
-            uiScript.UpdateProgressbar(probeTimer, probeDuration, "Probe", "Probing " + target.name);
-            uiScript.ToggleProgressbar(true);
+            uiScript.UpdateProgressbar(probeTimer, probeDuration);
+            uiScript.ToggleProgressbar(true, "Probe", "Probing " + target.name);
         }
     }
 
@@ -283,7 +283,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         //uiScript.UpdateInfo(msg);
-        uiScript.ToggleProgressbar(false);
+        uiScript.ToggleProgressbar(false, "", "");
     }
 
     /// <summary>
@@ -312,7 +312,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
             //uiScript.UpdateInfo(msg);
-            uiScript.ToggleProgressbar(false);
+            uiScript.ToggleProgressbar(false, "", "");
         }
     }
 
@@ -330,7 +330,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         //uiScript.UpdateInfo(msg);
-        uiScript.ToggleProgressbar(false);
+        uiScript.ToggleProgressbar(false, "", "");
     }
 
     public void OnProbeResponse(ProbeResponseMessage message)
@@ -340,6 +340,6 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         string msg = "Probe response: devices - " + message.numOfChildren + ", difficulty - " + message.difficulty;
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
 
-        uiScript.ToggleProgressbar(false);
+        uiScript.ToggleProgressbar(false, "", "");
     }
 }

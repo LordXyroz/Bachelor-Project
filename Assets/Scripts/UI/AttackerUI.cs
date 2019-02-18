@@ -19,6 +19,9 @@ public class AttackerUI : MonoBehaviour
     public Text progressbarTitle;
     public Text progressbarText;
 
+    [Header("OnClickMenu")]
+    public GameObject onClickMenu;
+
     public void ChangeTarget(GameObject go)
     {
         targetText.text = go.name;
@@ -31,16 +34,28 @@ public class AttackerUI : MonoBehaviour
         infoText.text = text;
     }
 
-    public void UpdateProgressbar(float value, float max, string title, string text)
+    public void UpdateProgressbar(float value, float max)
     {
-        progressbarTitle.text = title;
-        progressbarText.text = text;
         progressbar.fillAmount = value / max;
     }
 
-    public void ToggleProgressbar(bool toggle)
+    public void ToggleProgressbar(bool toggle, string title, string text)
     {
         progressbarObject.SetActive(toggle);
+
+        progressbarTitle.text = title;
+        progressbarText.text = text;
+    }
+
+    public void ToggleOnClickMenu(bool toggle, Vector3 pos)
+    {
+        onClickMenu.SetActive(toggle);
+        onClickMenu.GetComponent<RectTransform>().localPosition = pos;
+    }
+
+    public void DisableOnClickMenu()
+    {
+        onClickMenu.SetActive(false);
     }
     
 }

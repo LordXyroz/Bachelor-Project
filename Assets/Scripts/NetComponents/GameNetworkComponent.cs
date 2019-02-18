@@ -20,16 +20,25 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     [Header("Variables")]
     [Range(1f, 5f)]
     public int difficulty = 1;
+    private bool visible = false;
 
-    [HideInInspector]
-    public bool visible = false;
-
-    [HideInInspector]
-    public GameObject uiElement;
+    [SerializeField]
+    private GameObject uiElement;
+    [SerializeField]
+    private Button uiButton;
+    [SerializeField]
+    private AttackerUI uiScript;
 
     [Header("Network depth")]
     public int graphDepth;
     public List<GameNetworkComponent> children;
+
+    public void Start()
+    {
+        RectTransform rectTransform = GetComponent<RectTransform>();
+        Vector3 pos = new Vector3(rectTransform.localPosition.x + rectTransform.rect.height * 1.5f, rectTransform.localPosition.y);
+        uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
+    }
 
     public void Update()
     {
