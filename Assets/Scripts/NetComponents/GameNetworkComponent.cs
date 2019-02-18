@@ -183,7 +183,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     {
         if (message.targetName == name)
         {
-            MessagingManager.BroadcastMessage(new ProbeResponseMessage(message.senderName, name, MessageTypes.Game.PROBE_RESPONSE, children.Count, difficulty));
+            MessagingManager.BroadcastMessage(new ProbeResponseMessage(message.senderName, name, MessageTypes.Game.PROBE_RESPONSE, children.Count, difficulty, vulnerabilities.Count));
         }
     }
 }

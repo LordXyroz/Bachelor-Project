@@ -19,6 +19,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     [SerializeField]
     private AttackerUI uiScript;
 
+    [SerializeField]
+    private List<AttackerInfo> info = new List<AttackerInfo>();
+
     private int discoverDuration = 3;
     private float discoverTimer = 0f;
     private bool discoverInProgress = false;
@@ -270,6 +273,11 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         workInProgress = false;
 
+        AttackerInfo i = info.Find(x => x.component.name == message.senderName);
+
+        if (i != null)
+            i.beenDiscoveredOn = true;
+        
         string msg = "Discover response: ";
 
         if (message.discovered.Count == 0)
@@ -278,7 +286,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         {
             msg += "discovered - ";
             foreach (var entry in message.discovered)
+            {
                 msg += entry.name + ", ";
+                info.Add(new AttackerInfo(entry.gameObject));
+            }
         }
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
@@ -299,6 +310,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         {
             workInProgress = false;
 
+            AttackerInfo i = info.Find(x => x.component.name == message.senderName);
+            i.beenAnalyzed = true;
+
             string msg = "Analyze response: ";
 
             if (message.attacks.Count == 0)
@@ -307,9 +321,13 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             {
                 msg += "found - ";
                 foreach (var entry in message.attacks)
+                {
                     msg += entry + ", ";
+                    if (!i.vulnerabilities.Contains(entry))
+                        i.vulnerabilities.Add(entry);
+                }
             }
-
+            
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
             //uiScript.UpdateInfo(msg);
             uiScript.ToggleProgressbar(false, "", "");
@@ -336,6 +354,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     public void OnProbeResponse(ProbeResponseMessage message)
     {
         workInProgress = false;
+
+        AttackerInfo i = info.Find(x => x.component.name == message.senderName);
+        i.beenProbed = true;
+        i.numOfVulnerabilities = message.numOfVulnerabilities;
+        i.numOfChildren = message.numOfChildren;
+        i.difficulty = message.difficulty;
 
         string msg = "Probe response: devices - " + message.numOfChildren + ", difficulty - " + message.difficulty;
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
