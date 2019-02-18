@@ -45,7 +45,9 @@ public class ClientBehaviour
     }
 
     
-
+    /// <summary>
+    /// Destructor for client behaviour, makes sure that important data is cleaned up.
+    /// </summary>
     ~ClientBehaviour()
     {
         m_ClientDriver.ScheduleUpdate().Complete();
@@ -54,75 +56,8 @@ public class ClientBehaviour
         m_ClientDriver.Dispose();
     }
 
-    void OnDestroy()
-    {
-        Debug.Log("ondestroy");
-        m_ClientDriver.Dispose();
-    }
 
     public void FindHost()
-    {
-        // Data buffer for incoming data.  
-        byte[] bytes = new byte[1024];
-        // Connect to a remote device.  
-        try
-        {
-            // Establish the remote endpoint for the socket.  
-            // This example uses port 11000 on the local computer.  
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
-
-            // Create a TCP/IP  socket.  
-            Socket sender = new Socket(ipAddress.AddressFamily,
-                SocketType.Stream, ProtocolType.Tcp);
-
-            // Connect the socket to the remote endpoint. Catch any errors.  
-            try
-            {
-                sender.Connect(remoteEP);
-
-                //Debug.Log("Clientside - Socket connected to" + sender.RemoteEndPoint.ToString());
-
-                // Encode the data string into a byte array.  
-                byte[] msg = Encoding.ASCII.GetBytes("I want your ip address<EOF>");
-
-                // Send the data through the socket.  
-                int bytesSent = sender.Send(msg);
-
-                // Receive the response from the remote device.  
-                int bytesRec = sender.Receive(bytes);
-                //Debug.Log("Clientside(socket) - Echoed test = " + Encoding.ASCII.GetString(bytes, 0, bytesRec));
-                // Release the socket.  
-                sender.Shutdown(SocketShutdown.Both);
-                sender.Close();
-
-                // Setup server connection and try to connect:
-                string hostIp = Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                ServerEndPoint = new IPEndPoint(IPAddress.Parse(hostIp), 9000);
-
-            }
-            catch (ArgumentNullException ane)
-            {
-                Console.WriteLine("ArgumentNullException: ", ane.ToString());
-            }
-            catch (SocketException se)
-            {
-                Console.WriteLine("SocketException: ", se.ToString());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Unexpected exception: ", e.ToString());
-            }
-
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-        }
-    }
-
-    public void FindHostNew()
     {
         string server = "10.22.210.138";
         // TODO use arp -a to get all possible server ips...
@@ -166,7 +101,6 @@ public class ClientBehaviour
             // Close everything.
             stream.Close();
             client.Close();
-            Debug.Log("client closed");
             ServerEndPoint = new IPEndPoint(IPAddress.Parse(server), 9000);
         }
         catch (ArgumentNullException e)
@@ -256,12 +190,12 @@ public class ClientBehaviour
             connectionText.text = "Connecting..";
             yield return new WaitForSeconds(0.15f);
             connectionText.text = "Connecting...";
-            /// Could use thread, but testing showed that Task was more efficient to use in this scenario. Easy to wait for the task to finish before doing something else aswell.
-            Task setupHostIp = Task.Run(FindHostNew);
+            
+            /// Get IP of host that wants to serve a match.
+            Task setupHostIp = Task.Run(FindHost);
             setupHostIp.Wait();
             try
             {
-                //Debug.Log("IP address: " + ServerEndPoint.GetIp());
                 /// Connect to host if one is found and connection isn't already made.
                 if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
                 {
@@ -319,7 +253,7 @@ public class ClientBehaviour
     /// SendMessage is used to send simple strings through the network, will later on use the type 'Message' to send more data through the network.
     /// </summary>
     /// <param name="message"></param>
-    public new void SendChatMessage(string message)
+    public void SendChatMessage(string message)
     {
         if (m_clientToServerConnection.IsCreated)
         {
@@ -408,20 +342,22 @@ public class ClientBehaviour
                     data = data.Substring(data.IndexOf("<Match>") + 7, data.Length - (data.IndexOf("<Match>") + 7));
 
                     /// Receives hostname:
-                    nm.playerName1.transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<HostName>"));
+                    nm.playerNames[0].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<HostName>"));
                     data = data.Substring(data.IndexOf("<HostName>") + 10, data.Length - (data.IndexOf("<HostName>") + 10));
 
                     /// Receives names of other people in lobby(if any):
-                    if (data.Contains("<PlayerName>"))
+                    int i = 1;
+                    while (data.Contains("<PlayerName>"))
                     {
-                        nm.playerName3.transform.Find("Text").GetComponent<Text>().text = nm.playerName2.transform.Find("Text").GetComponent<Text>().text;
-                        nm.playerName2.transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<PlayerName>"));
-                        data = data.Substring(data.IndexOf("<PlayerName>") + 10, data.Length - (data.IndexOf("<PlayerName>") + 10));
+                        nm.playerNames[i].SetActive(true);
+                        nm.playerNames[i].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<PlayerName>"));
+                        data = data.Substring(data.IndexOf("<PlayerName>") + 12, data.Length - (data.IndexOf("<PlayerName>") + 12));
+                        i++;
                     }
-                    else
-                    {
-                        nm.playerName3.SetActive(false);
-                    }
+                    /// TODO set the rest of the playerNames.active to false.
+                    /// TODO make sure that I don't add too many?
+                    
+                    nm.playerNames[i].transform.Find("Text").GetComponent<Text>().text = nm.userName;
 
                     Debug.Log("Client - You are connected to server!");
                 }

@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+/// <summary>
+/// A more overviewed perspective that controls the network within the game.
+/// Controls whether the user wants to host or join a host,
+/// controls the UI of the lobby.
+/// Makes sure that the connection/disconnection is done.
+/// </summary>
 public class NetworkingManager : MonoBehaviour
 {
     public string userName;
@@ -17,11 +23,11 @@ public class NetworkingManager : MonoBehaviour
     public GameObject chatField;
     public GameObject connectionField;
 
-    
-    // TODO make these into one array - easier to scale further then.
-    public GameObject playerName1;
-    public GameObject playerName2;
-    public GameObject playerName3;
+
+    /// <summary>
+    /// playerNames is used to see name of players currently in the lobby.
+    /// </summary>
+    public List<GameObject> playerNames;
 
     private ClientBehaviour cb;
     private ServerBehaviour sb;
@@ -34,9 +40,14 @@ public class NetworkingManager : MonoBehaviour
         sb = null;
 
         /// Get playername positions from the beginning for use in future.
-        playerName1 = GameObject.Find("Player1");
-        playerName2 = GameObject.Find("Player2");
-        playerName3 = GameObject.Find("Player3");
+        GameObject players = GameObject.Find("Players");
+        foreach (Transform child in players.transform)
+        {
+            if (child != players.transform)
+            {
+                playerNames.Add(child.gameObject);
+            }
+        }
 
         connectionField = GameObject.Find("ConnectionField");
         chatField = GameObject.Find("ChatField");
@@ -107,12 +118,13 @@ public class NetworkingManager : MonoBehaviour
 
             /// Set match name as title on new view, and username as first one in lobby:
             GameObject.Find("MatchName").GetComponent<Text>().text = matchName;
-            playerName1.transform.Find("Text").GetComponent<Text>().text = userName;
+            playerNames[0].transform.Find("Text").GetComponent<Text>().text = userName;
 
             /// Set to false as host is the only one in lobby when it starts.
-            playerName2.SetActive(false);
-            playerName3.SetActive(false);
-
+            for (int i = 1; i < playerNames.Count; i++)
+            {
+                playerNames[i].SetActive(false);
+            }
         }
         else
         {
@@ -124,8 +136,12 @@ public class NetworkingManager : MonoBehaviour
 
             /// Get username from user before changing view to lobby view if host is found.
             userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
-            playerName3.SetActive(false);
 
+            /// Set to false until names of all players in lobby is collected:
+            for (int i = 0; i < playerNames.Count; i++)
+            {
+                playerNames[i].SetActive(false);
+            }
             
             /// Make client connect to host or disconnect.
             cb.Connect(this);
@@ -238,7 +254,7 @@ public class NetworkingManager : MonoBehaviour
     {
         /// listNr gives the number in list after host(Host is always nr.1).
 
-        if (listNr == 0)
+        /*if (listNr == 0)
         {
             if (playerName2.activeSelf && playerName3.activeSelf)
             {
@@ -252,7 +268,7 @@ public class NetworkingManager : MonoBehaviour
         else if (listNr == 1)
         {
             playerName3.SetActive(false);
-        }
+        }*/
     }
 
     /// <summary>
@@ -260,7 +276,15 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void AddPlayerName(string newName)
     {
-        if (playerName2.activeSelf)
+        int i = 1;
+        while (playerNames[i++].activeSelf) ;
+        i--;
+
+        playerNames[i].SetActive(true);
+        playerNames[i].transform.Find("Text").GetComponent<Text>().text = newName;
+
+
+        /*if (playerName2.activeSelf)
         {
             if (playerName2.transform.Find("Text").GetComponent<Text>().text == "" || playerName2.transform.Find("Text").GetComponent<Text>().text == null)
             {
@@ -276,7 +300,7 @@ public class NetworkingManager : MonoBehaviour
         {
             playerName2.SetActive(true);
             playerName2.transform.Find("Text").GetComponent<Text>().text = newName;
-        }
+        }*/
     }
 
 

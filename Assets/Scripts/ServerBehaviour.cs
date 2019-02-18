@@ -87,9 +87,8 @@ public class ServerBehaviour
                 Debug.Log("newconnection - Waiting for a connection... ");
 
                 // Perform a blocking call to accept requests.
-                // Could also user server.AcceptSocket() here.
                 TcpClient client = server.AcceptTcpClient();
-                Debug.Log("newconnection - Connected!;");
+                Debug.Log("newconnection - Connected!");
 
                 data = null;
 
@@ -198,7 +197,6 @@ public class ServerBehaviour
 
     ~ServerBehaviour()
     {
-        Debug.Log("Server destructor.");
         // All jobs must be completed before we can dispose the data they use
         m_updateHandle.Complete();
         m_ServerDriver.Dispose();
@@ -207,7 +205,6 @@ public class ServerBehaviour
 
     public void FixedUpdate()
     {
-
         if (m_ServerDriver.IsCreated)
         {
             // Update the NetworkDriver. It schedules a job so we must wait for that job with Complete
@@ -259,14 +256,17 @@ public class ServerBehaviour
                                 /// Add new client to list of players in lobby:
                                 data = data.Substring(0, data.Length - 12);
                                 GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(data);
-
+                                Debug.Log("something");
                                 /// Send info back to client just connected about the lobby.
                                 NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                                 string message = nm.matchName + "<Match>";
                                 message += nm.userName + "<HostName>";
-                                if (nm.playerName2.activeSelf)
+                                Debug.Log("Came further now!");
+                                int j = 0;
+                                while (nm.playerNames[j].activeSelf)
                                 {
-                                    message += nm.playerName2.transform.Find("Text").GetComponent<Text>().text + "<PlayerName>";
+                                    message += nm.playerNames[j].transform.Find("Text").GetComponent<Text>().text + "<PlayerName>";
+                                    j++;
                                 }
 
                                 writer.Write(Encoding.ASCII.GetBytes(message + "<Connected>"));
