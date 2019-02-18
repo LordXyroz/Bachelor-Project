@@ -5,6 +5,11 @@ using UnityEngine.UI;
 /// <summary>
 /// This script is added to all drag-and-drop UI elements
 /// </summary>
+/// 
+
+/// TODO 
+/// - delete references when object is dragged out of frame and deleted
+/// 
 
 public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -94,17 +99,25 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         float objectHeight = this.GetComponent<RectTransform>().rect.height;
 
         /// Delete the object if it is placed outside of the editing screen field
-        if (objectPosition.x < width * 0.5f - objectWidth * 0.33f ||
-            objectPosition.x > width * 1.5f - objectWidth * 1.3f ||
-            objectPosition.y < height * 0.32f - objectHeight ||
-            objectPosition.y > height + 10)
+        if (objectPosition.x < width * 0.5f - objectWidth * 0.33f
+            || objectPosition.x > width * 1.5f - objectWidth * 1.3f
+            || objectPosition.y < height * 0.32f - objectHeight
+            || objectPosition.y > height + 10)
         {
-            Destroy(this.gameObject);
+            if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
+            {
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                Debug.Log("DraggableObject dropped outside delete field: " + this.gameObject.name);
+                objectSelect.DeleteSelectedObject();
+            }
         }
         /// delete the game object if it is placed outside the drop zone
-        else if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
-        {
-            Destroy(this.gameObject);
-        }
+        //else if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
+        //{
+        //    Destroy(this.gameObject);
+        //}
     }
 }

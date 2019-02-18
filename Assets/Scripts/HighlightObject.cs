@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    [Header("The objects that need to be refferenced")]
+    [Header("The objects that need to be referenced")]
     private SelectedObject objectSelect;
     private TMP_Text currentToolTipText;
     private Canvas canvas;
@@ -50,6 +50,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        Debug.Log("Pointer enter: Name: " + eventData.pointerCurrentRaycast.gameObject.name);
         if (image != null)  // Component
         {
             image.color = Color.red;

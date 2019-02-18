@@ -45,11 +45,11 @@ public class SystemComponent : MonoBehaviour
         /// connection to the right
         if (startPos.x < endPos.x)
         {
-            lineToEnd.localScale = new Vector3(XPosDiff, 0.05f, 1.0f);
-            lineFromStart.localScale = new Vector3(0.05f, YPosDiff, 1.0f);
             /// connection down
             if (startPos.y > endPos.y)
             {
+                lineToEnd.localScale = new Vector3(XPosDiff, 0.05f, 1.0f);
+                lineFromStart.localScale = new Vector3(0.05f, YPosDiff, 1.0f);
                 connectionLine.transform.rotation = Quaternion.identity;
 
                 lineFromStart.position = new Vector3(startPos.x, endPos.y + YPosDiff * 50);
@@ -58,22 +58,24 @@ public class SystemComponent : MonoBehaviour
             ///connection up
             else
             {
-                connectionLine.transform.rotation = Quaternion.Euler(0, 180, 180);
+                lineFromStart.localScale = new Vector3(0.05f, XPosDiff, 1.0f);
+                lineToEnd.localScale = new Vector3(YPosDiff, 0.05f, 1.0f);
+                connectionLine.transform.rotation = Quaternion.Euler(0, 0, 90);
 
-                lineFromStart.position = new Vector3(startPos.x, endPos.y - YPosDiff * 50);
-                lineToEnd.position = new Vector3(lineFromStart.position.x + XPosDiff * 50, endPos.y);
+                lineFromStart.position = new Vector3(startPos.x + XPosDiff * 50, startPos.y);
+                lineToEnd.position = new Vector3(lineFromStart.position.x + XPosDiff * 50, endPos.y - YPosDiff * 50);
             }
         }
         /// connection to the left
         else
         {
-            lineFromStart.localScale = new Vector3(0.05f, XPosDiff, 1.0f);
-            lineToEnd.localScale = new Vector3(YPosDiff, 0.05f, 1.0f);
 
             /// connection down
             if (startPos.y > endPos.y)
             {
-                connectionLine.transform.rotation = Quaternion.Euler(180, 180, 90);
+                lineFromStart.localScale = new Vector3(0.05f, XPosDiff, 1.0f);
+                lineToEnd.localScale = new Vector3(YPosDiff, 0.05f, 1.0f);
+                connectionLine.transform.rotation = Quaternion.Euler(0, 0, 270);
 
                 lineFromStart.position = new Vector3(startPos.x - XPosDiff * 50, startPos.y);
                 lineToEnd.position = new Vector3(lineFromStart.position.x - XPosDiff * 50, endPos.y + YPosDiff * 50);
@@ -81,7 +83,9 @@ public class SystemComponent : MonoBehaviour
             ///connection up
             else
             {
-                connectionLine.transform.rotation = Quaternion.Euler(180, 0, 270);
+                lineFromStart.localScale = new Vector3(XPosDiff, 0.05f, 1.0f);
+                lineToEnd.localScale = new Vector3(0.05f, YPosDiff, 1.0f);
+                connectionLine.transform.rotation = Quaternion.Euler(0, 0, -180);
 
                 lineFromStart.position = new Vector3(startPos.x - XPosDiff * 50, startPos.y);
                 lineToEnd.position = new Vector3(lineFromStart.position.x - XPosDiff * 50, endPos.y - YPosDiff * 50);
@@ -136,8 +140,8 @@ public class SystemComponent : MonoBehaviour
             systemComponent = connectedSystemCommponent.GetComponent<SystemComponent>();
             systemComponent.connectedReferenceLines.Remove(line);
             Destroy(line);
-            Destroy(this.gameObject);
         }
+        Destroy(this.gameObject);
     }
 }
 

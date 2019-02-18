@@ -142,7 +142,7 @@ public class SelectedObject : MonoBehaviour
 
     public void StartConnectionButton()
     {
-        if (selected.GetComponent<SystemComponent>() != null)
+        if (selected != null && selected.GetComponent<SystemComponent>() != null)
         {
             connectionStarted = true;
         }
@@ -163,9 +163,9 @@ public class SelectedObject : MonoBehaviour
             && oldSelected.GetComponent<SystemComponent>() != null)
         {
             GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
+            connectionLineClone.transform.position = oldSelected.transform.position;
             connectionLineClone.transform.SetParent(oldSelected.transform.parent);
             connectionLineClone.transform.SetAsFirstSibling();
-            connectionLineClone.transform.position = oldSelected.transform.position;
 
             connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
             connectionReferences.SetReferences(oldSelected, selected);
@@ -192,6 +192,7 @@ public class SelectedObject : MonoBehaviour
             systemComponentsToObject = selected.GetComponent<SystemComponent>();
             if (systemComponentsToObject != null)
             {
+                Debug.Log("SelectedObject dropped outside delete field: " + systemComponentsToObject.name);
                 systemComponentsToObject.DeleteSystemComponent();
             }
             else
