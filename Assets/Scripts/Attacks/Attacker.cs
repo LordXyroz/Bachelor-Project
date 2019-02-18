@@ -8,7 +8,7 @@ using UnityEngine;
 /// <summary>
 /// Handles the attacker's controls and capabilities.
 /// </summary>
-public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAttackResponse
+public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAttackResponse, IProbeResponse
 {
     [SerializeField]
     private GameObject[] attackPrefabs;
@@ -21,11 +21,15 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
     private int discoverDuration = 3;
     private float discoverTimer = 0f;
-    private bool discoverCount = false;
+    private bool discoverInProgress = false;
 
     private int analyzeDuration = 10;
     private float analyzeTimer = 0f;
-    private bool analyzeCount = false;
+    private bool analyzeInProgress = false;
+
+    private int probeDuration = 3;
+    private float probeTimer = 0f;
+    private bool probeInProgress = false;
 
     private bool workInProgress = false;
 
@@ -36,17 +40,33 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     // Update is called once per frame
     void Update()
     {
-        if (discoverCount)
+        if (discoverInProgress)
+        {
             discoverTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(discoverTimer, discoverDuration, "Discover", "Discovering new locations..");
+        }
 
         if (discoverTimer >= discoverDuration)
             Discover();
 
-        if (analyzeCount)
+        if (analyzeInProgress)
+        {
             analyzeTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration, "Analyze", "Analyzing location...");
+        }
 
         if (analyzeTimer >= analyzeDuration)
             Analyze();
+
+
+        if (probeInProgress)
+        {
+            probeTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(probeTimer, probeDuration, "Probe", "Probing " + target.name);
+        }
+
+        if (probeTimer >= probeDuration)
+            Probe();
         
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -55,6 +75,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (Input.GetKeyDown(KeyCode.W))
         {
             StartAnalyze();
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            StartProbing();
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -104,7 +128,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// <param name="go">Gameobject set to be new target</param>
     public void SetTarget(GameObject go)
     {
-        target = go;
+        if (!workInProgress)
+            target = go;
     }
 
     /// <summary>
@@ -115,12 +140,14 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (!workInProgress)
         {
             workInProgress = true;
-            discoverCount = true;
+            discoverInProgress = true;
 
             string msg = "Started discovering" + ((target != null) ? " on: "  + target.name : "");
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-            uiScript.UpdateInfo(msg);
+            uiScript.UpdateProgressbar(discoverTimer, discoverDuration, "Discover", "Discovering new locations..");
+            //uiScript.UpdateInfo(msg);
+            uiScript.ToggleProgressbar(true);
         }
     }
 
@@ -135,12 +162,14 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
                 return;
 
             workInProgress = true;
-            analyzeCount = true;
+            analyzeInProgress = true;
 
             string msg = "Started analyzing on: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-            uiScript.UpdateInfo(msg);
+            uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration, "Analyze", "Analyzing " + target.name);
+            //uiScript.UpdateInfo(msg);
+            uiScript.ToggleProgressbar(true);
         }
     }
 
@@ -164,7 +193,26 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Started attack of type: " + go.GetComponent<Attack>().attackType + ", on: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-            uiScript.UpdateInfo(msg);
+            //uiScript.UpdateInfo(msg);
+        }
+    }
+
+
+    public void StartProbing()
+    {
+        if (!workInProgress)
+        {
+            if (target == null)
+                return;
+            
+            workInProgress = true;
+            probeInProgress = true;
+
+            string msg = "Started probing: " + target.name;
+
+            MessagingManager.BroadcastMessage(new LoggingMessage(target.name, name, MessageTypes.Logging.LOG, msg));
+            uiScript.UpdateProgressbar(probeTimer, probeDuration, "Probe", "Probing " + target.name);
+            uiScript.ToggleProgressbar(true);
         }
     }
 
@@ -174,7 +222,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// </summary>
     public void Discover()
     {
-        discoverCount = false;
+        discoverInProgress = false;
         discoverTimer = 0f;
         
         int currentDepth = -1;
@@ -198,10 +246,18 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// </summary>
     public void Analyze()
     {
-        analyzeCount = false;
+        analyzeInProgress = false;
         analyzeTimer = 0f;
         
         MessagingManager.BroadcastMessage(new AnalyzeMessage(target.name, name, MessageTypes.Game.ANALYZE, analyzeProbability));
+    }
+
+    public void Probe()
+    {
+        probeInProgress = false;
+        probeTimer = 0f;
+
+        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.PROBE));
     }
 
     /// <summary>
@@ -226,7 +282,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         }
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-        uiScript.UpdateInfo(msg);
+        //uiScript.UpdateInfo(msg);
+        uiScript.ToggleProgressbar(false);
     }
 
     /// <summary>
@@ -254,7 +311,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             }
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-            uiScript.UpdateInfo(msg);
+            //uiScript.UpdateInfo(msg);
+            uiScript.ToggleProgressbar(false);
         }
     }
 
@@ -271,6 +329,17 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         string msg = "Attack response: " + ((message.success) ? "Success" : "Failed");
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-        uiScript.UpdateInfo(msg);
+        //uiScript.UpdateInfo(msg);
+        uiScript.ToggleProgressbar(false);
+    }
+
+    public void OnProbeResponse(ProbeResponseMessage message)
+    {
+        workInProgress = false;
+
+        string msg = "Probe response: devices - " + message.numOfChildren + ", difficulty - " + message.difficulty;
+        MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+
+        uiScript.ToggleProgressbar(false);
     }
 }

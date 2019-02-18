@@ -30,9 +30,18 @@ public class Attack : MonoBehaviour, IAttackResponse
     public GameObject target;
     [HideInInspector]
     public float probability;
-
+    
     private float timer = 0f;
     private bool triggered = false;
+
+    private AttackerUI uiScript;
+
+    public void Start()
+    {
+        uiScript = FindObjectOfType<AttackerUI>();
+        uiScript.ToggleProgressbar(true);
+        uiScript.UpdateProgressbar(timer, duration, "Attacking", "Attacking " + target.name);
+    }
 
     /// <summary>
     /// Automatically starts counting once the gameobject is created.
@@ -44,6 +53,8 @@ public class Attack : MonoBehaviour, IAttackResponse
 
         if (timer >= duration && !triggered)
             Effect();
+
+        uiScript.UpdateProgressbar(timer, duration, "Attacking", "Attacking " + target.name);
     }
 
     /// <summary>

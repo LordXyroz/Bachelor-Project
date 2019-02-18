@@ -82,6 +82,22 @@ public static class MessagingManager
                     break;
                 }
 
+            case MessageTypes.Game.PROBE:
+                {
+                    var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IProbe>();
+                    foreach (var o in objects)
+                        o.OnProbe(message);
+                    break;
+                }
+
+            case MessageTypes.Game.PROBE_RESPONSE:
+                {
+                    var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IProbeResponse>();
+                    foreach (var o in objects)
+                        o.OnProbeResponse((ProbeResponseMessage) message);
+                    break;
+                }
+
             case MessageTypes.Logging.LOG:
                 {
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<ILogging>();

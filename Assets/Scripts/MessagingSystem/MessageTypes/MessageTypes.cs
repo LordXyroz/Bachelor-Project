@@ -49,6 +49,8 @@ namespace MessageTypes
         public const ushort DISCOVER_RESPONSE = offset + 6;
         public const ushort ANALYZE = offset + 7;
         public const ushort ANALYZE_RESPONE = offset + 8;
+        public const ushort PROBE = offset + 9;
+        public const ushort PROBE_RESPONSE = offset + 10;
     }
 
     [System.Serializable]

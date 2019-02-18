@@ -10,7 +10,7 @@ using UnityEngine.UI;
 /// Tweak the lists in the Inspector tab in the Unity Editor to customize vulnerabilities,
 /// and available defenses that can be bought on to it.
 /// </summary>
-public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, IDiscover, IAnalyze
+public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, IDiscover, IAnalyze, IProbe
 {
     [Header("Lists")]
     public List<AttackTypes> vulnerabilities;
@@ -168,5 +168,13 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             MessagingManager.BroadcastMessage(new AnalyzeResponeMessage(message.senderName, name, MessageTypes.Game.ANALYZE_RESPONE, vulnList));
         }
 
+    }
+
+    public void OnProbe(Message message)
+    {
+        if (message.targetName == name)
+        {
+            MessagingManager.BroadcastMessage(new ProbeResponseMessage(message.senderName, name, MessageTypes.Game.PROBE_RESPONSE, children.Count, difficulty));
+        }
     }
 }
