@@ -130,6 +130,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                     visible = true;
                     list.Add(this);
                 }
+                MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
             }
             else if (message.targetName == name)
             {
@@ -141,8 +142,8 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                         child.visible = true;
                     }
                 }
+                MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
             }
-            MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
         }
     }
 

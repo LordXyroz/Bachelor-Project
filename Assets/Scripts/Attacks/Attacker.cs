@@ -132,7 +132,13 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     public void SetTarget(GameObject go)
     {
         if (!workInProgress)
+        {
             target = go;
+
+            AttackerInfo i = info.Find(x => x.component.name == go.name);
+            if (i != null)
+                uiScript.PopulateInfoPanel(i);
+        }
     }
 
     /// <summary>
@@ -275,6 +281,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         AttackerInfo i = info.Find(x => x.component.name == message.senderName);
 
+
         if (i != null)
             i.beenDiscoveredOn = true;
         
@@ -295,6 +302,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         //uiScript.UpdateInfo(msg);
         uiScript.ToggleProgressbar(false, "", "");
+        uiScript.PopulateInfoPanel(info.Find(x => x.component.name == message.senderName));
     }
 
     /// <summary>
@@ -331,6 +339,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
             //uiScript.UpdateInfo(msg);
             uiScript.ToggleProgressbar(false, "", "");
+            uiScript.PopulateInfoPanel(i);
         }
     }
 
@@ -365,5 +374,6 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
 
         uiScript.ToggleProgressbar(false, "", "");
+        uiScript.PopulateInfoPanel(i);
     }
 }

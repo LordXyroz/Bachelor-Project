@@ -26,8 +26,8 @@ public class AttackerInfo
         beenAnalyzed = false;
         beenDiscoveredOn = false;
 
-        numOfVulnerabilities = 0;
-        numOfChildren = 0;
-        difficulty = 0;
+        numOfVulnerabilities = -1;
+        numOfChildren = -1;
+        difficulty = -1;
     }
 }

@@ -1,18 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
+using System.Collections.Generic;
 
 public class AttackerUI : MonoBehaviour
 {
-    [Header("Target field")]
-    public Text targetText;
-
-    [Header("Info field")]
-    public GameObject infoStaticText;
-    public GameObject infoTextObject;
-    public Text infoText;
-
     [Header("Progressbar")]
     public GameObject progressbarObject;
     public Image progressbar;
@@ -22,16 +14,36 @@ public class AttackerUI : MonoBehaviour
     [Header("OnClickMenu")]
     public GameObject onClickMenu;
 
-    public void ChangeTarget(GameObject go)
-    {
-        targetText.text = go.name;
-    }
+    [Header("InfoPanel")]
+    public GameObject infoPanel;
+    public GameObject infoPanelArea;
+    public Text targetText;
+    public Text probeText;
+    public Text analyzeText;
+    public Text discoverText;
+    public Text difficultyText;
+    public Text nodesText;
+    public Text numVulnText;
+    public GameObject vulnPrefab;
 
-    public void UpdateInfo(string text)
+    [Header("AttackPanel")]
+    public GameObject attackPanel;
+    public GameObject attackPanelArea;
+    public GameObject attackButtonPrefab;
+
+    public void Start()
     {
-        infoStaticText.SetActive(true);
-        infoTextObject.SetActive(true);
-        infoText.text = text;
+        List<AttackTypes> attacks = VulnerabilityPairings.GetAllAttacks();
+        foreach (var a in attacks)
+        {
+            GameObject go = Instantiate(attackButtonPrefab, attackPanelArea.transform);
+
+            go.GetComponentInChildren<Text>().text = VulnerabilityPairings.GetAttackString(a);
+            go.GetComponent<Button>().onClick.AddListener(() => FindObjectOfType<Attacker>().StartAttack((int) a - 1));
+            go.GetComponent<Button>().onClick.AddListener(DisableAttackPanel);
+        }
+
+        Debug.Log(GetComponentsInChildren<Transform>().Length);
     }
 
     public void UpdateProgressbar(float value, float max)
@@ -58,5 +70,46 @@ public class AttackerUI : MonoBehaviour
         onClickMenu.SetActive(false);
     }
     
+    public void PopulateInfoPanel(AttackerInfo info)
+    {
+        infoPanel.SetActive(true);
+
+        foreach (Transform child in infoPanelArea.transform)
+            if (child.CompareTag("VulnBox"))
+                Destroy(child.gameObject);
+
+        targetText.text = info.component.name;
+        probeText.text = (info.beenProbed) ? "Yes" : "No";
+        analyzeText.text = (info.beenAnalyzed) ? "Yes" : "No";
+        discoverText.text = (info.beenDiscoveredOn) ? "Yes" : "No";
+
+        difficultyText.text = (info.difficulty == -1) ? "Unknown" : info.difficulty.ToString();
+        nodesText.text = (info.numOfChildren == -1) ? "Unknown" : info.numOfChildren.ToString();
+        numVulnText.text = (info.numOfVulnerabilities == -1) ? "Unknown" : info.numOfVulnerabilities.ToString();
+
+        foreach (var v in info.vulnerabilities)
+        {
+            GameObject go = Instantiate(vulnPrefab, infoPanelArea.transform);
+            Text t = go.GetComponentsInChildren<Text>().First(x => x.CompareTag("VarText"));
+            t.text = VulnerabilityPairings.GetAttackString(v);
+        }
+    }
+
+    public void DisableInfoPanel()
+    {
+        infoPanel.SetActive(false);
+    }
+
+    public void EnableAttackPanel()
+    {
+        attackPanel.SetActive(true);
+        infoPanel.SetActive(false);
+    }
+
+    public void DisableAttackPanel()
+    {
+        attackPanel.SetActive(false);
+        infoPanel.SetActive(true);
+    }
 }
  
