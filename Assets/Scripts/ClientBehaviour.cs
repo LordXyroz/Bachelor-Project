@@ -342,6 +342,7 @@ public class ClientBehaviour
                     data = data.Substring(data.IndexOf("<Match>") + 7, data.Length - (data.IndexOf("<Match>") + 7));
 
                     /// Receives hostname:
+                    nm.playerNames[0].SetActive(true);
                     nm.playerNames[0].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<HostName>"));
                     data = data.Substring(data.IndexOf("<HostName>") + 10, data.Length - (data.IndexOf("<HostName>") + 10));
 
@@ -351,7 +352,9 @@ public class ClientBehaviour
                     {
                         nm.playerNames[i].SetActive(true);
                         nm.playerNames[i].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<PlayerName>"));
-                        data = data.Substring(data.IndexOf("<PlayerName>") + 12, data.Length - (data.IndexOf("<PlayerName>") + 12));
+
+                        int offsetPosition = data.IndexOf("<PlayerName>") + 12;
+                        data = data.Substring(offsetPosition, data.Length - offsetPosition);
                         i++;
                     }
                     /// TODO set the rest of the playerNames.active to false.

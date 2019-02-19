@@ -252,23 +252,24 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void RemovePlayerAtPosition(int listNr)
     {
-        /// listNr gives the number in list after host(Host is always nr.1).
-
-        /*if (listNr == 0)
+        Debug.Log("listNr" + listNr);
+        Debug.Log("listcount: " + playerNames.Count);
+        /// Move one above in list to the one below: (Will overwrite position of where wanted player to be removed is.)
+        while (listNr < playerNames.Count - 1)
         {
-            if (playerName2.activeSelf && playerName3.activeSelf)
+            /// Check if next in list is used.
+            if (playerNames[listNr + 1].activeSelf)
             {
-                playerName2.transform.Find("Text").GetComponent<Text>().text = playerName3.transform.Find("Text").GetComponent<Text>().text;
+                playerNames[listNr].transform.Find("Text").GetComponent<Text>().text = playerNames[listNr + 1].transform.Find("Text").GetComponent<Text>().text;
             }
             else
             {
-                playerName2.SetActive(false);
+                /// Remove unused position in list:
+                playerNames[listNr].SetActive(false);
+                break;
             }
+            listNr++;
         }
-        else if (listNr == 1)
-        {
-            playerName3.SetActive(false);
-        }*/
     }
 
     /// <summary>

@@ -256,13 +256,12 @@ public class ServerBehaviour
                                 /// Add new client to list of players in lobby:
                                 data = data.Substring(0, data.Length - 12);
                                 GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(data);
-                                Debug.Log("something");
                                 /// Send info back to client just connected about the lobby.
                                 NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                                 string message = nm.matchName + "<Match>";
                                 message += nm.userName + "<HostName>";
-                                Debug.Log("Came further now!");
-                                int j = 0;
+                                /// Host uses index 0, other clients starts at 1.
+                                int j = 1;
                                 while (nm.playerNames[j].activeSelf)
                                 {
                                     message += nm.playerNames[j].transform.Find("Text").GetComponent<Text>().text + "<PlayerName>";
@@ -313,7 +312,7 @@ public class ServerBehaviour
                             Debug.Log("Server - Disconnecting client...");
 
                             /// Remove client that disconnected from list of people who ARE indeed connected.
-                            GameObject.Find("GameManager").GetComponent<NetworkingManager>().RemovePlayerAtPosition(i);
+                            GameObject.Find("GameManager").GetComponent<NetworkingManager>().RemovePlayerAtPosition(i + 1);
 
 
                             // This connection no longer exist, remove it from the list
