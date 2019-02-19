@@ -115,7 +115,6 @@ public class SelectedObject : MonoBehaviour
                         oldSelected = selected;
                         selected = null;
                         connectionStarted = false;
-                        Debug.Log("Same selected line, resetting selection visuals: " + newSelected);
                         return;
                     }
 
@@ -192,7 +191,6 @@ public class SelectedObject : MonoBehaviour
             systemComponentsToObject = selected.GetComponent<SystemComponent>();
             if (systemComponentsToObject != null)
             {
-                Debug.Log("SelectedObject dropped outside delete field: " + systemComponentsToObject.name);
                 systemComponentsToObject.DeleteSystemComponent();
             }
             else

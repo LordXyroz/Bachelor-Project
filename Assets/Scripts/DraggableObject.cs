@@ -48,8 +48,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         /// Only selectable if it is located in the SystemSetupScreen editor area
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
         {
-            // TODO Adjust dragging for connection lines
-
             if (this.GetComponent<Image>() != null)
             {
                 objectSelect.SelectObject(this.gameObject, true, true);
@@ -69,7 +67,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         offset = (Vector2)this.transform.position - eventData.position;
         GetComponent<CanvasGroup>().blocksRaycasts = false;
-
     }
 
 
@@ -114,10 +111,5 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 objectSelect.DeleteSelectedObject();
             }
         }
-        /// delete the game object if it is placed outside the drop zone
-        //else if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
-        //{
-        //    Destroy(this.gameObject);
-        //}
     }
 }

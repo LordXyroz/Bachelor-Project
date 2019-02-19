@@ -16,11 +16,11 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     [Header("Visual properties for this object")]
     public GameObject selectionBox;
+    public Sprite spriteDefault;
+    public Sprite spriteHighlight;
     private Image image;
     private Image[] images;
     private Color originalColor;
-    public Sprite spriteDefault;
-    public Sprite spriteHighlight;
 
     [Header("The text displayed at the bottom of the screen for this object")]
     public string tooltipText;
@@ -50,7 +50,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("Pointer enter: Name: " + eventData.pointerCurrentRaycast.gameObject.name);
         if (image != null)  // Component
         {
             image.color = Color.red;
@@ -60,9 +59,12 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
             foreach (Image img in images)   // Connection lines
             {
                 img.color = Color.red;
+                img.transform.parent.SetParent(GameObject.Find("Connections").transform);
+                img.transform.parent.SetAsLastSibling();
             }
         }
         currentToolTipText.text = tooltipText;
+
     }
 
 
@@ -78,6 +80,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 img.color = originalColor;
             }
+            objectSelect.selected.transform.SetAsLastSibling();
         }
         currentToolTipText.text = "";
     }
@@ -87,29 +90,18 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
 
         /// Only selectable if it is located in the SystemSetupScreen editor area
-        if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
+        if (this.transform.parent.gameObject.GetComponent<DropZone>() != null
+            || this.transform.parent.parent.gameObject.GetComponent<DropZone>() != null)
         {
-            /// Only selectable if it is located in the SystemSetupScreen editor area
-            if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
+            if (image != null)
             {
-                if (image != null)
-                {
-                    objectSelect.SelectObject(this.gameObject, false, true);
-                }
-                else
-                {
-                    objectSelect.SelectObject(this.gameObject, false, false);
-                }
+                objectSelect.SelectObject(this.gameObject, false, true);
+            }
+            else
+            {
+                objectSelect.SelectObject(this.gameObject, false, false);
             }
         }
 
     }
-
-
-    /*void ClearSelection()
-    {
-        image.sprite = spriteDefault;
-        image.material = default;
-        selectionBox.SetActive(false);
-    }*/
 }
