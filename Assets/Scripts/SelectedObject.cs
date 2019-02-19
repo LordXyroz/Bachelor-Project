@@ -163,7 +163,7 @@ public class SelectedObject : MonoBehaviour
         {
             GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
             connectionLineClone.transform.position = oldSelected.transform.position;
-            connectionLineClone.transform.SetParent(oldSelected.transform.parent);
+            connectionLineClone.transform.SetParent(GameObject.Find("Connections").transform);
             connectionLineClone.transform.SetAsFirstSibling();
 
             connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();

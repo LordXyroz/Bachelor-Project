@@ -59,7 +59,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
             foreach (Image img in images)   // Connection lines
             {
                 img.color = Color.red;
-                img.transform.parent.SetParent(GameObject.Find("Connections").transform);
                 img.transform.parent.SetAsLastSibling();
             }
         }
@@ -80,7 +79,10 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 img.color = originalColor;
             }
-            objectSelect.selected.transform.SetAsLastSibling();
+            if (objectSelect.selected != null)
+            {
+                objectSelect.selected.transform.SetAsLastSibling();
+            }
         }
         currentToolTipText.text = "";
     }
