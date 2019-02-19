@@ -67,6 +67,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             probeTimer += Time.deltaTime;
             uiScript.UpdateProgressbar(probeTimer, probeDuration);
         }
+
+        if (probeTimer >= probeDuration)
+            Probe();
     }
 
     /// <summary>
@@ -206,11 +209,15 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         MessagingManager.BroadcastMessage(new AnalyzeMessage(target.name, name, MessageTypes.Game.ANALYZE, analyzeProbability));
     }
 
+    /// <summary>
+    /// Sends a probe message.
+    /// Rests timers/bools.
+    /// </summary>
     public void Probe()
     {
         probeInProgress = false;
         probeTimer = 0f;
-
+        Debug.Log("Probe triggered!");
         MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.PROBE));
     }
 
@@ -291,7 +298,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// <summary>
     /// From the IAttackResponse interface.
     /// 
-    /// Listens to a MessageTypes.Events.ATTACK_RESPONSE
+    /// Listens to a MessageTypes.Game.ATTACK_RESPONSE
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
     public void AttackResponse(SuccessMessage message)
@@ -308,7 +315,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// <summary>
     /// From the IProbeResponse interface.
     /// 
-    /// Listens to a MessageTypes.Events.PROBE_RESPONSE.
+    /// Listens to a MessageTypes.Game.PROBE_RESPONSE.
     /// Updates the NodeInfo for the sender.
     /// </summary>
     /// <param name="message">Message containing the relevant info to be handled by the function</param>
