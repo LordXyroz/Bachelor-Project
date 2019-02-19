@@ -20,7 +20,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private AttackerUI uiScript;
 
     [SerializeField]
-    private List<AttackerInfo> info = new List<AttackerInfo>();
+    private List<NodeInfo> info = new List<NodeInfo>();
 
     private int discoverDuration = 3;
     private float discoverTimer = 0f;
@@ -67,62 +67,6 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             probeTimer += Time.deltaTime;
             uiScript.UpdateProgressbar(probeTimer, probeDuration);
         }
-
-        if (probeTimer >= probeDuration)
-            Probe();
-        
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            StartDiscover();
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            StartAnalyze();
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            StartProbing();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            StartAttack(0);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            StartAttack(1);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            StartAttack(2);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            StartAttack(3);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            StartAttack(4);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            StartAttack(5);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha7))
-        {
-            StartAttack(6);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha8))
-        {
-            StartAttack(7);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            StartAttack(8);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha0))
-        {
-            StartAttack(9);
-        }
     }
 
     /// <summary>
@@ -135,7 +79,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         {
             target = go;
 
-            AttackerInfo i = info.Find(x => x.component.name == go.name);
+            NodeInfo i = info.Find(x => x.component.name == go.name);
             if (i != null)
                 uiScript.PopulateInfoPanel(i);
         }
@@ -154,8 +98,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Started discovering" + ((target != null) ? " on: "  + target.name : "");
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+
             uiScript.UpdateProgressbar(discoverTimer, discoverDuration);
-            //uiScript.UpdateInfo(msg);
             uiScript.ToggleProgressbar(true, "Discover", "Discovering new locations..");
         }
     }
@@ -176,8 +120,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Started analyzing on: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+
             uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration);
-            //uiScript.UpdateInfo(msg);
             uiScript.ToggleProgressbar(true, "Analyze", "Analyzing " + target.name);
         }
     }
@@ -202,11 +146,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Started attack of type: " + go.GetComponent<Attack>().attackType + ", on: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-            //uiScript.UpdateInfo(msg);
         }
     }
 
-
+    /// <summary>
+    /// Function to be hooked up to a button. Starts probing a target.
+    /// </summary>
     public void StartProbing()
     {
         if (!workInProgress)
@@ -279,7 +224,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         workInProgress = false;
 
-        AttackerInfo i = info.Find(x => x.component.name == message.senderName);
+        NodeInfo i = info.Find(x => x.component.name == message.senderName);
 
 
         if (i != null)
@@ -295,12 +240,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             foreach (var entry in message.discovered)
             {
                 msg += entry.name + ", ";
-                info.Add(new AttackerInfo(entry.gameObject));
+                info.Add(new NodeInfo(entry.gameObject));
             }
         }
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-        //uiScript.UpdateInfo(msg);
+        
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.PopulateInfoPanel(info.Find(x => x.component.name == message.senderName));
     }
@@ -318,7 +263,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         {
             workInProgress = false;
 
-            AttackerInfo i = info.Find(x => x.component.name == message.senderName);
+            NodeInfo i = info.Find(x => x.component.name == message.senderName);
             i.beenAnalyzed = true;
 
             string msg = "Analyze response: ";
@@ -337,7 +282,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             }
             
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-            //uiScript.UpdateInfo(msg);
+            
             uiScript.ToggleProgressbar(false, "", "");
             uiScript.PopulateInfoPanel(i);
         }
@@ -356,15 +301,22 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         string msg = "Attack response: " + ((message.success) ? "Success" : "Failed");
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
-        //uiScript.UpdateInfo(msg);
+
         uiScript.ToggleProgressbar(false, "", "");
     }
 
+    /// <summary>
+    /// From the IProbeResponse interface.
+    /// 
+    /// Listens to a MessageTypes.Events.PROBE_RESPONSE.
+    /// Updates the NodeInfo for the sender.
+    /// </summary>
+    /// <param name="message">Message containing the relevant info to be handled by the function</param>
     public void OnProbeResponse(ProbeResponseMessage message)
     {
         workInProgress = false;
 
-        AttackerInfo i = info.Find(x => x.component.name == message.senderName);
+        NodeInfo i = info.Find(x => x.component.name == message.senderName);
         i.beenProbed = true;
         i.numOfVulnerabilities = message.numOfVulnerabilities;
         i.numOfChildren = message.numOfChildren;

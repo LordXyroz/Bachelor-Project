@@ -31,6 +31,9 @@ public class AttackerUI : MonoBehaviour
     public GameObject attackPanelArea;
     public GameObject attackButtonPrefab;
 
+    /// <summary>
+    /// Builds the list of attack buttons for the attack panel at start based on localization strings
+    /// </summary>
     public void Start()
     {
         List<AttackTypes> attacks = VulnerabilityPairings.GetAllAttacks();
@@ -46,11 +49,22 @@ public class AttackerUI : MonoBehaviour
         Debug.Log(GetComponentsInChildren<Transform>().Length);
     }
 
+    /// <summary>
+    /// Fills the progressbar an amount based on current and max value
+    /// </summary>
+    /// <param name="value">Current value</param>
+    /// <param name="max">Max value</param>
     public void UpdateProgressbar(float value, float max)
     {
         progressbar.fillAmount = value / max;
     }
 
+    /// <summary>
+    /// Enables/Disables the progressbar popup, and sets the texts to display.
+    /// </summary>
+    /// <param name="toggle">Whether to enable or disable</param>
+    /// <param name="title">Title text</param>
+    /// <param name="text">Info text</param>
     public void ToggleProgressbar(bool toggle, string title, string text)
     {
         progressbarObject.SetActive(toggle);
@@ -59,18 +73,31 @@ public class AttackerUI : MonoBehaviour
         progressbarText.text = text;
     }
 
+    /// <summary>
+    /// Toggles the OnClick menu, and moves it to a target position
+    /// </summary>
+    /// <param name="toggle">Whether to enable or disable</param>
+    /// <param name="pos">Position to move to</param>
     public void ToggleOnClickMenu(bool toggle, Vector3 pos)
     {
         onClickMenu.SetActive(toggle);
         onClickMenu.GetComponent<RectTransform>().localPosition = pos;
     }
 
+    /// <summary>
+    /// Disables the OnClick menu
+    /// </summary>
     public void DisableOnClickMenu()
     {
         onClickMenu.SetActive(false);
     }
     
-    public void PopulateInfoPanel(AttackerInfo info)
+    /// <summary>
+    /// Populates the info panel with new info.
+    /// Removes old vulnerability entries with new ones.
+    /// </summary>
+    /// <param name="info">Class containing the info to be displayed</param>
+    public void PopulateInfoPanel(NodeInfo info)
     {
         infoPanel.SetActive(true);
 
@@ -95,17 +122,26 @@ public class AttackerUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Disables the info panel.
+    /// </summary>
     public void DisableInfoPanel()
     {
         infoPanel.SetActive(false);
     }
 
+    /// <summary>
+    /// Enables the attack panel and disables info panel.
+    /// </summary>
     public void EnableAttackPanel()
     {
         attackPanel.SetActive(true);
         infoPanel.SetActive(false);
     }
 
+    /// <summary>
+    /// Disables the attack panel and enables info panel.
+    /// </summary>
     public void DisableAttackPanel()
     {
         attackPanel.SetActive(false);

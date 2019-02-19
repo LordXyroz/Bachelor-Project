@@ -20,7 +20,6 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     [Header("Variables")]
     [Range(1f, 5f)]
     public int difficulty = 1;
-    private bool visible = false;
 
     [SerializeField]
     private GameObject uiElement;
@@ -33,16 +32,16 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     public int graphDepth;
     public List<GameNetworkComponent> children;
 
+    /// <summary>
+    /// Sets up the OnClick of the button attached to this object.
+    /// </summary>
     public void Start()
     {
         RectTransform rectTransform = GetComponent<RectTransform>();
         Vector3 pos = new Vector3(rectTransform.localPosition.x + rectTransform.rect.height * 1.5f, rectTransform.localPosition.y);
         uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
-    }
 
-    public void Update()
-    {
-        uiElement.SetActive(visible);
+        uiElement.SetActive(false);
     }
 
     /// <summary>
@@ -125,9 +124,9 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
 
             if (message.targetName == "")
             {
-                if (!visible)
+                if (!uiElement.activeSelf)
                 {
-                    visible = true;
+                    uiElement.SetActive(true);
                     list.Add(this);
                 }
                 MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
@@ -136,10 +135,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             {
                 foreach (var child in children)
                 {
-                    if (child.visible == false && Random.Range(0f, 1f) < (message.probability * (1f / difficulty)))
+                    if (!child.uiElement.activeSelf == false && Random.Range(0f, 1f) < (message.probability * (1f / difficulty)))
                     {
                         list.Add(child);
-                        child.visible = true;
+                        child.uiElement.SetActive(true);
                     }
                 }
                 MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
@@ -180,6 +179,12 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
 
     }
 
+    /// <summary>
+    /// From the IProbe interface
+    /// 
+    /// Sends a message with relevant probing information.
+    /// </summary>
+    /// <param name="message">Message containing relevant info to be handled by the function</param>
     public void OnProbe(Message message)
     {
         if (message.targetName == name)

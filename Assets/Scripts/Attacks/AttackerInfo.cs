@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+/// <summary>
+/// Class containing relevant info for the attacker about a network node that is discovered.
+/// 
+/// </summary>
 [System.Serializable]
-public class AttackerInfo
+public class NodeInfo
 {
     public GameObject component;
 
@@ -16,7 +20,12 @@ public class AttackerInfo
     public int numOfChildren;
     public int difficulty;
 
-    public AttackerInfo(GameObject target = null)
+    /// <summary>
+    /// Default constructor that should be used.
+    /// Sets up initial values for a newly discovered node.
+    /// </summary>
+    /// <param name="target">The node that's been discovered</param>
+    public NodeInfo(GameObject target)
     {
         component = target;
         
