@@ -15,7 +15,7 @@ public class AttackerUI : MonoBehaviour
     public GameObject onClickMenu;
 
     [Header("InfoPanel")]
-    public GameObject infoPanel;
+    public GameObject infoPanelObject;
     public GameObject infoPanelArea;
     public Text targetText;
     public Text probeText;
@@ -27,9 +27,18 @@ public class AttackerUI : MonoBehaviour
     public GameObject vulnPrefab;
 
     [Header("AttackPanel")]
-    public GameObject attackPanel;
+    public GameObject attackPanelObject;
     public GameObject attackPanelArea;
     public GameObject attackButtonPrefab;
+
+    [Header("PopupWindow")]
+    public GameObject popupWindowObject;
+    public Text popupWindowTitle;
+    public Text popupWindowText;
+
+    [Header("DefaultWindow")]
+    public GameObject defaultPanelObject;
+    
 
     /// <summary>
     /// Builds the list of attack buttons for the attack panel at start based on localization strings
@@ -43,10 +52,8 @@ public class AttackerUI : MonoBehaviour
 
             go.GetComponentInChildren<Text>().text = VulnerabilityPairings.GetAttackString(a);
             go.GetComponent<Button>().onClick.AddListener(() => FindObjectOfType<Attacker>().StartAttack((int) a - 1));
-            go.GetComponent<Button>().onClick.AddListener(DisableAttackPanel);
+            go.GetComponent<Button>().onClick.AddListener(EnableInfoPanel);
         }
-
-        Debug.Log(GetComponentsInChildren<Transform>().Length);
     }
 
     /// <summary>
@@ -99,7 +106,7 @@ public class AttackerUI : MonoBehaviour
     /// <param name="info">Class containing the info to be displayed</param>
     public void PopulateInfoPanel(NodeInfo info)
     {
-        infoPanel.SetActive(true);
+        EnableInfoPanel();
 
         foreach (Transform child in infoPanelArea.transform)
             if (child.CompareTag("VulnBox"))
@@ -122,12 +129,26 @@ public class AttackerUI : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Disables the info panel.
-    /// </summary>
-    public void DisableInfoPanel()
+    public void TogglePopupWindow(bool toggle, string title, string text)
     {
-        infoPanel.SetActive(false);
+        popupWindowObject.SetActive(toggle);
+
+        popupWindowTitle.text = title;
+        popupWindowText.text = text;
+    }
+
+    public void EnableDefaultPanel()
+    {
+        defaultPanelObject.SetActive(true);
+        attackPanelObject.SetActive(false);
+        infoPanelObject.SetActive(false);
+    }
+
+    public void EnableInfoPanel()
+    {
+        defaultPanelObject.SetActive(false);
+        attackPanelObject.SetActive(false);
+        infoPanelObject.SetActive(true);
     }
 
     /// <summary>
@@ -135,17 +156,9 @@ public class AttackerUI : MonoBehaviour
     /// </summary>
     public void EnableAttackPanel()
     {
-        attackPanel.SetActive(true);
-        infoPanel.SetActive(false);
-    }
-
-    /// <summary>
-    /// Disables the attack panel and enables info panel.
-    /// </summary>
-    public void DisableAttackPanel()
-    {
-        attackPanel.SetActive(false);
-        infoPanel.SetActive(true);
+        defaultPanelObject.SetActive(false);
+        attackPanelObject.SetActive(true);
+        infoPanelObject.SetActive(false);
     }
 }
  

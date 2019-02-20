@@ -71,7 +71,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                             if (VulnerabilityPairings.IsStoppedBy(message.attack, def))
                                 isVulnerable = false;
                         }
-                        if (Random.Range(0f, 1f) < message.probability * (1f / difficulty))
+                        if (Random.Range(0f, 1f) <= message.probability - (0.8f *  (difficulty / 5f - 0.2f)))
                             isVulnerable = false;
                     }
                 }
@@ -135,7 +135,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             {
                 foreach (var child in children)
                 {
-                    if (!child.uiElement.activeSelf == false && Random.Range(0f, 1f) < (message.probability * (1f / difficulty)))
+                    if (!child.uiElement.activeSelf && Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
                     {
                         list.Add(child);
                         child.uiElement.SetActive(true);
@@ -163,7 +163,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             {
                 bool vulnerable = false;
 
-                if (Random.Range(0f, 1f) < message.probability * (1f / difficulty))
+                if (Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
                     vulnerable = true;
 
                 foreach (var def in implementedDefenses)

@@ -36,9 +36,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
     private bool workInProgress = false;
 
-    private float attackProbability = 0.4f;
+    private float attackProbability = 0.6f;
     private float analyzeProbability = 0.6f;
-    private float discoverProbability = 0.6f;
+    private float discoverProbability = 0.8f;
 
     // Update is called once per frame
     void Update()
@@ -86,6 +86,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             if (i != null)
                 uiScript.PopulateInfoPanel(i);
         }
+    }
+
+    public void ClearTarget()
+    {
+        if (!workInProgress)
+            target = null;
     }
 
     /// <summary>
@@ -310,6 +316,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
 
         uiScript.ToggleProgressbar(false, "", "");
+        uiScript.TogglePopupWindow(true, "Attack", "Attack was: " + ((message.success) ? "success" : "stopped"));
     }
 
     /// <summary>
