@@ -22,23 +22,52 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     [SerializeField]
     private List<NodeInfo> info = new List<NodeInfo>();
 
+    [Header("Discovery variables")]
+    [SerializeField]
+    private int discoverLevel = 1;
+    [SerializeField]
+    private float discoverProbability = 0.8f;
+    [SerializeField]
+    private int discoverUpgradeDuration = 10;
+    private float discoverUpgradeTimer = 0f;
+    private bool discoverUpgrading = false;
+
     private int discoverDuration = 3;
     private float discoverTimer = 0f;
     private bool discoverInProgress = false;
+
+    [Header("Analysis variables")]
+    [SerializeField]
+    private int analyzeLevel = 1;
+    [SerializeField]
+    private float analyzeProbability = 0.7f;
+    [SerializeField]
+    private int analyzeUpgradeDuration = 10;
+    private float analyzeUpgradeTimer = 0f;
+    private bool analyzeUpgrading = false;
 
     private int analyzeDuration = 10;
     private float analyzeTimer = 0f;
     private bool analyzeInProgress = false;
 
+    [Header("Probing variables")]
     private int probeDuration = 3;
     private float probeTimer = 0f;
     private bool probeInProgress = false;
 
-    private bool workInProgress = false;
-
+    [Header("Attack variables")]
+    [SerializeField]
+    private int attackLevel = 1;
+    [SerializeField]
     private float attackProbability = 0.6f;
-    private float analyzeProbability = 0.6f;
-    private float discoverProbability = 0.8f;
+    [SerializeField]
+    private int attackUpgradeDuration = 10;
+    private float attackUpgradeTimer = 0f;
+    private bool attackUpgrading = false;
+
+    [Header("General variables")]
+    private bool workInProgress = false;
+    
 
     // Update is called once per frame
     void Update()
@@ -70,6 +99,33 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         if (probeTimer >= probeDuration)
             Probe();
+
+        if (attackUpgrading)
+        {
+            attackUpgradeTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(attackUpgradeTimer, attackUpgradeDuration);
+        }
+
+        if (attackUpgradeTimer >= attackUpgradeDuration)
+            UpgradeAttack();
+
+        if (analyzeUpgrading)
+        {
+            analyzeUpgradeTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(analyzeUpgradeTimer, analyzeUpgradeDuration);
+        }
+
+        if (analyzeUpgradeTimer >= analyzeUpgradeDuration)
+            UpgradeAnalyze();
+
+        if (discoverUpgrading)
+        {
+            discoverUpgradeTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(discoverUpgradeTimer, discoverUpgradeDuration);
+        }
+
+        if (discoverUpgradeTimer >= discoverUpgradeDuration)
+            UpgradeDiscover();
     }
 
     /// <summary>
@@ -101,6 +157,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         if (!workInProgress)
         {
+            if (uiScript.popupWindowObject.activeSelf)
+                return;
+
             workInProgress = true;
             discoverInProgress = true;
 
@@ -121,6 +180,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (!workInProgress)
         {
             if (target == null)
+                return;
+
+            if (uiScript.popupWindowObject.activeSelf)
                 return;
 
             workInProgress = true;
@@ -146,6 +208,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             if (target == null)
                 return;
 
+            if (uiScript.popupWindowObject.activeSelf)
+                return;
+
             workInProgress = true;
 
             var go = Instantiate(attackPrefabs[id]);
@@ -167,7 +232,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         {
             if (target == null)
                 return;
-            
+
+            if (uiScript.popupWindowObject.activeSelf)
+                return;
+
             workInProgress = true;
             probeInProgress = true;
 
@@ -246,7 +314,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         string msg = "Discover response: ";
 
         if (message.discovered.Count == 0)
+        {
             msg += "nothing discovered";
+            uiScript.TogglePopupWindow(true, "Failure", "No new locations found.");
+        }
         else
         {
             msg += "discovered - ";
@@ -255,12 +326,13 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
                 msg += entry.name + ", ";
                 info.Add(new NodeInfo(entry.gameObject));
             }
+            uiScript.TogglePopupWindow(true, "Success!", "New locations have been revealed!");
         }
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
         
         uiScript.ToggleProgressbar(false, "", "");
-        uiScript.PopulateInfoPanel(info.Find(x => x.component.name == message.senderName));
+        //uiScript.PopulateInfoPanel(info.Find(x => x.component.name == message.senderName));
     }
 
     /// <summary>
@@ -282,16 +354,30 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             string msg = "Analyze response: ";
 
             if (message.attacks.Count == 0)
+            {
                 msg += "no vulnerabilities found";
+                if (i.vulnerabilities.Count == 0)
+                    uiScript.TogglePopupWindow(true, "Failure", "No vulnerabilties found");
+                else
+                    uiScript.TogglePopupWindow(true, "Failure", "No new vulnerabilties found");
+            }
             else
             {
                 msg += "found - ";
+                bool foundNew = false;
                 foreach (var entry in message.attacks)
                 {
                     msg += entry + ", ";
                     if (!i.vulnerabilities.Contains(entry))
+                    {
                         i.vulnerabilities.Add(entry);
+                        foundNew = true;
+                    }
                 }
+                if (foundNew)
+                    uiScript.TogglePopupWindow(true, "Success!", "New vulnerabilities have been revealed!");
+                else
+                    uiScript.TogglePopupWindow(true, "Failure", "No new vulnerabilties found");
             }
             
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
@@ -340,6 +426,91 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
 
         uiScript.ToggleProgressbar(false, "", "");
+        uiScript.TogglePopupWindow(true, "Success!", "Info on " + message.senderName + " found!");
         uiScript.PopulateInfoPanel(i);
+    }
+
+    public void StartAttackUpgrade()
+    {
+        if (attackLevel >= 3)
+            return;
+        
+        if (!workInProgress)
+        {
+            workInProgress = true;
+            attackUpgrading = true;
+
+            uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Attacks");
+        }
+    }
+
+    public void StartAnalyzeUpgrade()
+    {
+        if (analyzeLevel >= 3)
+            return;
+
+        if (!workInProgress)
+        {
+            workInProgress = true;
+            analyzeUpgrading = true;
+
+            uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Analysis");
+        }
+    }
+    
+    public void StartDiscoverUpgrade()
+    {
+        if (discoverLevel >= 3)
+            return;
+
+        if (!workInProgress)
+        {
+            workInProgress = true;
+            discoverUpgrading = true;
+
+            uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Discovery");
+        }
+    }
+    
+    public void UpgradeAttack()
+    {
+        attackLevel++;
+        attackProbability += 0.32f;
+
+        attackUpgrading = false;
+        attackUpgradeDuration += 10;
+        attackUpgradeTimer = 0f;
+
+        uiScript.ToggleProgressbar(false, "", "");
+        uiScript.TogglePopupWindow(true, "Success!", "Attacks now upgraded to level: " + attackLevel);
+        workInProgress = false;
+    }
+
+    public void UpgradeDiscover()
+    {
+        discoverLevel++;
+        discoverProbability += 0.32f;
+
+        discoverUpgrading = false;
+        discoverUpgradeDuration += 10;
+        discoverUpgradeTimer = 0f;
+
+        uiScript.ToggleProgressbar(false, "", "");
+        uiScript.TogglePopupWindow(true, "Success!", "Discovery now upgraded to level: " + discoverLevel);
+        workInProgress = false;
+    }
+
+    public void UpgradeAnalyze()
+    {
+        analyzeLevel++;
+        analyzeProbability += 0.32f;
+
+        analyzeUpgrading = false;
+        analyzeUpgradeDuration += 10;
+        analyzeUpgradeTimer = 0f;
+
+        uiScript.ToggleProgressbar(false, "", "");
+        uiScript.TogglePopupWindow(true, "Success!", "Analysis now upgraded to level: " + analyzeLevel);
+        workInProgress = false;
     }
 }

@@ -39,6 +39,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     {
         RectTransform rectTransform = GetComponent<RectTransform>();
         Vector3 pos = new Vector3(rectTransform.localPosition.x + rectTransform.rect.height * 1.5f, rectTransform.localPosition.y);
+        uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
         uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
 
         uiElement.SetActive(false);
@@ -71,7 +72,8 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                             if (VulnerabilityPairings.IsStoppedBy(message.attack, def))
                                 isVulnerable = false;
                         }
-                        if (Random.Range(0f, 1f) <= message.probability - (0.8f *  (difficulty / 5f - 0.2f)))
+                      
+                        if (!(Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f))))
                             isVulnerable = false;
                     }
                 }
@@ -135,7 +137,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             {
                 foreach (var child in children)
                 {
-                    if (!child.uiElement.activeSelf && Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
+                    if (!child.uiElement.activeSelf && (Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f))))
                     {
                         list.Add(child);
                         child.uiElement.SetActive(true);

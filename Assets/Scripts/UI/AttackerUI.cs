@@ -56,6 +56,21 @@ public class AttackerUI : MonoBehaviour
         }
     }
 
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (onClickMenu.activeSelf)
+                onClickMenu.SetActive(false);
+            else if (popupWindowObject.activeSelf)
+                popupWindowObject.SetActive(false);
+            else if (infoPanelObject.activeSelf)
+                EnableDefaultPanel();
+            else if (attackPanelObject.activeSelf)
+                EnableInfoPanel();
+        }
+    }
+
     /// <summary>
     /// Fills the progressbar an amount based on current and max value
     /// </summary>
@@ -87,6 +102,9 @@ public class AttackerUI : MonoBehaviour
     /// <param name="pos">Position to move to</param>
     public void ToggleOnClickMenu(bool toggle, Vector3 pos)
     {
+        if (popupWindowObject.activeSelf || progressbarObject.activeSelf)
+            return;
+
         onClickMenu.SetActive(toggle);
         onClickMenu.GetComponent<RectTransform>().localPosition = pos;
     }
@@ -159,6 +177,11 @@ public class AttackerUI : MonoBehaviour
         defaultPanelObject.SetActive(false);
         attackPanelObject.SetActive(true);
         infoPanelObject.SetActive(false);
+    }
+
+    public void DisablePopupWindow()
+    {
+        popupWindowObject.SetActive(false);
     }
 }
  

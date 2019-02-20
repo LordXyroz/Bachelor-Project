@@ -39,7 +39,7 @@ public class Attack : MonoBehaviour, IAttackResponse
     public void Start()
     {
         uiScript = FindObjectOfType<AttackerUI>();
-        uiScript.ToggleProgressbar(true, "Attacking", "Attacking " + target.name);
+        uiScript.ToggleProgressbar(true, "Attacking", description + " on: " + target.name);
         uiScript.UpdateProgressbar(timer, duration);
     }
 

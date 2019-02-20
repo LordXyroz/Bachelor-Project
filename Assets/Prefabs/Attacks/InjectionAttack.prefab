@@ -47,3 +47,5 @@ MonoBehaviour:
   duration: 10
   description: Send an Injection Attack
   attackType: 1
+  target: {fileID: 0}
+  probability: 0
