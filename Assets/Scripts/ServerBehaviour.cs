@@ -272,23 +272,25 @@ public class ServerBehaviour
                                 }
 
                                 writer.Write(Encoding.ASCII.GetBytes(message + "<Connected>"));
-                                /// Send a message back to the client, so it is known that connection is secured.
+                                /// Send a message back to the client, with information about the connection.
                                 m_ServerDriver.Send(m_connections[i], writer);
 
 
                                 /// Send another message to all other clients that this client has connected:
+                                var connectionWriter = new DataStreamWriter(150, Allocator.Temp);
                                 message = data + "<ClientConnect>";
-                                writer.Write(Encoding.ASCII.GetBytes(message));
+                                connectionWriter.Write(Encoding.ASCII.GetBytes(message));
                                 
-                                for (int k = 0; k <= j; k++)
+                                for (int k = 0; k < m_connections.Length; k++)
                                 {
                                     /// Send message to client as long as it is not the connected one.
                                     if (k != i)
                                     {
                                         Debug.Log("Sending message to client that someone connected!");
-                                        m_ServerDriver.Send(m_connections[i], writer);
+                                        m_ServerDriver.Send(m_connections[k], connectionWriter);
                                     }
                                 }
+                                connectionWriter.Dispose();
                             }
                             else if (data.Contains("<ChatMessage>"))
                             {
