@@ -250,7 +250,7 @@ public class NetworkingManager : MonoBehaviour
     /// <summary>
     /// When a player leaves the lobby their name is removed from the list.
     /// </summary>
-    public void RemovePlayerAtPosition(int listNr)
+    public void RemovePlayerAtPosition(int listNr)  /// TODO, make this work correctly!
     {
         Debug.Log("listNr" + listNr);
         Debug.Log("listcount: " + playerNames.Count);
@@ -283,25 +283,6 @@ public class NetworkingManager : MonoBehaviour
 
         playerNames[i].SetActive(true);
         playerNames[i].transform.Find("Text").GetComponent<Text>().text = newName;
-
-
-        /*if (playerName2.activeSelf)
-        {
-            if (playerName2.transform.Find("Text").GetComponent<Text>().text == "" || playerName2.transform.Find("Text").GetComponent<Text>().text == null)
-            {
-                playerName2.transform.Find("Text").GetComponent<Text>().text = newName;
-            }
-            else
-            {
-                playerName3.SetActive(true);
-                playerName3.transform.Find("Text").GetComponent<Text>().text = newName;
-            }
-        }
-        else
-        {
-            playerName2.SetActive(true);
-            playerName2.transform.Find("Text").GetComponent<Text>().text = newName;
-        }*/
     }
 
 

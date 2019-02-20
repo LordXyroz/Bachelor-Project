@@ -122,7 +122,8 @@ public class ServerBehaviour
         }
         catch (SocketException e)
         {
-            Debug.Log("SocketException: " + e);
+            /// When host wants to close connection there will be sent a block call to WSACancelBlockingCall causing an wanted exception. Debug for testing.
+            /// Debug.Log("SocketException: " + e);
         }
         finally
         {
@@ -256,22 +257,38 @@ public class ServerBehaviour
                                 /// Add new client to list of players in lobby:
                                 data = data.Substring(0, data.Length - 12);
                                 GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(data);
+
                                 /// Send info back to client just connected about the lobby.
                                 NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                                 string message = nm.matchName + "<Match>";
                                 message += nm.userName + "<HostName>";
+
                                 /// Host uses index 0, other clients starts at 1.
                                 int j = 1;
-                                while (nm.playerNames[j].activeSelf)
+                                while (j < nm.playerNames.Count && nm.playerNames[j].activeSelf)
                                 {
                                     message += nm.playerNames[j].transform.Find("Text").GetComponent<Text>().text + "<PlayerName>";
                                     j++;
                                 }
 
                                 writer.Write(Encoding.ASCII.GetBytes(message + "<Connected>"));
-
                                 /// Send a message back to the client, so it is known that connection is secured.
                                 m_ServerDriver.Send(m_connections[i], writer);
+
+
+                                /// Send another message to all other clients that this client has connected:
+                                message = data + "<ClientConnect>";
+                                writer.Write(Encoding.ASCII.GetBytes(message));
+                                
+                                for (int k = 0; k <= j; k++)
+                                {
+                                    /// Send message to client as long as it is not the connected one.
+                                    if (k != i)
+                                    {
+                                        Debug.Log("Sending message to client that someone connected!");
+                                        m_ServerDriver.Send(m_connections[i], writer);
+                                    }
+                                }
                             }
                             else if (data.Contains("<ChatMessage>"))
                             {

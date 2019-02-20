@@ -11,6 +11,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 public class ClientBehaviour
 {
@@ -56,10 +57,29 @@ public class ClientBehaviour
         m_ClientDriver.Dispose();
     }
 
-
-    public void FindHost()
+    /// <summary>
+    /// Get ipaddress for pc this function is run on.
+    /// </summary>
+    /// <returns></returns>
+    public static string GetLocalIPAddress()
     {
-        string server = "10.22.210.138";
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                return ip.ToString();
+            }
+        }
+        throw new Exception("No network adapters with an IPv4 address in the system!");
+    }
+
+
+    public void FindHost(string ip)// TODO change to use ip instead of setting server= ip
+    {
+        //string server = "10.22.210.138";
+        string server = ip;
+
         // TODO use arp -a to get all possible server ips...
         string message = "Connecting bro :)";
         try
@@ -113,23 +133,7 @@ public class ClientBehaviour
         }
     }
 
-    /*void Start()
-    {
-        /// Makes sure that the client updates connection every now and then to not lose connection;
-        /// Client will lose connection if pursuing actions that gives that effect.
-        StartCoroutine(UpdateConnection());
-
-        /// Set values to default.
-        connect = false;
-        m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
-        m_clientToServerConnection = default;
-        m_clientWantsConnection = false;
-        
-    }*/
-
-
-
-
+   
 
     public void Disconnect(List<GameObject> messageTexts)
     {
@@ -166,6 +170,39 @@ public class ClientBehaviour
         }
     }
 
+    private List<string> FindIPs()
+    {
+        List<string> results = new List<string>();
+
+        using (System.Diagnostics.Process p = new System.Diagnostics.Process())
+        {
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.Arguments = "/c arp -a";
+            p.StartInfo.FileName = @"C:\Windows\System32\cmd.exe";
+            p.Start();
+
+            string line;
+
+            while ((line = p.StandardOutput.ReadLine()) != null)
+            {
+                if (line != "" && !line.Contains("Interface") && !line.Contains("Physical Address"))
+                {
+                    var lineArr = line.Trim().Split(' ').Select(n => n).Where(n => !string.IsNullOrEmpty(n)).ToArray();
+                    var arrResult = lineArr[0];
+                    results.Add(arrResult);
+                }
+            }
+
+            p.WaitForExit();
+        }
+
+        /// Add ip address for own pc for testing purposes.
+        results.Add(GetLocalIPAddress());
+        return results;
+    }
+
 
     /// <summary>
     /// WaitForHost is a routine where the client searches for a host until one is found, or the client stops the connecting.
@@ -190,10 +227,21 @@ public class ClientBehaviour
             connectionText.text = "Connecting..";
             yield return new WaitForSeconds(0.15f);
             connectionText.text = "Connecting...";
+
+            List<string> ips = FindIPs();
             
-            /// Get IP of host that wants to serve a match.
-            Task setupHostIp = Task.Run(FindHost);
-            setupHostIp.Wait();
+            /// Go through possible ips.
+            for (int i = 0; i < ips.Count; i++)
+            {
+                /// Get IP of host that wants to serve a match.
+                Task setupHostIp = Task.Run(() => FindHost(ips[i]));
+                setupHostIp.Wait();
+                if (ServerEndPoint.IsValid)
+                {
+                    break;
+                }
+            }
+            
             try
             {
                 /// Connect to host if one is found and connection isn't already made.
@@ -375,6 +423,12 @@ public class ClientBehaviour
                 {
                     data = data.Substring(0, data.Length - 10);
                     Debug.Log("Client - got scenario: " + data);
+                }
+                else if (data.Contains("<ClientConnect>"))
+                {
+                    NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
+                    /// Add new client connected to list of players in lobby:
+                    nm.AddPlayerName(data.Substring(0, data.IndexOf("<ClientConnect>")));
                 }
                 else if (data.Contains("<Disconnect>"))
                 {
