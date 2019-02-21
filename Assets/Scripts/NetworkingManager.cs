@@ -5,6 +5,7 @@ using System.Threading;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -22,6 +23,7 @@ public class NetworkingManager : MonoBehaviour
     public bool isSpectator;
     public GameObject chatField;
     public GameObject connectionField;
+    public GameObject gameField;
 
 
     /// <summary>
@@ -56,7 +58,36 @@ public class NetworkingManager : MonoBehaviour
         chatField = GameObject.Find("ChatField");
         chatField.SetActive(false);
 
+        gameField = GameObject.Find("GameField");
+        gameField.SetActive(false);
+
         GameObject.Find("UserNameInputField").GetComponent<InputField>().onValueChanged.AddListener(delegate { ValueChangeCheck(); });
+    }
+
+    /// <summary>
+    /// This will start the gameplay scene when all clients in a lobby is ready.
+    /// </summary>
+    public void StartGame()
+    {
+        /// TODO check for enough players in lobby.
+        
+        /// Open game view:
+        gameField.SetActive(true);
+        /// Close lobby view:
+        chatField.SetActive(false);
+        SceneManager.LoadScene("TestScene", LoadSceneMode.Additive);
+    }
+
+    /// <summary>
+    /// This will exit the gameplay and go back to before-lobby view.
+    /// </summary>
+    public void ExitGame()
+    {
+        /// Close game view:
+        gameField.SetActive(false);
+        /// Open connection view:
+        connectionField.SetActive(true);
+        SceneManager.UnloadSceneAsync("TestScene");
     }
 
     /// <summary>
