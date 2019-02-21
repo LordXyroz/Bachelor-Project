@@ -31,13 +31,20 @@ public class AttackerUI : MonoBehaviour
     public GameObject attackPanelArea;
     public GameObject attackButtonPrefab;
 
-    [Header("PopupWindow")]
+    [Header("Popup window")]
     public GameObject popupWindowObject;
     public Text popupWindowTitle;
     public Text popupWindowText;
 
-    [Header("DefaultWindow")]
-    public GameObject defaultPanelObject;
+    [Header("Stats window")]
+    public GameObject statsPanelObject;
+    public Text statsResourcesText;
+    public Text statsAttackLvlText;
+    public Text statsAnalyzeLvlText;
+    public Text statsDiscoverLvlText;
+
+    [Header("Actions window")]
+    public GameObject actionsPanelObject;
 
     [Header("Tooltip")]
     public GameObject tooltipObject;
@@ -70,7 +77,7 @@ public class AttackerUI : MonoBehaviour
             else if (popupWindowObject.activeSelf)
                 popupWindowObject.SetActive(false);
             else if (infoPanelObject.activeSelf)
-                EnableDefaultPanel();
+                EnableStatsPanel();
             else if (attackPanelObject.activeSelf)
                 EnableInfoPanel();
         }
@@ -160,20 +167,24 @@ public class AttackerUI : MonoBehaviour
         popupWindowObject.SetActive(toggle);
     }
 
-    public void EnableDefaultPanel()
+    public void EnableStatsPanel()
     {
         DisableToolTip();
-        defaultPanelObject.SetActive(true);
-        attackPanelObject.SetActive(false);
+        statsPanelObject.SetActive(true);
+
         infoPanelObject.SetActive(false);
+        attackPanelObject.SetActive(false);
+        actionsPanelObject.SetActive(false);
     }
 
     public void EnableInfoPanel()
     {
         DisableToolTip();
-        defaultPanelObject.SetActive(false);
-        attackPanelObject.SetActive(false);
         infoPanelObject.SetActive(true);
+
+        statsPanelObject.SetActive(false);
+        attackPanelObject.SetActive(false);
+        actionsPanelObject.SetActive(false);
     }
 
     /// <summary>
@@ -182,9 +193,21 @@ public class AttackerUI : MonoBehaviour
     public void EnableAttackPanel()
     {
         DisableToolTip();
-        defaultPanelObject.SetActive(false);
         attackPanelObject.SetActive(true);
+
         infoPanelObject.SetActive(false);
+        statsPanelObject.SetActive(false);
+        actionsPanelObject.SetActive(false);
+    }
+
+    public void EnableActionPanel()
+    {
+        DisableToolTip();
+        actionsPanelObject.SetActive(true);
+
+        infoPanelObject.SetActive(false);
+        statsPanelObject.SetActive(false);
+        attackPanelObject.SetActive(false);
     }
 
     public void DisablePopupWindow()
@@ -196,10 +219,10 @@ public class AttackerUI : MonoBehaviour
     {
         tooltipText.text = text;
 
-        float xWidth = (rect.width / 2f);
+        float xOffset = (rect.width / 2f);
         if (pos.x >= Screen.width / 2f)
         {
-            xWidth = (xWidth * -1);
+            xOffset = (xOffset * -1);
             tooltipFrameTransform.pivot = new Vector2(1f, 0.5f);
         }
         else
@@ -207,8 +230,7 @@ public class AttackerUI : MonoBehaviour
             tooltipFrameTransform.pivot = new Vector2(0f, 0.5f);
         }
         
-        Vector2 newPos = new Vector2(pos.x + xWidth, pos.y);
-        
+        Vector2 newPos = new Vector2(pos.x + xOffset, pos.y - rect.height);
         
         tooltipObject.GetComponent<RectTransform>().position = newPos;
         tooltipObject.SetActive(true);
@@ -217,6 +239,14 @@ public class AttackerUI : MonoBehaviour
     public void DisableToolTip()
     {
         tooltipObject.SetActive(false);
+    }
+
+    public void UpdateStats(int res, int attackLvl, int analyzeLvl, int discoverLvl)
+    {
+        statsResourcesText.text = res + " GB";
+        statsAttackLvlText.text = "Level - " + attackLvl;
+        statsAnalyzeLvlText.text = "Level - " + analyzeLvl;
+        statsDiscoverLvlText.text = "Level - " + discoverLvl;
     }
 }
  

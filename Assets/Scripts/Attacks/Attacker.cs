@@ -482,6 +482,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Success!", "Attacks now upgraded to level: " + attackLevel);
+        uiScript.UpdateStats(0, attackLevel, analyzeLevel, discoverLevel);
         workInProgress = false;
     }
 
@@ -496,6 +497,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Success!", "Discovery now upgraded to level: " + discoverLevel);
+        uiScript.UpdateStats(0, attackLevel, analyzeLevel, discoverLevel);
         workInProgress = false;
     }
 
@@ -510,6 +512,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Success!", "Analysis now upgraded to level: " + analyzeLevel);
+        uiScript.UpdateStats(0, attackLevel, analyzeLevel, discoverLevel);
         workInProgress = false;
     }
 }
