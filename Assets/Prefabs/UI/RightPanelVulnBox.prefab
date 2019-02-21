@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: 9206297301378267575}
   - component: {fileID: 6162118502952511665}
   - component: {fileID: 3840008635071115485}
+  - component: {fileID: 8067660207686499819}
   m_Layer: 5
   m_Name: RightPanelVulnBox
   m_TagString: VulnBox
@@ -155,6 +156,19 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &8067660207686499819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5523697044473413109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Vulnerability
 --- !u!1 &6294334294929297611
 GameObject:
   m_ObjectHideFlags: 0

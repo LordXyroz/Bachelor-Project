@@ -9,9 +9,8 @@ using UnityEngine;
 /// Handles the attacker's controls and capabilities.
 /// </summary>
 public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAttackResponse, IProbeResponse
-{
-    [SerializeField]
-    private GameObject[] attackPrefabs;
+{ 
+    public GameObject[] attackPrefabs;
 
     [SerializeField]
     private GameObject target;
@@ -402,7 +401,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
 
         uiScript.ToggleProgressbar(false, "", "");
-        uiScript.TogglePopupWindow(true, "Attack", "Attack was: " + ((message.success) ? "success" : "stopped"));
+        uiScript.TogglePopupWindow(true, "Attack", "Attack was " + ((message.success) ? "successful" : "stopped"));
     }
 
     /// <summary>

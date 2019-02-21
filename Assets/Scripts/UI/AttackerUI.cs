@@ -38,7 +38,11 @@ public class AttackerUI : MonoBehaviour
 
     [Header("DefaultWindow")]
     public GameObject defaultPanelObject;
-    
+
+    [Header("Tooltip")]
+    public GameObject tooltipObject;
+    public RectTransform tooltipFrameTransform;
+    public Text tooltipText;    
 
     /// <summary>
     /// Builds the list of attack buttons for the attack panel at start based on localization strings
@@ -51,8 +55,9 @@ public class AttackerUI : MonoBehaviour
             GameObject go = Instantiate(attackButtonPrefab, attackPanelArea.transform);
 
             go.GetComponentInChildren<Text>().text = VulnerabilityPairings.GetAttackString(a);
-            go.GetComponent<Button>().onClick.AddListener(() => FindObjectOfType<Attacker>().StartAttack((int) a - 1));
+            go.GetComponent<Button>().onClick.AddListener(() => FindObjectOfType<Attacker>().StartAttack((int)a - 1));
             go.GetComponent<Button>().onClick.AddListener(EnableInfoPanel);
+            go.AddComponent<PointerHandler>().tooltipInfo = FindObjectOfType<Attacker>().attackPrefabs[(int)a - 1].GetComponent<Attack>().description;
         }
     }
 
@@ -89,10 +94,10 @@ public class AttackerUI : MonoBehaviour
     /// <param name="text">Info text</param>
     public void ToggleProgressbar(bool toggle, string title, string text)
     {
-        progressbarObject.SetActive(toggle);
-
         progressbarTitle.text = title;
         progressbarText.text = text;
+
+        progressbarObject.SetActive(toggle);
     }
 
     /// <summary>
@@ -124,8 +129,6 @@ public class AttackerUI : MonoBehaviour
     /// <param name="info">Class containing the info to be displayed</param>
     public void PopulateInfoPanel(NodeInfo info)
     {
-        EnableInfoPanel();
-
         foreach (Transform child in infoPanelArea.transform)
             if (child.CompareTag("VulnBox"))
                 Destroy(child.gameObject);
@@ -145,18 +148,21 @@ public class AttackerUI : MonoBehaviour
             Text t = go.GetComponentsInChildren<Text>().First(x => x.CompareTag("VarText"));
             t.text = VulnerabilityPairings.GetAttackString(v);
         }
+
+        EnableInfoPanel();
     }
 
     public void TogglePopupWindow(bool toggle, string title, string text)
     {
-        popupWindowObject.SetActive(toggle);
-
         popupWindowTitle.text = title;
         popupWindowText.text = text;
+
+        popupWindowObject.SetActive(toggle);
     }
 
     public void EnableDefaultPanel()
     {
+        DisableToolTip();
         defaultPanelObject.SetActive(true);
         attackPanelObject.SetActive(false);
         infoPanelObject.SetActive(false);
@@ -164,6 +170,7 @@ public class AttackerUI : MonoBehaviour
 
     public void EnableInfoPanel()
     {
+        DisableToolTip();
         defaultPanelObject.SetActive(false);
         attackPanelObject.SetActive(false);
         infoPanelObject.SetActive(true);
@@ -174,6 +181,7 @@ public class AttackerUI : MonoBehaviour
     /// </summary>
     public void EnableAttackPanel()
     {
+        DisableToolTip();
         defaultPanelObject.SetActive(false);
         attackPanelObject.SetActive(true);
         infoPanelObject.SetActive(false);
@@ -182,6 +190,33 @@ public class AttackerUI : MonoBehaviour
     public void DisablePopupWindow()
     {
         popupWindowObject.SetActive(false);
+    }
+
+    public void EnableToolTip(string text, Vector2 pos, Rect rect)
+    {
+        tooltipText.text = text;
+
+        float xWidth = (rect.width / 2f);
+        if (pos.x >= Screen.width / 2f)
+        {
+            xWidth = (xWidth * -1);
+            tooltipFrameTransform.pivot = new Vector2(1f, 0.5f);
+        }
+        else
+        {
+            tooltipFrameTransform.pivot = new Vector2(0f, 0.5f);
+        }
+        
+        Vector2 newPos = new Vector2(pos.x + xWidth, pos.y);
+        
+        
+        tooltipObject.GetComponent<RectTransform>().position = newPos;
+        tooltipObject.SetActive(true);
+    }
+
+    public void DisableToolTip()
+    {
+        tooltipObject.SetActive(false);
     }
 }
  

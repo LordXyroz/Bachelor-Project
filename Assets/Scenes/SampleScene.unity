@@ -393,6 +393,7 @@ GameObject:
   - component: {fileID: 82118913}
   - component: {fileID: 82118912}
   - component: {fileID: 82118911}
+  - component: {fileID: 82118914}
   m_Layer: 5
   m_Name: RightPanelDefaultDiscover
   m_TagString: Untagged
@@ -460,6 +461,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 231441333}
+        m_MethodName: DisablePopupWindow
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1480980484}
         m_MethodName: StartDiscover
         m_Mode: 1
@@ -510,6 +522,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 82118909}
   m_CullTransparentMesh: 0
+--- !u!114 &82118914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82118909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Discovers root nodes
 --- !u!1 &82757276
 GameObject:
   m_ObjectHideFlags: 0
@@ -606,6 +631,7 @@ GameObject:
   - component: {fileID: 134494338}
   - component: {fileID: 134494340}
   - component: {fileID: 134494339}
+  - component: {fileID: 134494341}
   m_Layer: 5
   m_Name: RightPanelDiscoveredBox
   m_TagString: Untagged
@@ -671,6 +697,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 134494337}
   m_CullTransparentMesh: 0
+--- !u!114 &134494341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134494337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: If you have discovered on the node
 --- !u!1 &143641687
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,6 +772,7 @@ GameObject:
   - component: {fileID: 161961271}
   - component: {fileID: 161961270}
   - component: {fileID: 161961269}
+  - component: {fileID: 161961272}
   m_Layer: 5
   m_Name: OnClickMenuDiscoverButton
   m_TagString: Untagged
@@ -822,6 +862,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 231441333}
+        m_MethodName: DisableToolTip
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &161961270
@@ -861,6 +912,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 161961267}
   m_CullTransparentMesh: 0
+--- !u!114 &161961272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161961267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Start discovering nodes attached to this node
 --- !u!1 &197406063
 GameObject:
   m_ObjectHideFlags: 0
@@ -1234,7 +1298,7 @@ GameObject:
   - component: {fileID: 231441332}
   - component: {fileID: 231441333}
   m_Layer: 5
-  m_Name: AttackerScreenTemp
+  m_Name: AttackerScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1258,6 +1322,7 @@ RectTransform:
   - {fileID: 810622315}
   - {fileID: 1109951464}
   - {fileID: 981363057}
+  - {fileID: 2049524950}
   m_Father: {fileID: 2104840893}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1302,6 +1367,9 @@ MonoBehaviour:
   popupWindowTitle: {fileID: 1756265215}
   popupWindowText: {fileID: 1978180737}
   defaultPanelObject: {fileID: 1043722154}
+  tooltipObject: {fileID: 2049524949}
+  tooltipFrameTransform: {fileID: 1616511937}
+  tooltipText: {fileID: 1478323733}
 --- !u!1 &234278441
 GameObject:
   m_ObjectHideFlags: 0
@@ -1577,6 +1645,7 @@ GameObject:
   - component: {fileID: 352892292}
   - component: {fileID: 352892291}
   - component: {fileID: 352892290}
+  - component: {fileID: 352892293}
   m_Layer: 5
   m_Name: OnClickMenuProbeButton
   m_TagString: Untagged
@@ -1666,6 +1735,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 231441333}
+        m_MethodName: DisableToolTip
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &352892291
@@ -1705,6 +1785,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 352892288}
   m_CullTransparentMesh: 0
+--- !u!114 &352892293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352892288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Probe the node for basic information
 --- !u!1 &357589744 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2522408413776009009, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
@@ -1740,6 +1833,7 @@ GameObject:
   - component: {fileID: 447378499}
   - component: {fileID: 447378501}
   - component: {fileID: 447378500}
+  - component: {fileID: 447378502}
   m_Layer: 5
   m_Name: RightPanelNumVulnBox
   m_TagString: Untagged
@@ -1805,6 +1899,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 447378498}
   m_CullTransparentMesh: 0
+--- !u!114 &447378502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447378498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Number of vunlerabilities
 --- !u!1 &478959386
 GameObject:
   m_ObjectHideFlags: 0
@@ -1816,6 +1923,7 @@ GameObject:
   - component: {fileID: 478959387}
   - component: {fileID: 478959389}
   - component: {fileID: 478959388}
+  - component: {fileID: 478959390}
   m_Layer: 5
   m_Name: RightPanelAnalyzedBox
   m_TagString: Untagged
@@ -1881,6 +1989,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 478959386}
   m_CullTransparentMesh: 0
+--- !u!114 &478959390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478959386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: If you have analyzed the node
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -2063,6 +2184,7 @@ GameObject:
   - component: {fileID: 523954299}
   - component: {fileID: 523954301}
   - component: {fileID: 523954300}
+  - component: {fileID: 523954302}
   m_Layer: 5
   m_Name: RightPanelTargetBox
   m_TagString: Untagged
@@ -2128,6 +2250,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523954298}
   m_CullTransparentMesh: 0
+--- !u!114 &523954302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523954298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Name of targeted node
 --- !u!1 &539150991
 GameObject:
   m_ObjectHideFlags: 0
@@ -2251,6 +2386,7 @@ GameObject:
   - component: {fileID: 545147448}
   - component: {fileID: 545147447}
   - component: {fileID: 545147446}
+  - component: {fileID: 545147449}
   m_Layer: 5
   m_Name: OnClickMenuAttackButton
   m_TagString: Untagged
@@ -2340,6 +2476,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 231441333}
+        m_MethodName: DisableToolTip
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &545147447
@@ -2379,6 +2526,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 545147444}
   m_CullTransparentMesh: 0
+--- !u!114 &545147449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 545147444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Send an attack to the node
 --- !u!1001 &553607485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3302,6 +3462,7 @@ GameObject:
   - component: {fileID: 835841603}
   - component: {fileID: 835841605}
   - component: {fileID: 835841604}
+  - component: {fileID: 835841606}
   m_Layer: 5
   m_Name: RightPanelNodesBox
   m_TagString: Untagged
@@ -3367,6 +3528,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 835841602}
   m_CullTransparentMesh: 0
+--- !u!114 &835841606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 835841602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Number of connected nodes
 --- !u!1 &840193673
 GameObject:
   m_ObjectHideFlags: 0
@@ -4173,6 +4347,7 @@ GameObject:
   - component: {fileID: 1069389160}
   - component: {fileID: 1069389159}
   - component: {fileID: 1069389158}
+  - component: {fileID: 1069389161}
   m_Layer: 5
   m_Name: RightPanelDefaultUpgradeAttack
   m_TagString: Untagged
@@ -4240,8 +4415,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 231441333}
+        m_MethodName: DisablePopupWindow
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1480980484}
-        m_MethodName: StartAttackUpgrade
+        m_MethodName: StartAnalyzeUpgrade
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4290,6 +4476,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1069389156}
   m_CullTransparentMesh: 0
+--- !u!114 &1069389161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069389156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Upgrade successrate of attacks
 --- !u!1 &1090205868
 GameObject:
   m_ObjectHideFlags: 0
@@ -5949,6 +6148,105 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1357825902}
   m_CullTransparentMesh: 0
+--- !u!1 &1367569305
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1367569306}
+  - component: {fileID: 1367569309}
+  - component: {fileID: 1367569308}
+  - component: {fileID: 1367569307}
+  m_Layer: 5
+  m_Name: TooltipBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1367569306
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1367569305}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1478323731}
+  m_Father: {fileID: 1616511937}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 148.5, y: -18}
+  m_SizeDelta: {x: 293, y: 32}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1367569307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1367569305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 5
+    m_Right: 5
+    m_Top: 5
+    m_Bottom: 5
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+--- !u!222 &1367569308
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1367569305}
+  m_CullTransparentMesh: 0
+--- !u!114 &1367569309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1367569305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.54901963, g: 0.54901963, b: 0.54901963, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
 --- !u!1 &1369167960
 GameObject:
   m_ObjectHideFlags: 0
@@ -6354,6 +6652,85 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 0
+--- !u!1 &1478323730
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1478323731}
+  - component: {fileID: 1478323734}
+  - component: {fileID: 1478323733}
+  m_Layer: 5
+  m_Name: TooltipText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1478323731
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1478323730}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1367569306}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 146.5, y: -16}
+  m_SizeDelta: {x: 283, y: 22}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1478323733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1478323730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 3
+    m_AlignByGeometry: 0
+    m_RichText: 0
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Hello everyone! This is a tooltip!
+--- !u!222 &1478323734
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1478323730}
+  m_CullTransparentMesh: 0
 --- !u!1 &1480980483
 GameObject:
   m_ObjectHideFlags: 0
@@ -6432,6 +6809,7 @@ GameObject:
   - component: {fileID: 1497504602}
   - component: {fileID: 1497504601}
   - component: {fileID: 1497504600}
+  - component: {fileID: 1497504603}
   m_Layer: 5
   m_Name: OnClickMenuAnalyzeButton
   m_TagString: Untagged
@@ -6521,6 +6899,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 231441333}
+        m_MethodName: DisableToolTip
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1497504601
@@ -6560,6 +6949,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1497504598}
   m_CullTransparentMesh: 0
+--- !u!114 &1497504603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1497504598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Analyze the node for vulnerabilities
 --- !u!1 &1503214042
 GameObject:
   m_ObjectHideFlags: 0
@@ -6572,6 +6974,7 @@ GameObject:
   - component: {fileID: 1503214046}
   - component: {fileID: 1503214045}
   - component: {fileID: 1503214044}
+  - component: {fileID: 1503214047}
   m_Layer: 5
   m_Name: RightPanelDefaultUpgradeAnalyze
   m_TagString: Untagged
@@ -6639,6 +7042,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 231441333}
+        m_MethodName: DisablePopupWindow
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1480980484}
         m_MethodName: StartAnalyzeUpgrade
         m_Mode: 1
@@ -6689,6 +7103,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1503214042}
   m_CullTransparentMesh: 0
+--- !u!114 &1503214047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503214042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Upgrades successrate of analysis
 --- !u!114 &1516500998 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
@@ -6964,6 +7391,120 @@ RectTransform:
   m_AnchoredPosition: {x: 100, y: 0}
   m_SizeDelta: {x: 200, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1616511936
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1616511937}
+  - component: {fileID: 1616511941}
+  - component: {fileID: 1616511940}
+  - component: {fileID: 1616511939}
+  - component: {fileID: 1616511938}
+  m_Layer: 5
+  m_Name: TooltipFrame
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1616511937
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616511936}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1367569306}
+  m_Father: {fileID: 2049524950}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -36}
+  m_SizeDelta: {x: 297, y: 36}
+  m_Pivot: {x: 0, y: 0}
+--- !u!114 &1616511938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616511936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 2
+    m_Right: 2
+    m_Top: 2
+    m_Bottom: 2
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+--- !u!114 &1616511939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616511936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1741964061, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
+--- !u!114 &1616511940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616511936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+--- !u!222 &1616511941
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616511936}
+  m_CullTransparentMesh: 0
 --- !u!1 &1630441792
 GameObject:
   m_ObjectHideFlags: 0
@@ -7668,6 +8209,7 @@ GameObject:
   - component: {fileID: 1778111160}
   - component: {fileID: 1778111159}
   - component: {fileID: 1778111158}
+  - component: {fileID: 1778111161}
   m_Layer: 5
   m_Name: RightPanelDefaultUpgradeDiscover
   m_TagString: Untagged
@@ -7735,6 +8277,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 231441333}
+        m_MethodName: DisablePopupWindow
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1480980484}
         m_MethodName: StartDiscoverUpgrade
         m_Mode: 1
@@ -7785,6 +8338,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1778111156}
   m_CullTransparentMesh: 0
+--- !u!114 &1778111161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778111156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: Upgrades successrate of discovery
 --- !u!114 &1785939646 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
@@ -7820,6 +8386,7 @@ GameObject:
   - component: {fileID: 1801550712}
   - component: {fileID: 1801550714}
   - component: {fileID: 1801550713}
+  - component: {fileID: 1801550715}
   m_Layer: 5
   m_Name: RightPanelDifficultyBox
   m_TagString: Untagged
@@ -7885,6 +8452,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1801550711}
   m_CullTransparentMesh: 0
+--- !u!114 &1801550715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1801550711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: How difficult it is to attack, analyze and discover on the node
 --- !u!1 &1822402714
 GameObject:
   m_ObjectHideFlags: 0
@@ -8470,6 +9050,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2049273418}
   m_CullTransparentMesh: 0
+--- !u!1 &2049524949
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2049524950}
+  m_Layer: 5
+  m_Name: TooltipObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &2049524950
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2049524949}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1616511937}
+  m_Father: {fileID: 231441332}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2090641674
 GameObject:
   m_ObjectHideFlags: 0
@@ -8481,6 +9097,7 @@ GameObject:
   - component: {fileID: 2090641675}
   - component: {fileID: 2090641677}
   - component: {fileID: 2090641676}
+  - component: {fileID: 2090641678}
   m_Layer: 5
   m_Name: RightPanelProbedBox
   m_TagString: Untagged
@@ -8546,6 +9163,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2090641674}
   m_CullTransparentMesh: 0
+--- !u!114 &2090641678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090641674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipInfo: If you have probed the node
 --- !u!1 &2104840889
 GameObject:
   m_ObjectHideFlags: 0
@@ -8613,7 +9243,7 @@ Canvas:
   m_GameObject: {fileID: 2104840889}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 519420031}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
