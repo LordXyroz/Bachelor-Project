@@ -260,16 +260,18 @@ public class NetworkingManager : MonoBehaviour
             /// Check if next in list is used.
             if (playerNames[listNr + 1].activeSelf)
             {
+                Debug.Log("changing text at position: " + listNr);
                 playerNames[listNr].transform.Find("Text").GetComponent<Text>().text = playerNames[listNr + 1].transform.Find("Text").GetComponent<Text>().text;
             }
             else
             {
-                /// Remove unused position in list:
-                playerNames[listNr].SetActive(false);
                 break;
             }
             listNr++;
         }
+        /// Remove last position in list that is no longer used.
+        Debug.Log("setting playername.active to false.");
+        playerNames[listNr].SetActive(false);
     }
 
     /// <summary>

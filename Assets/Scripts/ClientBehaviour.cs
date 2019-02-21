@@ -129,7 +129,8 @@ public class ClientBehaviour
         }
         catch (SocketException e)
         {
-            Debug.Log("SocketException:" + e);
+            /// Client will get socket exception when trying to ask other computers if they are hosting or not, and they don't answer yes.
+            /// Debug.Log("SocketException:" + e);
         }
     }
 
@@ -429,6 +430,13 @@ public class ClientBehaviour
                     NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                     /// Add new client connected to list of players in lobby:
                     nm.AddPlayerName(data.Substring(0, data.IndexOf("<ClientConnect>")));
+                }
+                else if (data.Contains("<ClientDisconnect>"))
+                {
+                    string position = data.Substring(0, data.IndexOf("<ClientDisconnect>"));
+                    /// Remove client that disconnected from list of people who ARE indeed connected.
+                    Debug.Log("removing other client");
+                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().RemovePlayerAtPosition(Int32.Parse(position));
                 }
                 else if (data.Contains("<Disconnect>"))
                 {

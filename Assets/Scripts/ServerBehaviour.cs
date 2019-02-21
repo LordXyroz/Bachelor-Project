@@ -286,7 +286,6 @@ public class ServerBehaviour
                                     /// Send message to client as long as it is not the connected one.
                                     if (k != i)
                                     {
-                                        Debug.Log("Sending message to client that someone connected!");
                                         m_ServerDriver.Send(m_connections[k], connectionWriter);
                                     }
                                 }
@@ -333,9 +332,24 @@ public class ServerBehaviour
                             /// Remove client that disconnected from list of people who ARE indeed connected.
                             GameObject.Find("GameManager").GetComponent<NetworkingManager>().RemovePlayerAtPosition(i + 1);
 
+                            /// Create writer to send message to other clients that client with connection i is disconnecting.
+                            var writer = new DataStreamWriter(100, Allocator.Temp);
 
-                            // This connection no longer exist, remove it from the list
-                            // The next iteration will operate on the new connection we swapped in so as long as it exist the loop can continue.
+                            writer.Write(Encoding.ASCII.GetBytes((i + 1).ToString() + "<ClientDisconnect>"));
+                            for (int k = 0; k < m_connections.Length; k++)
+                            {
+                                /// Send message to client as long as it is not the connected one.
+                                if (k != i)
+                                {
+                                    m_ServerDriver.Send(m_connections[k], writer);
+                                }
+                            }
+
+                            /// Dispose the writer when message has been sent.
+                            writer.Dispose();
+
+
+                            /// This connection no longer exists.
                             m_connections.RemoveAtSwapBack(i);
                             if (i >= m_connections.Length)
                                 break;
