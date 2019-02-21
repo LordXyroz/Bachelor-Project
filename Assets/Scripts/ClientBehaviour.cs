@@ -20,11 +20,9 @@ public class ClientBehaviour
     /// This is a way to see time right now, could be useful.
     /// </summary>
 
-    // Testing to get ipaddresses
-    List<string[]> results = new List<string[]>();
-
-
-    // Used to check if client is trying to start to play a game, no matter if host or not.
+    ///  results contain the ipaddresses possible to connect to.
+    readonly List<string[]> results = new List<string[]>();
+    
     public static NetworkEndPoint ServerEndPoint { get; private set; }
     private bool connect;
 
@@ -32,10 +30,14 @@ public class ClientBehaviour
     public NetworkConnection m_clientToServerConnection;
     private bool m_clientWantsConnection;
 
+    /// <summary>
+    /// Client behaviour constructor to set up basic settings for having a client behaviour in the game.
+    /// </summary>
+    /// <param name="myMonoBehaviour"></param>
     public ClientBehaviour(MonoBehaviour myMonoBehaviour)
     {
         /// Makes sure that the client updates connection every now and then to not lose connection;
-        /// Client will lose connection if pursuing actions that gives that effect.
+        /// Client will lose connection if pursuing actions giving that effect.
         myMonoBehaviour.StartCoroutine(UpdateConnection());
 
         /// Set values to default.
@@ -75,53 +77,43 @@ public class ClientBehaviour
     }
 
 
-    public void FindHost(string ip)// TODO change to use ip instead of setting server= ip
-    {
-        //string server = "10.22.210.138";
-        string server = ip;
-
-        // TODO use arp -a to get all possible server ips...
-        string message = "Connecting bro :)";
+    /// <summary>
+    /// Tries to connect to a computer with the ip given as parameter. If possible, global variable 'ServerEndPoint' will be set.
+    /// </summary>
+    /// <param name="ip"></param>
+    public void FindHost(string ip)
+    {   
+        string message = "Connecting";
         try
         {
-            // Create a TcpClient.
-            // Note, for this client to work you need to have a TcpServer 
-            // connected to the same address as specified by the server, port
-            // combination.
+            /// Create a TcpClient.
             Int32 port = 13000;
-            TcpClient client = new TcpClient(server, port);
+            TcpClient client = new TcpClient(ip, port);
 
-            // Translate the passed message into ASCII and store it as a Byte array.
+            /// Translate the passed message into ASCII and store it as a Byte array.
             Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
-
-            // Get a client stream for reading and writing.
-            //  Stream stream = client.GetStream();
             
-
+            /// Get a client stream for reading and writing.
             NetworkStream stream = client.GetStream();
 
-            // Send the message to the connected TcpServer. 
+            /// Send the message to the connected TcpServer. 
+            //Debug.Log("newconnection - client sending message");
             stream.Write(data, 0, data.Length);
-
-            Debug.Log("newconnection - client sending message");
-
-            // Receive the TcpServer.response.
-
-            // Buffer to store the response bytes.
+            
+            /// Buffer to store the response bytes.
             data = new Byte[256];
-
-            // String to store the response ASCII representation.
+            
             String responseData = String.Empty;
 
             // Read the first batch of the TcpServer response bytes.
             Int32 bytes = stream.Read(data, 0, data.Length);
             responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-            Debug.Log("newconnection - client received: " + responseData);
+            //Debug.Log("newconnection - client received: " + responseData);
 
             // Close everything.
             stream.Close();
             client.Close();
-            ServerEndPoint = new IPEndPoint(IPAddress.Parse(server), 9000);
+            ServerEndPoint = new IPEndPoint(IPAddress.Parse(ip), 9000);
         }
         catch (ArgumentNullException e)
         {
@@ -133,9 +125,11 @@ public class ClientBehaviour
             /// Debug.Log("SocketException:" + e);
         }
     }
-
-   
-
+    
+    /// <summary>
+    /// Disconnect is run when client wants to disconnect, the view will be changed to prelobby-view; Values will be reset.
+    /// </summary>
+    /// <param name="messageTexts"></param>
     public void Disconnect(List<GameObject> messageTexts)
     {
         Debug.Log("Disconnecting");
@@ -161,9 +155,12 @@ public class ClientBehaviour
         }
     }
 
+    /// <summary>
+    /// Function run from NetworkingManager when player wants to find and connect to a host/server.
+    /// </summary>
+    /// <param name="myMonoBehaviour"></param>
     public void Connect(MonoBehaviour myMonoBehaviour)
     {
-        /// TODO : set this to false when pressing a exit button
         if (m_clientWantsConnection != true)
         {
             m_clientWantsConnection = true;
@@ -171,6 +168,10 @@ public class ClientBehaviour
         }
     }
 
+    /// <summary>
+    /// Returns a list of IPs as strings on current local network.
+    /// </summary>
+    /// <returns></returns>
     private List<string> FindIPs()
     {
         List<string> results = new List<string>();
@@ -345,6 +346,9 @@ public class ClientBehaviour
         }
     }
 
+    /// <summary>
+    /// Test of sending scenario through the network, works fine. TODO delete later.
+    /// </summary>
     public class Scenario
     {
         public int level;
@@ -354,6 +358,10 @@ public class ClientBehaviour
         public int[] values;
     }
 
+    /// <summary>
+    /// FixedUpdate is a function called ca. 50 times per second. Used to see for events through the network.
+    /// If any messages is sent in, and will according to event happened send message through the network.
+    /// </summary>
     public void FixedUpdate()
     {
         // Update the NetworkDriver. Needs to be done before trying to pop events.

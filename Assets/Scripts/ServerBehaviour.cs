@@ -84,11 +84,10 @@ public class ServerBehaviour
             // Enter the listening loop.
             while (server != null)
             {
-                Debug.Log("newconnection - Waiting for a connection... ");
+                //Debug.Log("newconnection - Waiting for a connection... ");
 
                 // Perform a blocking call to accept requests.
                 TcpClient client = server.AcceptTcpClient();
-                Debug.Log("newconnection - Connected!");
 
                 data = null;
 
@@ -102,19 +101,17 @@ public class ServerBehaviour
                 {
                     // Translate data bytes to a ASCII string.
                     data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-                    Debug.Log("newconnection - Received: " + data);
+                    //Debug.Log("newconnection - Received: " + data);
                     
 
                     byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
 
                     // Send back a response.
                     stream.Write(msg, 0, msg.Length);
-                    Debug.Log("newconnection - sent: " + data);
+                    //Debug.Log("newconnection - sent: " + data);
                 }
-                Debug.Log("Sent message");
-
                
-                Thread.Sleep(100);
+                Thread.Sleep(80);
                 // Shutdown and end connection
                 client.Close();
             }
@@ -132,6 +129,9 @@ public class ServerBehaviour
         }
     }
 
+    /// <summary>
+    /// Server behaviour constructor to set up basic settings for having a server behaviour in the game.
+    /// </summary>
     public ServerBehaviour()
     {
         Task.Factory.StartNew(() => FindConnections());
@@ -188,14 +188,9 @@ public class ServerBehaviour
         GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
     }
 
-    void OnDestroy()
-    {
-        // All jobs must be completed before we can dispose the data they use
-        m_updateHandle.Complete();
-        m_ServerDriver.Dispose();
-        m_connections.Dispose();
-    }
-
+    /// <summary>
+    /// Destructor for server behaviour, makes sure that important data is cleaned up.
+    /// </summary>
     ~ServerBehaviour()
     {
         // All jobs must be completed before we can dispose the data they use
@@ -204,18 +199,22 @@ public class ServerBehaviour
         m_connections.Dispose();
     }
 
+    /// <summary>
+    /// FixedUpdate is a function called ca. 50 times per second. Used to see for events through the network.
+    /// If any messages is sent in the server behaviour will accordingly answer by sending a message back, and give some message to all other clients aswell.
+    /// </summary>
     public void FixedUpdate()
     {
         if (m_ServerDriver.IsCreated)
         {
-            // Update the NetworkDriver. It schedules a job so we must wait for that job with Complete
+            /// Update the NetworkDriver. It schedules a job so we must wait for that job with Complete
             m_ServerDriver.ScheduleUpdate().Complete();
 
-            // Accept all new connections
+            /// Accept all new connections
             while (true)
             {
                 var con = m_ServerDriver.Accept();
-                // "Nothing more to accept" is signaled by returning an invalid connection from accept
+                /// "Nothing more to accept" is signaled by returning an invalid connection from accept
                 if (!con.IsCreated)
                     break;
                 m_connections.Add(con);
@@ -227,7 +226,7 @@ public class ServerBehaviour
                 {
                     DataStreamReader strm;
                     NetworkEvent.Type cmd;
-                    // Pop all events for the connection
+                    /// Pop all events for the connection
                     while ((cmd = m_ServerDriver.PopEventForConnection(m_connections[i], out strm)) != NetworkEvent.Type.Empty)
                     {
                         if (cmd == NetworkEvent.Type.Connect)
@@ -236,9 +235,7 @@ public class ServerBehaviour
                         }
                         if (cmd == NetworkEvent.Type.Data)
                         {
-                            // If client is trying to connect to the server, send back data about this.
-
-                            // A DataStreamReader.Context is required to keep track of current read position since DataStreamReader is immutable
+                            /// A DataStreamReader.Context is required to keep track of current read position since DataStreamReader is immutable
                             var readerCtx = default(DataStreamReader.Context);
                             byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
                             string data = Encoding.ASCII.GetString(bytes);
@@ -252,19 +249,18 @@ public class ServerBehaviour
                             }
                             else if (data.Contains("<Connecting>"))
                             {
-                                Debug.Log("Server - Connecting client with name: " + data);
-
                                 /// Add new client to list of players in lobby:
                                 data = data.Substring(0, data.Length - 12);
+                                Debug.Log("Server - Connecting client with name: " + data);
                                 GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(data);
 
                                 /// Send info back to client just connected about the lobby.
                                 NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                                 string message = nm.matchName + "<Match>";
                                 message += nm.userName + "<HostName>";
-
-                                /// Host uses index 0, other clients starts at 1.
+                                
                                 int j = 1;
+                                /// Get names of all players in lobby.
                                 while (j < nm.playerNames.Count && nm.playerNames[j].activeSelf)
                                 {
                                     message += nm.playerNames[j].transform.Find("Text").GetComponent<Text>().text + "<PlayerName>";
@@ -303,10 +299,9 @@ public class ServerBehaviour
                                 {
                                     m_ServerDriver.Send(m_connections[j], writer);
                                 }
-
-                                // Put message in textbox for testing:
-                                MoveChatBox();
-                                GameObject.Find("MessageText1").GetComponent<Text>().text = data;
+                                
+                                /// Send message to the chat field.
+                                GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(data);
 
                                 /// Give the message received to the host aswell:
                                 Debug.Log("Host has data: " + data);

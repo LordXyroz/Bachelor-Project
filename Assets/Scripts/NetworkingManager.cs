@@ -32,6 +32,9 @@ public class NetworkingManager : MonoBehaviour
     private ClientBehaviour cb;
     private ServerBehaviour sb;
 
+    /// <summary>
+    /// When starting the scene default values will be set here in Start.
+    /// </summary>
     void Start()
     {
         QualitySettings.vSyncCount = 0;
@@ -56,7 +59,9 @@ public class NetworkingManager : MonoBehaviour
         GameObject.Find("UserNameInputField").GetComponent<InputField>().onValueChanged.AddListener(delegate { ValueChangeCheck(); });
     }
 
-
+    /// <summary>
+    /// Makes sure to update the Client/Server-Behaviour every 0.02 seconds approximately.
+    /// </summary>
     void FixedUpdate()
     {
         if (cb != null)
@@ -69,8 +74,9 @@ public class NetworkingManager : MonoBehaviour
         }
     }
 
-
-
+    /// <summary>
+    /// Cosmetic function that shows the user requirements for starting a game.
+    /// </summary>
     public void ValueChangeCheck()
     {
         if (GameObject.Find("UserNameInputField").GetComponent<InputField>().text == null || GameObject.Find("UserNameInputField").GetComponent<InputField>().text.Length < 1)
@@ -83,8 +89,10 @@ public class NetworkingManager : MonoBehaviour
         }
     }
     
-    
-
+    /// <summary>
+    /// Function used to set up default values for networking based on player wanting to be host or client(given as bool).
+    /// </summary>
+    /// <param name="isSpec"></param>
     public void SetupNetworkingManager(bool isSpec)
     {
         isSpectator = isSpec;
@@ -250,17 +258,14 @@ public class NetworkingManager : MonoBehaviour
     /// <summary>
     /// When a player leaves the lobby their name is removed from the list.
     /// </summary>
-    public void RemovePlayerAtPosition(int listNr)  /// TODO, make this work correctly!
+    public void RemovePlayerAtPosition(int listNr)
     {
-        Debug.Log("listNr" + listNr);
-        Debug.Log("listcount: " + playerNames.Count);
         /// Move one above in list to the one below: (Will overwrite position of where wanted player to be removed is.)
         while (listNr < playerNames.Count - 1)
         {
             /// Check if next in list is used.
             if (playerNames[listNr + 1].activeSelf)
             {
-                Debug.Log("changing text at position: " + listNr);
                 playerNames[listNr].transform.Find("Text").GetComponent<Text>().text = playerNames[listNr + 1].transform.Find("Text").GetComponent<Text>().text;
             }
             else
@@ -270,7 +275,6 @@ public class NetworkingManager : MonoBehaviour
             listNr++;
         }
         /// Remove last position in list that is no longer used.
-        Debug.Log("setting playername.active to false.");
         playerNames[listNr].SetActive(false);
     }
 
