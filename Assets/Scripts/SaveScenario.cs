@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class SaveScenario : MonoBehaviour
@@ -35,10 +36,9 @@ public class SaveScenario : MonoBehaviour
     {
         Save save = CreateSaveScenarioObject();
 
-        /*BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Create(Application.persistentDataPath + "/scenariosave.save");
+        /*BinaryFormatter bf = new BinaryFormatter();
         bf.Serialize(file, save);
-        file.Close();
 
         Debug.Log("Scenario saved");*/
         string json = JsonUtility.ToJson(save);
@@ -47,5 +47,6 @@ public class SaveScenario : MonoBehaviour
         Save saveFromJSON = JsonUtility.FromJson<Save>(json);
 
         Debug.Log("Saving as JSON: " + json);
+        file.Close();
     }
 }
