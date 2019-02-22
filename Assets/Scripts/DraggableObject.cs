@@ -20,10 +20,9 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private SelectedObject objectSelect;
     private SystemComponent systemComponent;
 
-    [Header("Position objects")]
+    [Header("Positioning objects")]
     private Vector2 offset;
     Vector2 objectPosition;
-
 
     [Header("The parent of the object (usually the list it is placed under)")]
     public Transform parentToReturnTo;

@@ -1,19 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// This script is to be places on all system components.
 /// It keeps a list of all lines connected to the component.
 /// </summary>
+/// 
+
+/// TODO should always spawn as having the menu as parent?
+/// Have a textbox with the type of component, only visible in the menu (next to the draggable prefab object)
 public class SystemComponent : MonoBehaviour
 {
-    [Header("List of reference lines connected to this system component")]
+
+    [Header("Attributes for this object/node")]
+    public List<String> Vulnerabilities;
+
+    [Header("Reference line components")]
     public List<GameObject> connectedReferenceLines;
-
-    [Header("Items for moving the connection lines when the system components are moved")]
     private GameObject connectedSystemCommponent;
-
-    [Header("Items for calculating size of the connection lines")]
     private Transform lineToEnd;
     private Transform lineFromStart;
 

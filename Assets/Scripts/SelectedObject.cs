@@ -1,13 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-
-/// <TODO>
-/// 
-/// Delete selected connection line
-///     - Have visual display of what line will be deleted
-///     
-/// </TODO>
+/// <summary>
+/// The script for selecting an object.
+/// Placed at the top of the hierarchy (under the canvas)
+/// </summary>
 
 public class SelectedObject : MonoBehaviour
 {
@@ -27,8 +24,8 @@ public class SelectedObject : MonoBehaviour
     public Canvas canvas;
     public Material selectMat;
     private Image image;
-    private Image[] images;
-    private Image imageBox;
+    private Image[] images;     /// For reference lines
+    private Image imageBox;     /// For system components
 
 
     void Start()

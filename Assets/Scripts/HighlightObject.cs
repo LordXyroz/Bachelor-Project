@@ -21,8 +21,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private Image image;
     private Image[] images;
     private Color originalColor;
-
-    [Header("The text displayed at the bottom of the screen for this object")]
     public string tooltipText;
 
 
@@ -103,6 +101,28 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 objectSelect.SelectObject(this.gameObject, false, false);
             }
+        }
+
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            /*/// Only selectable if it is located in the SystemSetupScreen editor area
+            if (this.transform.parent.gameObject.GetComponent<DropZone>() != null
+                || this.transform.parent.parent.gameObject.GetComponent<DropZone>() != null)
+            {
+
+
+                GameObject componentMenu = this.gameObject.transform.Find("SelectedObjectMenu").gameObject;
+                Debug.Log("Activating game object: " + componentMenu.name);
+                componentMenu.SetActive(true);
+                if (image != null)
+                {
+                    objectSelect.SelectObject(this.gameObject, false, true);
+                }
+                else
+                {
+                    objectSelect.SelectObject(this.gameObject, false, false);
+                }
+            }*/
         }
 
     }
