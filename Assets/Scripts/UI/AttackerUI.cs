@@ -49,7 +49,9 @@ public class AttackerUI : MonoBehaviour
     [Header("Tooltip")]
     public GameObject tooltipObject;
     public RectTransform tooltipFrameTransform;
-    public Text tooltipText;    
+    public Text tooltipText;
+    private const float refHeight = 1080;
+    private const float refWidth = 1920;
 
     /// <summary>
     /// Builds the list of attack buttons for the attack panel at start based on localization strings
@@ -219,7 +221,12 @@ public class AttackerUI : MonoBehaviour
     {
         tooltipText.text = text;
 
-        float xOffset = (rect.width / 2f);
+        float xOffset = (rect.width / 2f) * (Screen.width /refWidth);
+        float yOffset = rect.height * (Screen.height / refHeight);
+
+        Debug.Log("Height: " + Screen.height + " , Width: " + Screen.width);
+        Debug.Log("Height ratio: " + Screen.height / refHeight + " , Width ratio: " + Screen.width / refWidth);
+
         if (pos.x >= Screen.width / 2f)
         {
             xOffset = (xOffset * -1);
@@ -230,7 +237,7 @@ public class AttackerUI : MonoBehaviour
             tooltipFrameTransform.pivot = new Vector2(0f, 0.5f);
         }
         
-        Vector2 newPos = new Vector2(pos.x + xOffset, pos.y - rect.height);
+        Vector2 newPos = new Vector2(pos.x + xOffset, pos.y - yOffset);
         
         tooltipObject.GetComponent<RectTransform>().position = newPos;
         tooltipObject.SetActive(true);
