@@ -36,6 +36,9 @@ public class Attack : MonoBehaviour, IAttackResponse
 
     private AttackerUI uiScript;
 
+    /// <summary>
+    /// Finds the UI script and toggles the progress bar.
+    /// </summary>
     public void Start()
     {
         uiScript = FindObjectOfType<AttackerUI>();

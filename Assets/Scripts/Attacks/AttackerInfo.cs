@@ -21,7 +21,7 @@ public class NodeInfo
     public int difficulty;
 
     /// <summary>
-    /// Default constructor that should be used.
+    /// Default constructor that must be used.
     /// Sets up initial values for a newly discovered node.
     /// </summary>
     /// <param name="target">The node that's been discovered</param>

@@ -10,16 +10,17 @@ using UnityEngine;
 /// </summary>
 public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAttackResponse, IProbeResponse
 { 
+    [Header("Attack requirements")]
     public GameObject[] attackPrefabs;
 
     [SerializeField]
     private GameObject target;
 
     [SerializeField]
-    private AttackerUI uiScript;
+    private List<NodeInfo> info = new List<NodeInfo>();
 
     [SerializeField]
-    private List<NodeInfo> info = new List<NodeInfo>();
+    private AttackerUI uiScript;
 
     [Header("Discovery variables")]
     [SerializeField]
@@ -68,7 +69,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private bool workInProgress = false;
     
 
-    // Update is called once per frame
+    /// <summary>
+    /// Increments timers and calls functions once durations have been reached.
+    /// </summary>
     void Update()
     {
         if (discoverInProgress)
@@ -143,6 +146,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         }
     }
 
+    /// <summary>
+    /// Removes current target selection.
+    /// </summary>
     public void ClearTarget()
     {
         if (!workInProgress)
@@ -250,7 +256,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// Sends a discover message.
     /// Resets timers/bools.
     /// </summary>
-    public void Discover()
+    void Discover()
     {
         discoverInProgress = false;
         discoverTimer = 0f;
@@ -274,7 +280,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// Sends an analyze message.
     /// Rests timers/bools.
     /// </summary>
-    public void Analyze()
+    void Analyze()
     {
         analyzeInProgress = false;
         analyzeTimer = 0f;
@@ -286,7 +292,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// Sends a probe message.
     /// Rests timers/bools.
     /// </summary>
-    public void Probe()
+    void Probe()
     {
         probeInProgress = false;
         probeTimer = 0f;
@@ -429,6 +435,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         uiScript.PopulateInfoPanel(i);
     }
 
+    /// <summary>
+    /// Function for starting upgrade of attacks.
+    /// Returns early if the level is at or above max level.
+    /// </summary>
     public void StartAttackUpgrade()
     {
         if (attackLevel >= 3)
@@ -443,6 +453,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         }
     }
 
+    /// <summary>
+    /// Function for starting upgrade of analysis.
+    /// Returns early if the level is at or above max level.
+    /// </summary>
     public void StartAnalyzeUpgrade()
     {
         if (analyzeLevel >= 3)
@@ -456,7 +470,11 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Analysis");
         }
     }
-    
+
+    /// <summary>
+    /// Function for starting upgrade of discovery.
+    /// Returns early if the level is at or above max level.
+    /// </summary>
     public void StartDiscoverUpgrade()
     {
         if (discoverLevel >= 3)
@@ -471,7 +489,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         }
     }
     
-    public void UpgradeAttack()
+    /// <summary>
+    /// Handles the actual upgrade of attack.
+    /// Increments level and increases probability.
+    /// Resets timers and toggles.
+    /// </summary>
+    void UpgradeAttack()
     {
         attackLevel++;
         attackProbability += 0.32f;
@@ -486,22 +509,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         workInProgress = false;
     }
 
-    public void UpgradeDiscover()
-    {
-        discoverLevel++;
-        discoverProbability += 0.32f;
-
-        discoverUpgrading = false;
-        discoverUpgradeDuration += 10;
-        discoverUpgradeTimer = 0f;
-
-        uiScript.ToggleProgressbar(false, "", "");
-        uiScript.TogglePopupWindow(true, "Success!", "Discovery now upgraded to level: " + discoverLevel);
-        uiScript.UpdateStats(0, attackLevel, analyzeLevel, discoverLevel);
-        workInProgress = false;
-    }
-
-    public void UpgradeAnalyze()
+    /// <summary>
+    /// Handles the actual upgrade of analysis.
+    /// Increments level and increases probability.
+    /// Resets timers and toggles.
+    /// </summary>
+    void UpgradeAnalyze()
     {
         analyzeLevel++;
         analyzeProbability += 0.32f;
@@ -512,6 +525,26 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Success!", "Analysis now upgraded to level: " + analyzeLevel);
+        uiScript.UpdateStats(0, attackLevel, analyzeLevel, discoverLevel);
+        workInProgress = false;
+    }
+
+    /// <summary>
+    /// Handles the actual upgrade of discovery.
+    /// Increments level and increases probability.
+    /// Resets timers and toggles.
+    /// </summary>
+    void UpgradeDiscover()
+    {
+        discoverLevel++;
+        discoverProbability += 0.32f;
+
+        discoverUpgrading = false;
+        discoverUpgradeDuration += 10;
+        discoverUpgradeTimer = 0f;
+
+        uiScript.ToggleProgressbar(false, "", "");
+        uiScript.TogglePopupWindow(true, "Success!", "Discovery now upgraded to level: " + discoverLevel);
         uiScript.UpdateStats(0, attackLevel, analyzeLevel, discoverLevel);
         workInProgress = false;
     }
