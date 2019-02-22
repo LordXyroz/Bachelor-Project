@@ -40,4 +40,9 @@ public class PlayerManager : MonoBehaviour
     {
         return uiScript;
     }
+
+    public bool IsAttacker()
+    {
+        return playerType == PlayerType.Attacker;
+    }
 }

@@ -28,20 +28,33 @@ public class Defense : MonoBehaviour, IDefenseResponse
     /// </summary>
     [HideInInspector]
     public GameObject target;
+    [HideInInspector]
+    public float probability;
 
     private float timer;
     private bool triggered = false;
+
+    private DefenderUI uiScript;
+
+    public void Start()
+    {
+        uiScript = FindObjectOfType<DefenderUI>();
+        uiScript.ToggleProgressbar(true, "Defending", description + " on: " + target.name);
+        uiScript.UpdateProgressbar(timer, duration);
+    }
 
     /// <summary>
     /// Automatically starts counting once the gameobject is created.
     /// Triggers an effect once the duration has been met.
     /// </summary>
-    private void Update()
+    public void Update()
     {
         timer += Time.deltaTime;
 
         if (timer >= duration && !triggered)
             Effect();
+
+        uiScript.UpdateProgressbar(timer, duration);
     }
 
     /// <summary>

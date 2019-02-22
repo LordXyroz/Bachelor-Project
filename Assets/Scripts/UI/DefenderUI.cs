@@ -2,9 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class DefenderUI : BaseUI
 {
+    [Header("InfoPanel")]
+    public GameObject infoPanelObject;
+    public GameObject infoPanelArea;
+    public Text targetText;
+    public Text probeText;
+    public Text analyzeText;
+    public Text difficultyText;
+    public Text nodesText;
+    public Text numVulnText;
+    public GameObject vulnPrefab;
+
     [Header("DefensePanel")]
     public GameObject defensePanelObject;
     public GameObject defensePanelArea;
@@ -28,7 +40,19 @@ public class DefenderUI : BaseUI
     // Update is called once per frame
     override public void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (onClickMenu.activeSelf)
+                onClickMenu.SetActive(false);
+            else if (popupWindowObject.activeSelf)
+                popupWindowObject.SetActive(false);
+            else if (actionsPanelObject.activeSelf)
+                EnableStatsPanel();
+            else if (infoPanelObject.activeSelf)
+                EnableStatsPanel();
+            else if (defensePanelObject.activeSelf)
+                EnableInfoPanel();
+        }
     }
 
     override public void EnableStatsPanel()
@@ -71,19 +95,34 @@ public class DefenderUI : BaseUI
         defensePanelObject.SetActive(false);
     }
     
-    override public void PopulateInfoPanel(NodeInfo info)
+    public void UpdateStats(int res, int defLvl, int analyzeLvl)
     {
-        throw new System.NotImplementedException();
+        statsResourcesText.text = res + " GB";
+        statsAtkDefLvlText.text = "Level - " + defLvl;
+        statsAnalyzeLvlText.text = "Level - " + analyzeLvl;
     }
 
-    override public void UpdateProgressbar(float value, float max)
+    public override void PopulateInfoPanel(NodeInfo info)
     {
-        throw new System.NotImplementedException();
-    }
+        foreach (Transform child in infoPanelArea.transform)
+            if (child.CompareTag("VulnBox"))
+                Destroy(child.gameObject);
 
-    override public void UpdateStats(int res, int defLvl, int analyzeLvl, int discoverLvl)
-    {
-        throw new System.NotImplementedException();
+        targetText.text = info.component.name;
+        probeText.text = (info.beenProbed) ? "Yes" : "No";
+        analyzeText.text = (info.beenAnalyzed) ? "Yes" : "No";
+
+        difficultyText.text = (info.difficulty == -1) ? "Unknown" : info.difficulty.ToString();
+        nodesText.text = (info.numOfChildren == -1) ? "Unknown" : info.numOfChildren.ToString();
+        numVulnText.text = (info.numOfVulnerabilities == -1) ? "Unknown" : info.numOfVulnerabilities.ToString();
+
+        foreach (var v in info.vulnerabilities)
+        {
+            GameObject go = Instantiate(vulnPrefab, infoPanelArea.transform);
+            Text t = go.GetComponentsInChildren<Text>().First(x => x.CompareTag("VarText"));
+            t.text = VulnerabilityPairings.GetAttackString(v);
+        }
+
+        EnableInfoPanel();
     }
-    
 }

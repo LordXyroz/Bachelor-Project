@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Handles the defender's controls and capabilities.
 /// </summary>
-public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
+public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProbeResponse
 {
     [Header("Attack requirements")]
     public GameObject[] defensePrefabs;
@@ -19,25 +19,11 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
     [SerializeField]
     private DefenderUI uiScript;
 
-    [Header("Discovery variables")]
-    [SerializeField]
-    private int discoverLevel = 1;
-    [SerializeField]
-    private float discoverProbability = 0.8f;
-    [SerializeField]
-    private int discoverUpgradeDuration = 10;
-    private float discoverUpgradeTimer = 0f;
-    private bool discoverUpgrading = false;
-
-    private int discoverDuration = 3;
-    private float discoverTimer = 0f;
-    private bool discoverInProgress = false;
-
     [Header("Analysis variables")]
     [SerializeField]
     private int analyzeLevel = 1;
     [SerializeField]
-    private float analyzeProbability = 0.7f;
+    private float analyzeProbability = 0.6f;
     [SerializeField]
     private int analyzeUpgradeDuration = 10;
     private float analyzeUpgradeTimer = 0f;
@@ -47,70 +33,72 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
     private float analyzeTimer = 0f;
     private bool analyzeInProgress = false;
 
+    [Header("Defense variables")]
+    [SerializeField]
+    private int defenseLevel = 1;
+    [SerializeField]
+    private float defenseProbability = 0.6f;
+    [SerializeField]
+    private int defenseUpgradeDuration = 10;
+    private float defenseUpgradeTimer = 0f;
+    private bool defenseUpgrading = false;
+
+    [Header("Probing variables")]
+    private int probeDuration = 3;
+    private float probeTimer = 0f;
+    private bool probeInProgress = false;
+
     [Header("General variables")]
+    [SerializeField]
     private bool workInProgress = false;
+
+    void Start()
+    {
+        foreach (var o in FindObjectsOfType<GameNetworkComponent>())
+        {
+            info.Add(new NodeInfo(o.gameObject));
+        }
+    }
 
     // Update is called once per frame
     void Update()
     {
         if (analyzeInProgress)
+        {
             analyzeTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration);
+        }
 
         if (analyzeTimer >= analyzeDuration)
             Analyze();
 
-        if (Input.GetKeyDown(KeyCode.A))
+
+        if (probeInProgress)
         {
-            StartDefense(0);
+            probeTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(probeTimer, probeDuration);
         }
-        if (Input.GetKeyDown(KeyCode.S))
+
+        if (probeTimer >= probeDuration)
+            Probe();
+
+        if (analyzeUpgrading)
         {
-            StartDefense(1);
+            analyzeUpgradeTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(analyzeUpgradeTimer, analyzeUpgradeDuration);
         }
-        if (Input.GetKeyDown(KeyCode.D))
+
+        if (analyzeUpgradeTimer >= analyzeUpgradeDuration)
+            UpgradeAnalyze();
+
+        if (defenseUpgrading)
         {
-            StartDefense(2);
+            defenseUpgradeTimer += Time.deltaTime;
+            uiScript.UpdateProgressbar(defenseUpgradeTimer, defenseUpgradeDuration);
         }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            StartDefense(3);
-        }
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            StartDefense(4);
-        }
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            StartDefense(5);
-        }
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            StartDefense(6);
-        }
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            StartDefense(7);
-        }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            StartDefense(8);
-        }
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            StartDefense(9);
-        }
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            StartDefense(10);
-        }
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            StartDefense(11);
-        }
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            StartDefense(12);
-        }
+
+        if (defenseUpgradeTimer >= defenseUpgradeDuration)
+            UpgradeDefense();
     }
 
     /// <summary>
@@ -119,7 +107,14 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
     /// <param name="go">Gameobject set to be new target</param>
     public void SetTarget(GameObject go)
     {
-        target = go;
+        if (!workInProgress)
+        {
+            target = go;
+
+            NodeInfo i = info.Find(x => x.component.name == go.name);
+            if (i != null)
+                uiScript.PopulateInfoPanel(i);
+        }
     }
 
     public void ClearTarget()
@@ -144,6 +139,9 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
             string msg = "Started analyzing on: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+
+            uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration);
+            uiScript.ToggleProgressbar(true, "Analyze", "Analyzing " + target.name);
         }
     }
 
@@ -162,10 +160,32 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
 
             var go = Instantiate(defensePrefabs[id]);
             go.GetComponent<Defense>().target = target;
+            go.GetComponent<Defense>().probability = defenseProbability;
 
             string msg = "Started implementing defense: " + go.GetComponent<Defense>().defenseType + ", on: " + target.name;
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+        }
+    }
+
+    public void StartProbe()
+    {
+        if (!workInProgress)
+        {
+            if (target == null)
+                return;
+
+            if (uiScript.popupWindowObject.activeSelf)
+                return;
+
+            workInProgress = true;
+            probeInProgress = true;
+
+            string msg = "Started probing: " + target.name;
+
+            MessagingManager.BroadcastMessage(new LoggingMessage(target.name, name, MessageTypes.Logging.LOG, msg));
+            uiScript.UpdateProgressbar(probeTimer, probeDuration);
+            uiScript.ToggleProgressbar(true, "Probe", "Probing " + target.name);
         }
     }
 
@@ -178,7 +198,15 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
         analyzeInProgress = false;
         analyzeTimer = 0f;
 
-        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.ANALYZE));
+        MessagingManager.BroadcastMessage(new AnalyzeMessage(target.name, name, MessageTypes.Game.ANALYZE, analyzeProbability));
+    }
+
+    public void Probe()
+    {
+        probeInProgress = false;
+        probeTimer = 0f;
+
+        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.PROBE));
     }
     
     /// <summary>
@@ -194,20 +222,45 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
         {
             workInProgress = false;
 
+            NodeInfo i = info.Find(x => x.component.name == message.senderName);
+            i.beenAnalyzed = true;
+
             string msg = "Analyze response: ";
 
             if (message.attacks.Count == 0)
+            {
                 msg += "no vulnerabilities found";
+                if (i.vulnerabilities.Count == 0)
+                    uiScript.TogglePopupWindow(true, "Failure", "No vulnerabilties found");
+                else
+                    uiScript.TogglePopupWindow(true, "Failure", "No new vulnerabilties found");
+            }
             else
             {
                 msg += "found - ";
+                bool foundNew = false;
                 foreach (var entry in message.attacks)
+                {
                     msg += entry + ", ";
+                    if (!i.vulnerabilities.Contains(entry))
+                    {
+                        i.vulnerabilities.Add(entry);
+                        foundNew = true;
+                    }
+                }
+                if (foundNew)
+                    uiScript.TogglePopupWindow(true, "Success!", "New vulnerabilities have been revealed!");
+                else
+                    uiScript.TogglePopupWindow(true, "Failure", "No new vulnerabilties found");
             }
 
             MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+
+            uiScript.ToggleProgressbar(false, "", "");
+            uiScript.PopulateInfoPanel(i);
         }
     }
+
     /// <summary>
     /// From the IDefenseResponse interface.
     /// 
@@ -221,5 +274,87 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
         string msg = "Defense response: " + ((message.success) ? "Success" : "Failed");
 
         MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+
+        uiScript.ToggleProgressbar(false, "", "");
+        uiScript.TogglePopupWindow(true, "Defense", "Implementation was " + ((message.success) ? "successful" : "stopped"));
+    }
+
+    public void OnProbeResponse(ProbeResponseMessage message)
+    {
+        if (message.targetName == name)
+        {
+            workInProgress = false;
+
+            NodeInfo i = info.Find(x => x.component.name == message.senderName);
+            i.beenProbed = true;
+            i.numOfVulnerabilities = message.numOfVulnerabilities;
+            i.numOfChildren = message.numOfChildren;
+            i.difficulty = message.difficulty;
+
+            string msg = "Probe response: devices - " + message.numOfChildren + ", difficulty - " + message.difficulty;
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+
+            uiScript.ToggleProgressbar(false, "", "");
+            uiScript.TogglePopupWindow(true, "Success!", "Info on " + message.senderName + " found!");
+            uiScript.PopulateInfoPanel(i);
+        }
+    }
+
+    public void StartAnalyzeUpgrade()
+    {
+        if (analyzeLevel >= 3)
+            return;
+
+        if (!workInProgress)
+        {
+            workInProgress = true;
+            analyzeUpgrading = true;
+
+            uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Analysis");
+        }
+    }
+
+    public void StartDefenseUpgrade()
+    {
+        if (defenseLevel >= 3)
+            return;
+
+        if (!workInProgress)
+        {
+            workInProgress = true;
+            defenseUpgrading = true;
+
+            uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Defenses");
+        }
+    }
+
+    void UpgradeAnalyze()
+    {
+        analyzeLevel++;
+        analyzeProbability += 0.32f;
+
+        analyzeUpgrading = false;
+        analyzeUpgradeDuration += 10;
+        analyzeUpgradeTimer = 0f;
+
+        uiScript.ToggleProgressbar(false, "", "");
+        uiScript.TogglePopupWindow(true, "Success!", "Analysis now upgraded to level: " + analyzeLevel);
+        uiScript.UpdateStats(0, defenseLevel, analyzeLevel);
+        workInProgress = false;
+    }
+
+    void UpgradeDefense()
+    {
+        defenseLevel++;
+        defenseProbability += 0.32f;
+
+        defenseUpgrading = false;
+        defenseUpgradeDuration += 10;
+        defenseUpgradeTimer = 0f;
+
+        uiScript.ToggleProgressbar(false, "", "");
+        uiScript.TogglePopupWindow(true, "Success!", "Defenses now upgraded to level: " + defenseLevel);
+        uiScript.UpdateStats(0, defenseLevel, analyzeLevel);
+        workInProgress = false;
     }
 }

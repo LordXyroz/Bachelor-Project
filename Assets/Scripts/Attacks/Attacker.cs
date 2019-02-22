@@ -296,7 +296,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         probeInProgress = false;
         probeTimer = 0f;
-        Debug.Log("Probe triggered!");
+
         MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.PROBE));
     }
 
@@ -311,8 +311,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         workInProgress = false;
 
         NodeInfo i = info.Find(x => x.component.name == message.senderName);
-
-
+        
         if (i != null)
             i.beenDiscoveredOn = true;
         
@@ -419,20 +418,23 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// <param name="message">Message containing the relevant info to be handled by the function</param>
     public void OnProbeResponse(ProbeResponseMessage message)
     {
-        workInProgress = false;
+        if (message.targetName == name)
+        {
+            workInProgress = false;
 
-        NodeInfo i = info.Find(x => x.component.name == message.senderName);
-        i.beenProbed = true;
-        i.numOfVulnerabilities = message.numOfVulnerabilities;
-        i.numOfChildren = message.numOfChildren;
-        i.difficulty = message.difficulty;
+            NodeInfo i = info.Find(x => x.component.name == message.senderName);
+            i.beenProbed = true;
+            i.numOfVulnerabilities = message.numOfVulnerabilities;
+            i.numOfChildren = message.numOfChildren;
+            i.difficulty = message.difficulty;
 
-        string msg = "Probe response: devices - " + message.numOfChildren + ", difficulty - " + message.difficulty;
-        MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+            string msg = "Probe response: devices - " + message.numOfChildren + ", difficulty - " + message.difficulty;
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
 
-        uiScript.ToggleProgressbar(false, "", "");
-        uiScript.TogglePopupWindow(true, "Success!", "Info on " + message.senderName + " found!");
-        uiScript.PopulateInfoPanel(i);
+            uiScript.ToggleProgressbar(false, "", "");
+            uiScript.TogglePopupWindow(true, "Success!", "Info on " + message.senderName + " found!");
+            uiScript.PopulateInfoPanel(i);
+        }
     }
 
     /// <summary>

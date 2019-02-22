@@ -46,8 +46,8 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         uiButton.onClick.AddListener(() => FindObjectOfType<Defender>().SetTarget(gameObject));
         uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
 
-
-        uiElement.SetActive(false);
+        if (FindObjectOfType<PlayerManager>().IsAttacker())
+            uiElement.SetActive(false);
     }
 
     /// <summary>

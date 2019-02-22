@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public abstract class BaseUI : MonoBehaviour
 {
@@ -13,19 +14,7 @@ public abstract class BaseUI : MonoBehaviour
 
     [Header("OnClickMenu")]
     public GameObject onClickMenu;
-
-    [Header("InfoPanel")]
-    public GameObject infoPanelObject;
-    public GameObject infoPanelArea;
-    public Text targetText;
-    public Text probeText;
-    public Text analyzeText;
-    public Text discoverText;
-    public Text difficultyText;
-    public Text nodesText;
-    public Text numVulnText;
-    public GameObject vulnPrefab;
-
+    
     [Header("Popup Window")]
     public GameObject popupWindowObject;
     public Text popupWindowTitle;
@@ -107,9 +96,12 @@ public abstract class BaseUI : MonoBehaviour
     }
 
     public abstract void PopulateInfoPanel(NodeInfo info);
-    public abstract void UpdateProgressbar(float value, float max);
-    public abstract void UpdateStats(int res, int atkdefLvl, int analyzeLvl, int discoverLvl);
 
+    public void UpdateProgressbar(float value, float max)
+    {
+        progressbar.fillAmount = value / max;
+    }
+    
     public void DisableOnClickMenu()
     {
         onClickMenu.SetActive(false);

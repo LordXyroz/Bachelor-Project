@@ -5,6 +5,18 @@ using System.Collections.Generic;
 
 public class AttackerUI : BaseUI
 {
+    [Header("InfoPanel")]
+    public GameObject infoPanelObject;
+    public GameObject infoPanelArea;
+    public Text targetText;
+    public Text probeText;
+    public Text analyzeText;
+    public Text discoverText;
+    public Text difficultyText;
+    public Text nodesText;
+    public Text numVulnText;
+    public GameObject vulnPrefab;
+
     [Header("AttackPanel")]
     public GameObject attackPanelObject;
     public GameObject attackPanelArea;
@@ -206,10 +218,10 @@ public class AttackerUI : BaseUI
     /// </summary>
     /// <param name="value">Current value</param>
     /// <param name="max">Max value</param>
-    override public void UpdateProgressbar(float value, float max)
+    /*override public void UpdateProgressbar(float value, float max)
     {
         progressbar.fillAmount = value / max;
-    }
+    }*/
 
     /// <summary>
     /// Updates all the text for the stats panel
@@ -218,7 +230,7 @@ public class AttackerUI : BaseUI
     /// <param name="attackLvl">Current level of attack</param>
     /// <param name="analyzeLvl">Current level of analysis</param>
     /// <param name="discoverLvl">Current level of discovery</param>
-    override public void UpdateStats(int res, int attackLvl, int analyzeLvl, int discoverLvl)
+    public void UpdateStats(int res, int attackLvl, int analyzeLvl, int discoverLvl)
     {
         statsResourcesText.text = res + " GB";
         statsAtkDefLvlText.text = "Level - " + attackLvl;
