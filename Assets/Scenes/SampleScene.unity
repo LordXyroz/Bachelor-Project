@@ -301,17 +301,17 @@ PrefabInstance:
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.r
-      value: 0.99215686
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.g
-      value: 0.34117648
+      value: 0.5019608
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
-      value: 0.34117648
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6087713350432067625, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -457,7 +457,7 @@ PrefabInstance:
         type: 3}
       propertyPath: uiScript
       value: 
-      objectReference: {fileID: 528354964}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d, type: 3}
 --- !u!1 &21820451
@@ -576,9 +576,9 @@ RectTransform:
   m_Father: {fileID: 1369167961}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 192, y: -25}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 384, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &31298363
@@ -1610,7 +1610,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 0}
         m_MethodName: DisableOnClickMenu
         m_Mode: 1
         m_Arguments:
@@ -1632,7 +1632,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 0}
         m_MethodName: DisableToolTip
         m_Mode: 1
         m_Arguments:
@@ -1729,9 +1729,9 @@ RectTransform:
   m_Father: {fileID: 1369167961}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 192, y: -135}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 384, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &156970054
@@ -2099,7 +2099,7 @@ GameObject:
   - component: {fileID: 191731235}
   - component: {fileID: 191731234}
   m_Layer: 5
-  m_Name: RightPanelAttackArea
+  m_Name: RightPanelDefenseArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2639,17 +2639,17 @@ PrefabInstance:
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.r
-      value: 0.99215686
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.g
-      value: 0.34117648
+      value: 0.5019608
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
-      value: 0.34117648
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6087713350432067625, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -2790,7 +2790,7 @@ PrefabInstance:
         type: 3}
       propertyPath: uiScript
       value: 
-      objectReference: {fileID: 528354964}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d, type: 3}
 --- !u!1 &229105839
@@ -2888,7 +2888,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &231441332
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2944,22 +2944,22 @@ MonoBehaviour:
   numVulnText: {fileID: 1728939226}
   vulnPrefab: {fileID: 5523697044473413109, guid: 682d603c0f09f0e4c823b1b8a67c834c,
     type: 3}
-  attackPanelObject: {fileID: 1148115023}
-  attackPanelArea: {fileID: 1709140386}
-  attackButtonPrefab: {fileID: 4907750341504257728, guid: da71b0dc834bb8f49875f178d1427a40,
-    type: 3}
   popupWindowObject: {fileID: 1109951463}
   popupWindowTitle: {fileID: 1756265215}
   popupWindowText: {fileID: 1978180737}
   statsPanelObject: {fileID: 1043722154}
   statsResourcesText: {fileID: 67690529}
-  statsAttackLvlText: {fileID: 1599480001}
+  statsAtkDefLvlText: {fileID: 0}
   statsAnalyzeLvlText: {fileID: 1639881221}
   statsDiscoverLvlText: {fileID: 720021774}
   actionsPanelObject: {fileID: 1238397395}
   tooltipObject: {fileID: 1616511936}
   tooltipFrameTransform: {fileID: 1616511937}
   tooltipText: {fileID: 1478323733}
+  attackPanelObject: {fileID: 1148115023}
+  attackPanelArea: {fileID: 1709140386}
+  attackButtonPrefab: {fileID: 4907750341504257728, guid: da71b0dc834bb8f49875f178d1427a40,
+    type: 3}
 --- !u!1 &234278441
 GameObject:
   m_ObjectHideFlags: 0
@@ -3445,7 +3445,7 @@ GameObject:
   - component: {fileID: 305009462}
   - component: {fileID: 305009461}
   m_Layer: 5
-  m_Name: RightPanelAttackLevelBox
+  m_Name: RightPanelDefenseLevelBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4464,29 +4464,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 411382447}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 528354964}
-        m_MethodName: DisablePopupWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1480980484}
-        m_MethodName: StartAnalyzeUpgrade
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &411382447
@@ -5451,7 +5429,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 528354963}
-  - component: {fileID: 528354964}
+  - component: {fileID: 528354965}
   m_Layer: 5
   m_Name: DefenderScreen
   m_TagString: Untagged
@@ -5486,7 +5464,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &528354964
+--- !u!114 &528354965
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5495,7 +5473,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 528354962}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0a0fba55941d5a4aa4fe0ab7d77243d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0298ca4eda80a1b4899a6f9c3cc420c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   progressbarObject: {fileID: 1423240387}
@@ -5514,22 +5492,22 @@ MonoBehaviour:
   numVulnText: {fileID: 1842702096}
   vulnPrefab: {fileID: 5523697044473413109, guid: 682d603c0f09f0e4c823b1b8a67c834c,
     type: 3}
-  attackPanelObject: {fileID: 2097387529}
-  attackPanelArea: {fileID: 191731233}
-  attackButtonPrefab: {fileID: 4907750341504257728, guid: da71b0dc834bb8f49875f178d1427a40,
-    type: 3}
   popupWindowObject: {fileID: 1063794534}
   popupWindowTitle: {fileID: 958290304}
   popupWindowText: {fileID: 269322772}
   statsPanelObject: {fileID: 348255612}
   statsResourcesText: {fileID: 1578736993}
-  statsAttackLvlText: {fileID: 880169845}
+  statsAtkDefLvlText: {fileID: 0}
   statsAnalyzeLvlText: {fileID: 249820584}
   statsDiscoverLvlText: {fileID: 1104207209}
   actionsPanelObject: {fileID: 738794686}
   tooltipObject: {fileID: 1547699697}
   tooltipFrameTransform: {fileID: 1547699698}
   tooltipText: {fileID: 877511878}
+  defensePanelObject: {fileID: 2097387529}
+  defensePanelArea: {fileID: 191731233}
+  defensButtonPrefab: {fileID: 4907750341504257728, guid: b7062d3f3afe2954e830faf10402b095,
+    type: 3}
 --- !u!1 &539150991
 GameObject:
   m_ObjectHideFlags: 0
@@ -5604,6 +5582,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 539150991}
   m_CullTransparentMesh: 0
+--- !u!1 &542831244
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 542831246}
+  - component: {fileID: 542831245}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &542831245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542831244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bddf1047fed7d544f9f9110618482237, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerType: 1
+  uiScript: {fileID: 0}
+  attackerUI: {fileID: 231441331}
+  defenderUI: {fileID: 528354962}
+--- !u!4 &542831246
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542831244}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &544391182
 GameObject:
   m_ObjectHideFlags: 0
@@ -5821,7 +5846,7 @@ PrefabInstance:
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -5837,11 +5862,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1480980484}
+      objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SetTarget
+      value: ChangeTarget
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -5852,11 +5877,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 883730072}
+      objectReference: {fileID: 116598823}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: SetTarget
+      value: ChangeTarget
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -5867,7 +5892,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 883730072}
+      objectReference: {fileID: 116598823}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -5877,7 +5902,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1187280285}
+      objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
@@ -6729,7 +6754,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 0}
         m_MethodName: DisableOnClickMenu
         m_Mode: 1
         m_Arguments:
@@ -6751,7 +6776,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 0}
         m_MethodName: DisableToolTip
         m_Mode: 1
         m_Arguments:
@@ -7575,7 +7600,7 @@ GameObject:
   - component: {fileID: 748153457}
   - component: {fileID: 748153456}
   m_Layer: 5
-  m_Name: RightPanelDefaultDiscover
+  m_Name: RightPanelDefaultActionsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7654,7 +7679,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 528354965}
         m_MethodName: EnableActionPanel
         m_Mode: 1
         m_Arguments:
@@ -7835,7 +7860,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 0}
         m_MethodName: EnableAttackPanel
         m_Mode: 1
         m_Arguments:
@@ -7846,7 +7871,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 0}
         m_MethodName: DisableOnClickMenu
         m_Mode: 1
         m_Arguments:
@@ -7857,7 +7882,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 0}
         m_MethodName: DisableToolTip
         m_Mode: 1
         m_Arguments:
@@ -8036,29 +8061,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 809483167}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 528354964}
-        m_MethodName: DisablePopupWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1480980484}
-        m_MethodName: StartDiscoverUpgrade
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &809483167
@@ -8643,7 +8646,7 @@ GameObject:
   - component: {fileID: 880169844}
   - component: {fileID: 880169845}
   m_Layer: 5
-  m_Name: RightPanelAttackLevelVarText
+  m_Name: RightPanelDefenseLevelVarText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8807,7 +8810,7 @@ GameObject:
   - component: {fileID: 910168940}
   - component: {fileID: 910168939}
   m_Layer: 5
-  m_Name: RightPanelAttackTitle
+  m_Name: RightPanelDefenseTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9199,29 +9202,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 941162564}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 528354964}
-        m_MethodName: DisablePopupWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1480980484}
-        m_MethodName: StartDiscover
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &941162564
@@ -9718,7 +9699,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 0}
         m_MethodName: DisableOnClickMenu
         m_Mode: 1
         m_Arguments:
@@ -9740,7 +9721,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 0}
         m_MethodName: DisableToolTip
         m_Mode: 1
         m_Arguments:
@@ -10690,7 +10671,7 @@ PrefabInstance:
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -10706,11 +10687,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1480980484}
+      objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SetTarget
+      value: ChangeTarget
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -10721,11 +10702,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 653328104}
+      objectReference: {fileID: 116598823}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: SetTarget
+      value: ChangeTarget
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -10736,7 +10717,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 653328104}
+      objectReference: {fileID: 116598823}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -10746,7 +10727,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1187280285}
+      objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
@@ -11453,6 +11434,14 @@ MonoBehaviour:
   - {fileID: 7531313183321515208, guid: a57783c7014e8db46b5ebc2ac3aa103c, type: 3}
   - {fileID: 4381119078711378118, guid: 02aab2b811fae884f9fa3f9d379014a4, type: 3}
   target: {fileID: 0}
+  info: []
+  uiScript: {fileID: 0}
+  discoverLevel: 1
+  discoverProbability: 0.8
+  discoverUpgradeDuration: 10
+  analyzeLevel: 1
+  analyzeProbability: 0.7
+  analyzeUpgradeDuration: 10
 --- !u!4 &1187280286
 Transform:
   m_ObjectHideFlags: 0
@@ -11502,9 +11491,9 @@ RectTransform:
   m_Father: {fileID: 1369167961}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 192, y: -80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 384, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1199489973
@@ -12372,17 +12361,17 @@ PrefabInstance:
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.r
-      value: 0.99215686
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.g
-      value: 0.34117648
+      value: 0.5019608
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
-      value: 0.34117648
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6087713350432067625, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -12528,7 +12517,7 @@ PrefabInstance:
         type: 3}
       propertyPath: uiScript
       value: 
-      objectReference: {fileID: 528354964}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d, type: 3}
 --- !u!1 &1292961779
@@ -12609,8 +12598,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 528354964}
-        m_MethodName: EnableStatsPanel
+      - m_Target: {fileID: 1187280284}
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12620,18 +12609,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1480980484}
-        m_MethodName: ClearTarget
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 528354965}
         m_MethodName: DisableOnClickMenu
         m_Mode: 1
         m_Arguments:
@@ -12642,8 +12620,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 528354964}
+      - m_Target: {fileID: 528354965}
         m_MethodName: DisablePopupWindow
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 528354965}
+        m_MethodName: DisableToolTip
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 528354965}
+        m_MethodName: EnableStatsPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12984,17 +12984,17 @@ PrefabInstance:
     - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.r
-      value: 0.99215686
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.g
-      value: 0.34117648
+      value: 0.5019608
       objectReference: {fileID: 0}
     - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
-      value: 0.34117648
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4682973927837351195, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
@@ -13120,7 +13120,7 @@ PrefabInstance:
         type: 3}
       propertyPath: uiScript
       value: 
-      objectReference: {fileID: 528354964}
+      objectReference: {fileID: 0}
     - target: {fileID: 1881532719766092036, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
       propertyPath: m_IsActive
@@ -13391,7 +13391,7 @@ PrefabInstance:
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -13407,11 +13407,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1480980484}
+      objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SetTarget
+      value: ChangeTarget
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -13422,11 +13422,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 357589744}
+      objectReference: {fileID: 116598823}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: SetTarget
+      value: ChangeTarget
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -13437,7 +13437,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 357589744}
+      objectReference: {fileID: 116598823}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -13447,7 +13447,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1187280285}
+      objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
@@ -13738,7 +13738,7 @@ GameObject:
   - component: {fileID: 1364097615}
   - component: {fileID: 1364097614}
   m_Layer: 5
-  m_Name: RightPanelDefaultDiscover
+  m_Name: RightPanelDefaultActionsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13759,9 +13759,9 @@ RectTransform:
   m_Father: {fileID: 1369167961}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 192, y: -240}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1364097614
@@ -14169,7 +14169,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0, g: 0.5019608, b: 1, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -15177,7 +15177,7 @@ GameObject:
   - component: {fileID: 1507012203}
   - component: {fileID: 1507012202}
   m_Layer: 5
-  m_Name: RightPanelAttackLevelStaticText
+  m_Name: RightPanelDefenseLevelStaticText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15717,9 +15717,9 @@ RectTransform:
   m_Father: {fileID: 1369167961}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 192, y: -190}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 384, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1550625131
@@ -16532,17 +16532,17 @@ PrefabInstance:
     - target: {fileID: 4075259681559174776, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.r
-      value: 0.99215686
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4075259681559174776, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.g
-      value: 0.34117648
+      value: 0.5019608
       objectReference: {fileID: 0}
     - target: {fileID: 4075259681559174776, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
-      value: 0.34117648
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5807221432092884412, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}
@@ -16568,7 +16568,7 @@ PrefabInstance:
         type: 3}
       propertyPath: uiScript
       value: 
-      objectReference: {fileID: 528354964}
+      objectReference: {fileID: 0}
     - target: {fileID: 5807221432092884412, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}
       propertyPath: difficulty
@@ -19696,17 +19696,17 @@ PrefabInstance:
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.r
-      value: 0.99215686
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.g
-      value: 0.34117648
+      value: 0.5019608
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
-      value: 0.34117648
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6087713350432067625, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -19852,7 +19852,7 @@ PrefabInstance:
         type: 3}
       propertyPath: uiScript
       value: 
-      objectReference: {fileID: 528354964}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d, type: 3}
 --- !u!1 &1996469381
@@ -20715,29 +20715,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2088252788}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 528354964}
-        m_MethodName: DisablePopupWindow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1480980484}
-        m_MethodName: StartAttackUpgrade
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &2088252788
@@ -20877,7 +20855,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2097387530}
   m_Layer: 5
-  m_Name: RightPanelAttackList
+  m_Name: RightPanelDefenseList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21123,18 +21101,18 @@ PrefabInstance:
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1480980484}
+      objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1187280285}
+      objectReference: {fileID: 0}
     - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
@@ -21184,6 +21162,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
       value: 0.34117648
+      objectReference: {fileID: 0}
+    - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: ChangeTarget
+      objectReference: {fileID: 0}
+    - target: {fileID: 5471507577115202771, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeTarget
       objectReference: {fileID: 0}
     - target: {fileID: 6087713350432067625, guid: 8d60b12dc73901c41b7b7cda3dbf0b4d,
         type: 3}
@@ -21359,18 +21347,18 @@ PrefabInstance:
     - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1480980484}
+      objectReference: {fileID: 0}
     - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1187280285}
+      objectReference: {fileID: 0}
     - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
@@ -21420,6 +21408,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
       value: 0.34117648
+      objectReference: {fileID: 0}
+    - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 7869017205705675801}
+    - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: GameNetworkComponent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 7869017205705675801}
+    - target: {fileID: 2481845988440467732, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: GameNetworkComponent, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4682973927837351195, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
@@ -21590,18 +21608,18 @@ PrefabInstance:
     - target: {fileID: 4075259681559174776, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4075259681559174776, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1480980484}
+      objectReference: {fileID: 1480980483}
     - target: {fileID: 4075259681559174776, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1187280285}
+      objectReference: {fileID: 1480980483}
     - target: {fileID: 4075259681559174776, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
@@ -21651,6 +21669,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Colors.m_HighlightedColor.b
       value: 0.34117648
+      objectReference: {fileID: 0}
+    - target: {fileID: 4075259681559174776, guid: 4ffc4991ee6e3f94c80534a2656bef13,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4075259681559174776, guid: 4ffc4991ee6e3f94c80534a2656bef13,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5807221432092884412, guid: 4ffc4991ee6e3f94c80534a2656bef13,
         type: 3}

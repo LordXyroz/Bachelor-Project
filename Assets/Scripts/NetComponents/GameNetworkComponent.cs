@@ -26,7 +26,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     [SerializeField]
     private Button uiButton;
     [SerializeField]
-    private AttackerUI uiScript;
+    private BaseUI uiScript;
 
     [Header("Network depth")]
     public int graphDepth;
@@ -37,10 +37,15 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     /// </summary>
     public void Start()
     {
+        uiScript = FindObjectOfType<PlayerManager>().GetUIScript();
+
         RectTransform rectTransform = GetComponent<RectTransform>();
         Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
         uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
+        uiButton.onClick.AddListener(() => FindObjectOfType<Attacker>().SetTarget(gameObject));
+        uiButton.onClick.AddListener(() => FindObjectOfType<Defender>().SetTarget(gameObject));
         uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
+
 
         uiElement.SetActive(false);
     }

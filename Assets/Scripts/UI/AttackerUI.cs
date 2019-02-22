@@ -3,60 +3,17 @@ using UnityEngine.UI;
 using System.Linq;
 using System.Collections.Generic;
 
-public class AttackerUI : MonoBehaviour
+public class AttackerUI : BaseUI
 {
-    [Header("Progressbar")]
-    public GameObject progressbarObject;
-    public Image progressbar;
-    public Text progressbarTitle;
-    public Text progressbarText;
-
-    [Header("OnClickMenu")]
-    public GameObject onClickMenu;
-
-    [Header("InfoPanel")]
-    public GameObject infoPanelObject;
-    public GameObject infoPanelArea;
-    public Text targetText;
-    public Text probeText;
-    public Text analyzeText;
-    public Text discoverText;
-    public Text difficultyText;
-    public Text nodesText;
-    public Text numVulnText;
-    public GameObject vulnPrefab;
-
     [Header("AttackPanel")]
     public GameObject attackPanelObject;
     public GameObject attackPanelArea;
     public GameObject attackButtonPrefab;
 
-    [Header("Popup window")]
-    public GameObject popupWindowObject;
-    public Text popupWindowTitle;
-    public Text popupWindowText;
-
-    [Header("Stats window")]
-    public GameObject statsPanelObject;
-    public Text statsResourcesText;
-    public Text statsAttackLvlText;
-    public Text statsAnalyzeLvlText;
-    public Text statsDiscoverLvlText;
-
-    [Header("Actions window")]
-    public GameObject actionsPanelObject;
-
-    [Header("Tooltip")]
-    public GameObject tooltipObject;
-    public RectTransform tooltipFrameTransform;
-    public Text tooltipText;
-    private const float refHeight = 1080;
-    private const float refWidth = 1920;
-
     /// <summary>
     /// Builds the list of attack buttons for the attack panel at start based on localization strings
     /// </summary>
-    public void Start()
+    override public void Start()
     {
         List<AttackTypes> attacks = VulnerabilityPairings.GetAllAttacks();
         foreach (var a in attacks)
@@ -73,7 +30,7 @@ public class AttackerUI : MonoBehaviour
     /// <summary>
     /// Checks for escape key, and closes panels/popups based on what is currently open.
     /// </summary>
-    public void Update()
+    override public void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -93,7 +50,7 @@ public class AttackerUI : MonoBehaviour
     /// <summary>
     /// Enables the stats panel and disables all other panels
     /// </summary>
-    public void EnableStatsPanel()
+    override public void EnableStatsPanel()
     {
         DisableToolTip();
         statsPanelObject.SetActive(true);
@@ -106,7 +63,7 @@ public class AttackerUI : MonoBehaviour
     /// <summary>
     /// Enables the info panel and disables all other panels
     /// </summary>
-    public void EnableInfoPanel()
+    override public void EnableInfoPanel()
     {
         DisableToolTip();
         infoPanelObject.SetActive(true);
@@ -132,7 +89,7 @@ public class AttackerUI : MonoBehaviour
     /// <summary>
     /// Enables the action panel and disables all other panels.
     /// </summary>
-    public void EnableActionPanel()
+    override public void EnableActionPanel()
     {
         DisableToolTip();
         actionsPanelObject.SetActive(true);
@@ -149,7 +106,7 @@ public class AttackerUI : MonoBehaviour
     /// <param name="text">Text to be displayed</param>
     /// <param name="pos">Where to place tooltip</param>
     /// <param name="rect">Rect of the UI element used for width/height offset</param>
-    public void EnableToolTip(string text, Vector2 pos, Rect rect)
+    /*override public void EnableToolTip(string text, Vector2 pos, Rect rect)
     {
         tooltipText.text = text;
 
@@ -170,7 +127,7 @@ public class AttackerUI : MonoBehaviour
         
         tooltipObject.GetComponent<RectTransform>().position = newPos;
         tooltipObject.SetActive(true);
-    }
+    }*/
 
     /// <summary>
     /// Enables/Disables the progressbar popup, and sets the texts to display.
@@ -178,27 +135,27 @@ public class AttackerUI : MonoBehaviour
     /// <param name="toggle">Whether to enable or disable</param>
     /// <param name="title">Title text</param>
     /// <param name="text">Info text</param>
-    public void ToggleProgressbar(bool toggle, string title, string text)
+    /*override public void ToggleProgressbar(bool toggle, string title, string text)
     {
         progressbarTitle.text = title;
         progressbarText.text = text;
 
         progressbarObject.SetActive(toggle);
-    }
+    }*/
 
     /// <summary>
     /// Toggles the OnClick menu, and moves it to a target position
     /// </summary>
     /// <param name="toggle">Whether to enable or disable</param>
     /// <param name="pos">Position to move to</param>
-    public void ToggleOnClickMenu(bool toggle, Vector3 pos)
+    /*override public void ToggleOnClickMenu(bool toggle, Vector3 pos)
     {
         if (popupWindowObject.activeSelf || progressbarObject.activeSelf)
             return;
 
         onClickMenu.SetActive(toggle);
         onClickMenu.GetComponent<RectTransform>().position = pos;
-    }
+    }*/
 
     /// <summary>
     /// Toggles the popup window for displaying success/fail messages etc...
@@ -206,20 +163,20 @@ public class AttackerUI : MonoBehaviour
     /// <param name="toggle">Whether to toggle on or off</param>
     /// <param name="title">Title text of the window</param>
     /// <param name="text">Text message</param>
-    public void TogglePopupWindow(bool toggle, string title, string text)
+    /*override public void TogglePopupWindow(bool toggle, string title, string text)
     {
         popupWindowTitle.text = title;
         popupWindowText.text = text;
 
         popupWindowObject.SetActive(toggle);
-    }
+    }*/
 
     /// <summary>
     /// Populates the info panel with new info.
     /// Removes old vulnerability entries with new ones.
     /// </summary>
     /// <param name="info">Class containing the info to be displayed</param>
-    public void PopulateInfoPanel(NodeInfo info)
+    override public void PopulateInfoPanel(NodeInfo info)
     {
         foreach (Transform child in infoPanelArea.transform)
             if (child.CompareTag("VulnBox"))
@@ -249,7 +206,7 @@ public class AttackerUI : MonoBehaviour
     /// </summary>
     /// <param name="value">Current value</param>
     /// <param name="max">Max value</param>
-    public void UpdateProgressbar(float value, float max)
+    override public void UpdateProgressbar(float value, float max)
     {
         progressbar.fillAmount = value / max;
     }
@@ -261,37 +218,37 @@ public class AttackerUI : MonoBehaviour
     /// <param name="attackLvl">Current level of attack</param>
     /// <param name="analyzeLvl">Current level of analysis</param>
     /// <param name="discoverLvl">Current level of discovery</param>
-    public void UpdateStats(int res, int attackLvl, int analyzeLvl, int discoverLvl)
+    override public void UpdateStats(int res, int attackLvl, int analyzeLvl, int discoverLvl)
     {
         statsResourcesText.text = res + " GB";
-        statsAttackLvlText.text = "Level - " + attackLvl;
+        statsAtkDefLvlText.text = "Level - " + attackLvl;
         statsAnalyzeLvlText.text = "Level - " + analyzeLvl;
         statsDiscoverLvlText.text = "Level - " + discoverLvl;
     }
 
-    /// <summary>
-    /// Disables the OnClick menu
-    /// </summary>
-    public void DisableOnClickMenu()
-    {
-        onClickMenu.SetActive(false);
-    }
-
-    /// <summary>
-    /// Hides popup window
-    /// </summary>
-    public void DisablePopupWindow()
-    {
-        popupWindowObject.SetActive(false);
-    }
-
-    /// <summary>
-    /// Hides tooltip
-    /// </summary>
-    public void DisableToolTip()
-    {
-        tooltipObject.SetActive(false);
-    }
+    ////// <summary>
+    ////// Disables the OnClick menu
+    ////// </summary>
+    ///public void DisableOnClickMenu()
+    ///{
+    ///    onClickMenu.SetActive(false);
+    ///}
+    ///
+    ////// <summary>
+    ////// Hides popup window
+    ////// </summary>
+    ///public void DisablePopupWindow()
+    ///{
+    ///    popupWindowObject.SetActive(false);
+    ///}
+    ///
+    ////// <summary>
+    ////// Hides tooltip
+    ////// </summary>
+    ///public void DisableToolTip()
+    ///{
+    ///    tooltipObject.SetActive(false);
+    ///}
 
 }
  

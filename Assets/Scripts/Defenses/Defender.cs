@@ -7,20 +7,53 @@ using UnityEngine;
 /// </summary>
 public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
 {
+    [Header("Attack requirements")]
     public GameObject[] defensePrefabs;
 
-    public GameObject target;
+    [SerializeField]
+    private GameObject target;
+
+    [SerializeField]
+    private List<NodeInfo> info = new List<NodeInfo>();
+
+    [SerializeField]
+    private DefenderUI uiScript;
+
+    [Header("Discovery variables")]
+    [SerializeField]
+    private int discoverLevel = 1;
+    [SerializeField]
+    private float discoverProbability = 0.8f;
+    [SerializeField]
+    private int discoverUpgradeDuration = 10;
+    private float discoverUpgradeTimer = 0f;
+    private bool discoverUpgrading = false;
+
+    private int discoverDuration = 3;
+    private float discoverTimer = 0f;
+    private bool discoverInProgress = false;
+
+    [Header("Analysis variables")]
+    [SerializeField]
+    private int analyzeLevel = 1;
+    [SerializeField]
+    private float analyzeProbability = 0.7f;
+    [SerializeField]
+    private int analyzeUpgradeDuration = 10;
+    private float analyzeUpgradeTimer = 0f;
+    private bool analyzeUpgrading = false;
 
     private int analyzeDuration = 10;
     private float analyzeTimer = 0f;
-    private bool analyzeCount = false;
+    private bool analyzeInProgress = false;
 
+    [Header("General variables")]
     private bool workInProgress = false;
 
     // Update is called once per frame
     void Update()
     {
-        if (analyzeCount)
+        if (analyzeInProgress)
             analyzeTimer += Time.deltaTime;
 
         if (analyzeTimer >= analyzeDuration)
@@ -89,6 +122,12 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
         target = go;
     }
 
+    public void ClearTarget()
+    {
+        if (!workInProgress)
+            target = null;
+    }
+
     /// <summary>
     /// Function to be hooked up to a button. Starts timer for Analyzing
     /// </summary>
@@ -100,7 +139,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
                 return;
 
             workInProgress = true;
-            analyzeCount = true;
+            analyzeInProgress = true;
 
             string msg = "Started analyzing on: " + target.name;
 
@@ -136,7 +175,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse
     /// </summary>
     public void Analyze()
     {
-        analyzeCount = false;
+        analyzeInProgress = false;
         analyzeTimer = 0f;
 
         MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.ANALYZE));

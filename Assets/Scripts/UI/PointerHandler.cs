@@ -12,14 +12,14 @@ public class PointerHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     public string tooltipInfo;
 
-    private AttackerUI uiScript;
+    private BaseUI uiScript;
 
     /// <summary>
     /// Finds the script that controlls the UI on start.
     /// </summary>
     public void Start()
     {
-        uiScript = FindObjectOfType<AttackerUI>();
+        uiScript = FindObjectOfType<PlayerManager>().GetUIScript();
     }
 
     /// <summary>
