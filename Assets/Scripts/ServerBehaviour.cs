@@ -11,6 +11,9 @@ using System.Threading;
 using System.Text;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+
 
 public class ServerBehaviour
 {
@@ -23,6 +26,8 @@ public class ServerBehaviour
     Socket listener;
     Socket handler;
     private bool listen;
+
+    private List<(string name, int connectionNumber)> connectionNames;
 
     /// <summary>
     /// Get ipaddress for pc this function is run on.
@@ -57,6 +62,7 @@ public class ServerBehaviour
     /// </summary>
     public void FindConnections()
     {
+        /// TODO make sure that I don't add too many?
         server = null;
         try
         {
@@ -249,21 +255,31 @@ public class ServerBehaviour
                             }
                             else if (data.Contains("<Connecting>"))
                             {
+
                                 /// Add new client to list of players in lobby:
                                 data = data.Substring(0, data.Length - 12);
                                 Debug.Log("Server - Connecting client with name: " + data);
                                 GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(data);
 
+                                /// Add name of the client to list:
+                                connectionNames.Add((data, i));
+
                                 /// Send info back to client just connected about the lobby.
                                 NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
-                                string message = nm.matchName + "<Match>";
-                                message += nm.userName + "<HostName>";
+                                string message = nm.userName + "<HostName>";
                                 
-                                int j = 1;
-                                /// Get names of all players in lobby.
-                                while (j < nm.playerNames.Count && nm.playerNames[j].activeSelf)
+                                /// Get names of all players in lobby:
+                                int j = 0;
+                                while (j < nm.attackerNames.Count && nm.attackerNames[j].activeSelf)
                                 {
-                                    message += nm.playerNames[j].transform.Find("Text").GetComponent<Text>().text + "<PlayerName>";
+                                    message += nm.attackerNames[j].transform.Find("Text").GetComponent<Text>().text + "<AttackerName>";
+                                    j++;
+                                }
+
+                                j = 0;
+                                while (j < nm.defenderNames.Count && nm.defenderNames[j].activeSelf)
+                                {
+                                    message += nm.defenderNames[j].transform.Find("Text").GetComponent<Text>().text + "<DefenderName>";
                                     j++;
                                 }
 
@@ -325,12 +341,13 @@ public class ServerBehaviour
                             Debug.Log("Server - Disconnecting client...");
 
                             /// Remove client that disconnected from list of people who ARE indeed connected.
-                            GameObject.Find("GameManager").GetComponent<NetworkingManager>().RemovePlayerAtPosition(i + 1);
+                            string name = connectionNames.Where(x => x.connectionNumber == i).First().name;  /// TODO check that they don't have the same name?;
+                            GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindPlayerForRemoval(name);
 
                             /// Create writer to send message to other clients that client with connection i is disconnecting.
                             var writer = new DataStreamWriter(100, Allocator.Temp);
 
-                            writer.Write(Encoding.ASCII.GetBytes((i + 1).ToString() + "<ClientDisconnect>"));
+                            writer.Write(Encoding.ASCII.GetBytes(name + "<ClientDisconnect>"));
                             for (int k = 0; k < m_connections.Length; k++)
                             {
                                 /// Send message to client as long as it is not the connected one.

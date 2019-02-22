@@ -147,12 +147,6 @@ public class ClientBehaviour
         GameObject gm = GameObject.Find("GameManager");
         gm.GetComponent<NetworkingManager>().connectionField.SetActive(true);
         gm.GetComponent<NetworkingManager>().chatField.SetActive(false);
-
-        /// Delete past chat:
-        for (int i = 1; i < messageTexts.Count; i++)
-        {
-            messageTexts[i].GetComponent<Text>().text = "";
-        }
     }
 
     /// <summary>
@@ -394,30 +388,38 @@ public class ClientBehaviour
                 if (data.Contains("<Connected>"))
                 {
                     NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
-                    /// Receives matchname:
-                    GameObject.Find("MatchName").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<Match>"));
-                    data = data.Substring(data.IndexOf("<Match>") + 7, data.Length - (data.IndexOf("<Match>") + 7));
 
                     /// Receives hostname:
-                    nm.playerNames[0].SetActive(true);
-                    nm.playerNames[0].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<HostName>"));
+                    nm.hostText.SetActive(true);
+                    nm.hostText.transform.Find("Text").GetComponent<Text>().text = "Host: " + data.Substring(0, data.IndexOf("<HostName>"));
                     data = data.Substring(data.IndexOf("<HostName>") + 10, data.Length - (data.IndexOf("<HostName>") + 10));
 
-                    /// Receives names of other people in lobby(if any):
-                    int i = 1;
-                    while (data.Contains("<PlayerName>"))
+                    /// Receives names of other people in attackerlist(if any).
+                    int i = 0;
+                    while (data.Contains("<AttackerName>"))
                     {
-                        nm.playerNames[i].SetActive(true);
-                        nm.playerNames[i].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<PlayerName>"));
+                        nm.attackerNames[i].SetActive(true);
+                        nm.attackerNames[i].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<AttackerName>"));
 
-                        int offsetPosition = data.IndexOf("<PlayerName>") + 12;
+                        int offsetPosition = data.IndexOf("<AttackerName>") + 14;
                         data = data.Substring(offsetPosition, data.Length - offsetPosition);
                         i++;
                     }
-                    /// TODO set the rest of the playerNames.active to false.
-                    /// TODO make sure that I don't add too many?
-                    
-                    nm.playerNames[i].transform.Find("Text").GetComponent<Text>().text = nm.userName;
+
+                    /// Receives names of other people in defenderlist(if any).
+                    i = 0;
+                    while(data.Contains("<DefenderName>"))
+                    {
+                        nm.attackerNames[i].SetActive(true);
+                        nm.attackerNames[i].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<DefenderName>"));
+
+                        int offsetPosition = data.IndexOf("<DefenderName>") + 14;
+                        data = data.Substring(offsetPosition, data.Length - offsetPosition);
+                        i++;
+                    }
+
+                    /// Add your own name to list:
+                    nm.AddPlayerName(nm.userName);
 
                     Debug.Log("Client - You are connected to server!");
                 }
@@ -441,10 +443,10 @@ public class ClientBehaviour
                 }
                 else if (data.Contains("<ClientDisconnect>"))
                 {
-                    string position = data.Substring(0, data.IndexOf("<ClientDisconnect>"));
+                    string name = data.Substring(0, data.IndexOf("<ClientDisconnect>"));
                     /// Remove client that disconnected from list of people who ARE indeed connected.
                     Debug.Log("removing other client");
-                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().RemovePlayerAtPosition(Int32.Parse(position));
+                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindPlayerForRemoval(name);
                 }
                 else if (data.Contains("<Disconnect>"))
                 {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -18,19 +19,26 @@ using UnityEngine.UI;
 public class NetworkingManager : MonoBehaviour
 {
     public string userName;
-    public string matchName;
 
     public bool isSpectator;
     public GameObject chatField;
     public GameObject connectionField;
     public GameObject gameField;
 
+    public GameObject hostText;
+
 
     /// <summary>
-    /// playerNames is used to see name of players currently in the lobby.
+    /// List of names is used to see name of players currently in the lobby.
     /// </summary>
-    public List<GameObject> playerNames;
+    public List<GameObject> attackerNames;
+    public List<GameObject> defenderNames;
+    public List<GameObject> messageList;
 
+
+    /// <summary>
+    /// There are two different behaviours a player can have, hosting a game or joining a game someone else is hosting:
+    /// </summary>
     private ClientBehaviour cb;
     private ServerBehaviour sb;
 
@@ -44,13 +52,33 @@ public class NetworkingManager : MonoBehaviour
         cb = null;
         sb = null;
 
+        hostText = GameObject.Find("HostText");
+
         /// Get playername positions from the beginning for use in future.
-        GameObject players = GameObject.Find("Players");
-        foreach (Transform child in players.transform)
+        GameObject attackers = GameObject.Find("Attackers");
+        GameObject defenders = GameObject.Find("Defenders");
+        GameObject messages = GameObject.Find("MessageField");
+
+        /// Get reference to objects used later on:
+        foreach (Transform attacker in attackers.transform)
         {
-            if (child != players.transform)
+            if (attacker != attackers.transform)
             {
-                playerNames.Add(child.gameObject);
+                attackerNames.Add(attacker.gameObject);
+            }
+        }
+        foreach (Transform defender in defenders.transform)
+        {
+            if (defender != defenders.transform)
+            {
+                defenderNames.Add(defender.gameObject);
+            }
+        }
+        foreach (Transform message in messages.transform)
+        {
+            if (message != messages.transform)
+            {
+                defenderNames.Add(message.gameObject);
             }
         }
 
@@ -83,6 +111,8 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void ExitGame()
     {
+        /// Stop connection.
+        DisconnectFromServer();
         /// Close game view:
         gameField.SetActive(false);
         /// Open connection view:
@@ -126,64 +156,63 @@ public class NetworkingManager : MonoBehaviour
     /// <param name="isSpec"></param>
     public void SetupNetworkingManager(bool isSpec)
     {
-        isSpectator = isSpec;
-        GameObject gm = GameObject.Find("GameManager");
-        if (isSpectator)
+        /// Get username from user before changing view:
+        userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
+
+        /// Can try to join lobby/start game when player actually has a name.
+        if (userName != null && userName != "")
         {
-            if (sb == null && cb == null)
+            isSpectator = isSpec;
+            GameObject gm = GameObject.Find("GameManager");
+            if (isSpectator)
             {
-                sb = new ServerBehaviour();
+                /// Instantiate behaviour:
+                if (sb == null && cb == null)
+                {
+                    sb = new ServerBehaviour();
+                }
+
+                /// Changing view:
+                chatField.SetActive(true);
+                connectionField.SetActive(false);
+                GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
+                GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
+
+                /// Set username of host on top of screen for everyone to see.
+                Text T = GameObject.Find("HostText").GetComponent<Text>();
+                T.text = "Host: " + userName;
+                
+                /// Set to false as host no client has joined a lobby before it starts.
+                for (int i = 0; i < attackerNames.Count; i++)
+                {
+                    attackerNames[i].SetActive(false);
+                }
+                for (int i = 0; i < defenderNames.Count; i++)
+                {
+                    defenderNames[i].SetActive(false);
+                }
             }
-
-            /// Get match name from user before changing view:
-            matchName = GameObject.Find("MatchNameInputField").GetComponent<InputField>().text;
-            userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
-
-            /// Setting premade names if none is already there.
-            if (matchName == null || matchName == "")
+            else
             {
-                matchName = "Summoner's Rift";
-            }
-            if (userName == null || userName == "")
-            {
-                userName = "Player 1";
-            }
+                /// Add client behaviour and try to find a host.
+                if (cb == null && sb == null)
+                {
+                    cb = new ClientBehaviour(this);
+                }
+                
+                /// Set to false as host no client has joined a lobby before it starts.
+                for (int i = 0; i < attackerNames.Count; i++)
+                {
+                    attackerNames[i].SetActive(false);
+                }
+                for (int i = 0; i < defenderNames.Count; i++)
+                {
+                    defenderNames[i].SetActive(false);
+                }
 
-            /// Changing view:
-            chatField.SetActive(true);
-            connectionField.SetActive(false);
-            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
-            GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
-
-            /// Set match name as title on new view, and username as first one in lobby:
-            GameObject.Find("MatchName").GetComponent<Text>().text = matchName;
-            playerNames[0].transform.Find("Text").GetComponent<Text>().text = userName;
-
-            /// Set to false as host is the only one in lobby when it starts.
-            for (int i = 1; i < playerNames.Count; i++)
-            {
-                playerNames[i].SetActive(false);
+                /// Make client connect to host or disconnect.
+                cb.Connect(this);
             }
-        }
-        else
-        {
-            /// Add client behaviour and try to find a host.
-            if (cb == null && sb == null)
-            {
-                cb = new ClientBehaviour(this);
-            }
-
-            /// Get username from user before changing view to lobby view if host is found.
-            userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
-
-            /// Set to false until names of all players in lobby is collected:
-            for (int i = 0; i < playerNames.Count; i++)
-            {
-                playerNames[i].SetActive(false);
-            }
-            
-            /// Make client connect to host or disconnect.
-            cb.Connect(this);
         }
     }
 
@@ -240,15 +269,11 @@ public class NetworkingManager : MonoBehaviour
             sb.m_connections.Dispose();
             sb.m_ServerDriver.Dispose();
             sb = null;
-
-            /// Delete chat from lobby exiting:
-            Transform trans = chatField.transform.Find("MessageField").transform;
-            foreach (Transform child in trans)
+            
+            /// Delete chat when exiting lobby:
+            for (int i = 0; i < messageList.Count; i++)
             {
-                if (child != trans)
-                {
-                    child.gameObject.GetComponent<Text>().text = "";
-                }
+                messageList[i].gameObject.GetComponent<Text>().text = "";
             }
 
 
@@ -262,19 +287,15 @@ public class NetworkingManager : MonoBehaviour
         }
         else
         {
-            /// Get reference to chatfield for client connection to host:
-            List<GameObject> messageTexts = new List<GameObject>();
-            Transform trans = chatField.transform.Find("MessageField").transform;
-            foreach (Transform child in trans)
+            
+            /// Delete past chat:
+            for (int i = 1; i < messageList.Count; i++)
             {
-                if (child != trans)
-                {
-                    messageTexts.Add(child.gameObject);
-                }
+                messageList[i].GetComponent<Text>().text = "";
             }
 
             /// Delete chat text as client is disconnecting from lobby.
-            cb.Disconnect(messageTexts);
+            cb.Disconnect(messageList);
 
             /// Disconnect client from host.
             cb.m_clientToServerConnection.Disconnect(cb.m_ClientDriver);
@@ -285,41 +306,96 @@ public class NetworkingManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Will swap the position of two players in lobby, so that they can switch between being a defender/attacker. TODO make this shit
+    /// </summary>
+    public void SwapPosition()
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <summary>
+    /// Find location in lobby where name (given as parameter) exists and remove it.
+    /// </summary>
+    /// <param name="name"></param>
+    public void FindPlayerForRemoval(string name)
+    {
+        /// Find position of player:
+        for (int i = 0; i < attackerNames.Count; i++)
+        {
+            /// Check for player wanted to be removed being in attackerlist.
+            if (attackerNames[i].activeSelf)
+            {
+                if (attackerNames[i].transform.Find("Text").GetComponent<Text>().text == name)
+                {
+                    RemovePlayer(attackerNames, i);
+                    return;
+                }
+            }
+        }
+
+        for (int i = 0; i < defenderNames.Count; i++)
+        {
+            /// Check for player wanted to be removed being in defenderlist.
+            if (defenderNames[i].activeSelf)
+            {
+                if (attackerNames[i].transform.Find("Text").GetComponent<Text>().text == name)
+                {
+                    RemovePlayer(defenderNames, i);
+                    return;
+                }
+            }
+        }
+    }
 
     /// <summary>
-    /// When a player leaves the lobby their name is removed from the list.
+    /// Removes the player at given position and resets the list of players.
     /// </summary>
-    public void RemovePlayerAtPosition(int listNr)
+    /// <param name="nameList"></param>
+    public void RemovePlayer(List<GameObject> nameList, int position)
     {
         /// Move one above in list to the one below: (Will overwrite position of where wanted player to be removed is.)
-        while (listNr < playerNames.Count - 1)
+        while (position < nameList.Count - 1)
         {
             /// Check if next in list is used.
-            if (playerNames[listNr + 1].activeSelf)
+            if (nameList[position + 1].activeSelf)
             {
-                playerNames[listNr].transform.Find("Text").GetComponent<Text>().text = playerNames[listNr + 1].transform.Find("Text").GetComponent<Text>().text;
+                nameList[position].transform.Find("Text").GetComponent<Text>().text = nameList[position + 1].transform.Find("Text").GetComponent<Text>().text;
             }
             else
             {
                 break;
             }
-            listNr++;
+            position++;
         }
         /// Remove last position in list that is no longer used.
-        playerNames[listNr].SetActive(false);
+        nameList[position].SetActive(false);
     }
 
     /// <summary>
-    /// When a player joins the lobby their name is added to the list.
+    /// When a player joins the lobby their name is added to one of the lists.
     /// </summary>
     public void AddPlayerName(string newName)
     {
-        int i = 1;
-        while (playerNames[i++].activeSelf) ;
-        i--;
+        /// Look through all available spots and use the first available:
+        for (int i = 0; i < attackerNames.Count; i++)
+        {
+            /// If spot within attacker list is available; Use spot in that list.
+            if (attackerNames[i].activeSelf)
+            {
+                attackerNames[i].SetActive(true);
+                attackerNames[i].transform.Find("Text").GetComponent<Text>().text = newName;
+                return;
+            }
 
-        playerNames[i].SetActive(true);
-        playerNames[i].transform.Find("Text").GetComponent<Text>().text = newName;
+            /// If spot within defender list is available; Use spot in that list.
+            if (defenderNames[i].activeSelf)
+            {
+                defenderNames[i].SetActive(true);
+                defenderNames[i].transform.Find("Text").GetComponent<Text>().text = newName;
+                return;
+            }
+        }
     }
 
 
@@ -354,8 +430,6 @@ public class NetworkingManager : MonoBehaviour
     /// <param name="msg"></param>
     public void GetMessage(string msg)
     {
-        //GameObject.Find("MessageText").GetComponent<Text>().text = msg;
-
         // Put message in textbox for testing:
         MoveChatBox();
         GameObject.Find("MessageText1").GetComponent<Text>().text = msg;
@@ -366,9 +440,10 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     void MoveChatBox()
     {
-        GameObject.Find("MessageText5").GetComponent<Text>().text = GameObject.Find("MessageText4").GetComponent<Text>().text;
-        GameObject.Find("MessageText4").GetComponent<Text>().text = GameObject.Find("MessageText3").GetComponent<Text>().text;
-        GameObject.Find("MessageText3").GetComponent<Text>().text = GameObject.Find("MessageText2").GetComponent<Text>().text;
-        GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
+        /// Move messages in chat one line in list:
+        for (int i = 0; i < messageList.Count - 1; i++)
+        {
+            messageList[i].GetComponent<Text>().text = messageList[i].GetComponent<Text>().text;
+        }
     }
 }
