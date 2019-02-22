@@ -197,7 +197,7 @@ public class AttackerUI : MonoBehaviour
             return;
 
         onClickMenu.SetActive(toggle);
-        onClickMenu.GetComponent<RectTransform>().localPosition = pos;
+        onClickMenu.GetComponent<RectTransform>().position = pos;
     }
 
     /// <summary>

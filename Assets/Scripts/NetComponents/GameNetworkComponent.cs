@@ -38,7 +38,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     public void Start()
     {
         RectTransform rectTransform = GetComponent<RectTransform>();
-        Vector3 pos = new Vector3(rectTransform.localPosition.x + rectTransform.rect.height * 1.5f, rectTransform.localPosition.y);
+        Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
         uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
         uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
 
