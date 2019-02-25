@@ -78,7 +78,7 @@ public class NetworkingManager : MonoBehaviour
         {
             if (message != messages.transform)
             {
-                defenderNames.Add(message.gameObject);
+                messageList.Add(message.gameObject);
             }
         }
 
@@ -377,11 +377,13 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void AddPlayerName(string newName)
     {
+        Debug.Log("Networking manager adding name");
         /// Look through all available spots and use the first available:
         for (int i = 0; i < attackerNames.Count; i++)
         {
+            Debug.Log("Networking manager - i: " + i);
             /// If spot within attacker list is available; Use spot in that list.
-            if (attackerNames[i].activeSelf)
+            if (!attackerNames[i].activeSelf)
             {
                 attackerNames[i].SetActive(true);
                 attackerNames[i].transform.Find("Text").GetComponent<Text>().text = newName;
@@ -389,7 +391,7 @@ public class NetworkingManager : MonoBehaviour
             }
 
             /// If spot within defender list is available; Use spot in that list.
-            if (defenderNames[i].activeSelf)
+            if (!defenderNames[i].activeSelf)
             {
                 defenderNames[i].SetActive(true);
                 defenderNames[i].transform.Find("Text").GetComponent<Text>().text = newName;
@@ -432,7 +434,7 @@ public class NetworkingManager : MonoBehaviour
     {
         // Put message in textbox for testing:
         MoveChatBox();
-        GameObject.Find("MessageText1").GetComponent<Text>().text = msg;
+        messageList[messageList.Count - 1].GetComponent<Text>().text = msg;
     }
 
     /// <summary>
@@ -443,7 +445,11 @@ public class NetworkingManager : MonoBehaviour
         /// Move messages in chat one line in list:
         for (int i = 0; i < messageList.Count - 1; i++)
         {
-            messageList[i].GetComponent<Text>().text = messageList[i].GetComponent<Text>().text;
+            if (!messageList[i].activeSelf)
+            {
+                messageList[i].SetActive(true);
+            }
+            messageList[i].GetComponent<Text>().text = messageList[i + 1].GetComponent<Text>().text;/// TODO, check for i+1 doable
         }
     }
 }

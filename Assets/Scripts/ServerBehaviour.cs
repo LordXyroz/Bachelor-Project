@@ -140,8 +140,11 @@ public class ServerBehaviour
     /// </summary>
     public ServerBehaviour()
     {
-        Task.Factory.StartNew(() => FindConnections());
 
+        connectionNames = new List<(string name, int connectionNumber)> { };
+
+        Task.Factory.StartNew(() => FindConnections());
+        
         // Create the server driver, bind it to a port and start listening for incoming connections
         m_ServerDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
         if (m_ServerDriver.Bind(new IPEndPoint(IPAddress.Parse(GetLocalIPAddress()), 9000)) != 0)
@@ -162,9 +165,9 @@ public class ServerBehaviour
     /// <param name="message"></param>
     public void SendChatMessage(string message)
     {
-        // Put message in textbox for chat:
-        MoveChatBox();
-        GameObject.Find("MessageText1").GetComponent<Text>().text = message;
+        /// Put message in textbox for chat:
+        NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
+        nm.GetMessage(message);
 
         /// If any client has joined the lobby, the host will send the message to them:
         if (m_connections.IsCreated)
@@ -257,12 +260,12 @@ public class ServerBehaviour
                             {
 
                                 /// Add new client to list of players in lobby:
-                                data = data.Substring(0, data.Length - 12);
-                                Debug.Log("Server - Connecting client with name: " + data);
-                                GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(data);
+                                string name = data.Substring(0, data.Length - 12);
+                                Debug.Log("Server - Connecting client with name: " + name);
+                                GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(name);
 
                                 /// Add name of the client to list:
-                                connectionNames.Add((data, i));
+                                connectionNames.Add((name, i));
 
                                 /// Send info back to client just connected about the lobby.
                                 NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
@@ -290,7 +293,7 @@ public class ServerBehaviour
 
                                 /// Send another message to all other clients that this client has connected:
                                 var connectionWriter = new DataStreamWriter(150, Allocator.Temp);
-                                message = data + "<ClientConnect>";
+                                message = name + "<ClientConnect>";
                                 connectionWriter.Write(Encoding.ASCII.GetBytes(message));
                                 
                                 for (int k = 0; k < m_connections.Length; k++)

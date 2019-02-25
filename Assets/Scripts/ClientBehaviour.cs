@@ -390,8 +390,8 @@ public class ClientBehaviour
                     NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
 
                     /// Receives hostname:
-                    nm.hostText.SetActive(true);
-                    nm.hostText.transform.Find("Text").GetComponent<Text>().text = "Host: " + data.Substring(0, data.IndexOf("<HostName>"));
+                    Debug.Log("Names gotten from server: " + data);
+                    nm.hostText.GetComponent<Text>().text = "Host: " + data.Substring(0, data.IndexOf("<HostName>"));
                     data = data.Substring(data.IndexOf("<HostName>") + 10, data.Length - (data.IndexOf("<HostName>") + 10));
 
                     /// Receives names of other people in attackerlist(if any).
@@ -419,7 +419,7 @@ public class ClientBehaviour
                     }
 
                     /// Add your own name to list:
-                    nm.AddPlayerName(nm.userName);
+                    //nm.AddPlayerName(nm.userName);
 
                     Debug.Log("Client - You are connected to server!");
                 }
