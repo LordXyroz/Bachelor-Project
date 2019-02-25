@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
+using MessagingInterfaces;
 
 /// <summary>
 /// Static class to handle messaging between GameObjects in the scene.

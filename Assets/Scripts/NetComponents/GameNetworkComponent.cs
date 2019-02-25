@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MessagingInterfaces;
 
 /// <summary>
 /// The class used for creating components for the ingame network.

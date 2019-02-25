@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MessagingInterfaces;
 
 /// <summary>
 /// The class used for creating various attacks.
