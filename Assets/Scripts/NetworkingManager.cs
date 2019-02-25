@@ -449,7 +449,7 @@ public class NetworkingManager : MonoBehaviour
             {
                 messageList[i].SetActive(true);
             }
-            messageList[i].GetComponent<Text>().text = messageList[i + 1].GetComponent<Text>().text;/// TODO, check for i+1 doable
+            messageList[i].GetComponent<Text>().text = messageList[i + 1].GetComponent<Text>().text;
         }
     }
 }

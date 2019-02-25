@@ -258,17 +258,17 @@ public class ServerBehaviour
                             }
                             else if (data.Contains("<Connecting>"))
                             {
+                                NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
 
                                 /// Add new client to list of players in lobby:
                                 string name = data.Substring(0, data.Length - 12);
                                 Debug.Log("Server - Connecting client with name: " + name);
-                                GameObject.Find("GameManager").GetComponent<NetworkingManager>().AddPlayerName(name);
+                                nm.AddPlayerName(name);
 
-                                /// Add name of the client to list:
+                                /// Add name of the client to serverlist:
                                 connectionNames.Add((name, i));
-
-                                /// Send info back to client just connected about the lobby.
-                                NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
+                                
+                                /// Setup info to send to all clients about new client connecting:
                                 string message = nm.userName + "<HostName>";
                                 
                                 /// Get names of all players in lobby:
@@ -287,11 +287,15 @@ public class ServerBehaviour
                                 }
 
                                 writer.Write(Encoding.ASCII.GetBytes(message + "<Connected>"));
-                                /// Send a message back to the client, with information about the connection.
-                                m_ServerDriver.Send(m_connections[i], writer);
+
+                                /// Send a message to all of the clients with information about the connection.
+                                for (int k = 0; k < m_connections.Length; k++)
+                                {
+                                    m_ServerDriver.Send(m_connections[k], writer);
+                                }
 
 
-                                /// Send another message to all other clients that this client has connected:
+                                /*/// Send another message to all other clients that this client has connected:
                                 var connectionWriter = new DataStreamWriter(150, Allocator.Temp);
                                 message = name + "<ClientConnect>";
                                 connectionWriter.Write(Encoding.ASCII.GetBytes(message));
@@ -304,7 +308,8 @@ public class ServerBehaviour
                                         m_ServerDriver.Send(m_connections[k], connectionWriter);
                                     }
                                 }
-                                connectionWriter.Dispose();
+                                
+                                connectionWriter.Dispose();*/
                             }
                             else if (data.Contains("<ChatMessage>"))
                             {

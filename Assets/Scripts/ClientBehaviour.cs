@@ -384,15 +384,18 @@ public class ClientBehaviour
                 /// Read message sent from client and respond to that:
                 byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
                 string data = Encoding.ASCII.GetString(bytes);
-
+                
                 if (data.Contains("<Connected>"))
                 {
+                    /// A client just connected.
+                    
                     NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
 
                     /// Receives hostname:
                     Debug.Log("Names gotten from server: " + data);
                     nm.hostText.GetComponent<Text>().text = "Host: " + data.Substring(0, data.IndexOf("<HostName>"));
                     data = data.Substring(data.IndexOf("<HostName>") + 10, data.Length - (data.IndexOf("<HostName>") + 10));
+                    
 
                     /// Receives names of other people in attackerlist(if any).
                     int i = 0;
@@ -408,10 +411,10 @@ public class ClientBehaviour
 
                     /// Receives names of other people in defenderlist(if any).
                     i = 0;
-                    while(data.Contains("<DefenderName>"))
+                    while (data.Contains("<DefenderName>"))
                     {
-                        nm.attackerNames[i].SetActive(true);
-                        nm.attackerNames[i].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<DefenderName>"));
+                        nm.defenderNames[i].SetActive(true);
+                        nm.defenderNames[i].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<DefenderName>"));
 
                         int offsetPosition = data.IndexOf("<DefenderName>") + 14;
                         data = data.Substring(offsetPosition, data.Length - offsetPosition);
@@ -435,7 +438,7 @@ public class ClientBehaviour
                     data = data.Substring(0, data.Length - 10);
                     Debug.Log("Client - got scenario: " + data);
                 }
-                else if (data.Contains("<ClientConnect>"))
+                else if (data.Contains("<ClientConnect>"))///don't need this anymore? TODO
                 {
                     NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                     /// Add new client connected to list of players in lobby:
