@@ -26,6 +26,7 @@ public class SelectedObject : MonoBehaviour
     private Image image;
     private Image[] images;     /// For reference lines
     private Image imageBox;     /// For system components
+    private RectTransform componentMenu;
 
 
     void Start()
@@ -39,6 +40,7 @@ public class SelectedObject : MonoBehaviour
         systemComponentsToObject = null;
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         images = GetComponentsInChildren<Image>();
+        componentMenu = canvas.transform.Find("SystemComponentMenu").gameObject.GetComponent<RectTransform>();
     }
 
 
@@ -126,12 +128,32 @@ public class SelectedObject : MonoBehaviour
                         img.material = selectMat;
                     }
                 }
-
             }
         }
         else
         {
             Debug.Log("Selected connection line:  " + newSelected.name);
+        }
+    }
+
+
+    public void DeselectObjects()
+    {
+        if (selected != null)
+        {
+            image.material = default;
+            foreach (Image img in images)
+            {
+                img.material = default;
+            }
+            imageBox.gameObject.SetActive(false);
+            oldSelected = selected;
+            selected = null;
+        }
+
+        if (componentMenu.gameObject.activeInHierarchy)
+        {
+            componentMenu.gameObject.SetActive(false);
         }
     }
 

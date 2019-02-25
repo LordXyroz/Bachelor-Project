@@ -5,11 +5,6 @@ using UnityEngine.UI;
 /// <summary>
 /// This script is added to all drag-and-drop UI elements
 /// </summary>
-/// 
-
-/// TODO 
-/// - delete references when object is dragged out of frame and deleted
-/// 
 
 public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -33,10 +28,13 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         mainCamera = Camera.main;
         objectSelect = FindObjectOfType<SelectedObject>();
         systemComponent = GetComponent<SystemComponent>();
+
+        /// Only system components are draggable and start with one image object
         if (GetComponent<Image>() != null)
         {
             originalColor = GetComponent<Image>().color;
             systemComponentImage = GetComponent<Image>();
+            parentToReturnTo = this.gameObject.transform.parent;
         }
     }
 

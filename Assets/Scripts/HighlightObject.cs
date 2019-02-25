@@ -10,9 +10,11 @@ using UnityEngine.UI;
 public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("The objects that need to be referenced")]
+    private RectTransform componentMenu;
     private SelectedObject objectSelect;
     private TMP_Text currentToolTipText;
     private Canvas canvas;
+    private DropZone dropZone;
 
     [Header("Visual properties for this object")]
     public GameObject selectionBox;
@@ -22,6 +24,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private Image[] images;
     private Color originalColor;
     public string tooltipText;
+
 
 
     public void Start()
@@ -43,6 +46,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         canvas = GetComponentInParent<Canvas>();
         currentToolTipText = canvas.transform.Find("TooltipText").GetComponent<TMP_Text>();
         currentToolTipText.text = "";
+        componentMenu = canvas.transform.Find("SystemComponentMenu").gameObject.GetComponent<RectTransform>();
     }
 
 
@@ -88,32 +92,17 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (componentMenu.gameObject.activeInHierarchy)
+        {
+            componentMenu.gameObject.SetActive(false);
+        }
 
         /// Only selectable if it is located in the SystemSetupScreen editor area
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null
             || this.transform.parent.parent.gameObject.GetComponent<DropZone>() != null)
         {
-            if (image != null)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                objectSelect.SelectObject(this.gameObject, false, true);
-            }
-            else
-            {
-                objectSelect.SelectObject(this.gameObject, false, false);
-            }
-        }
-
-        if (eventData.button == PointerEventData.InputButton.Right)
-        {
-            /*/// Only selectable if it is located in the SystemSetupScreen editor area
-            if (this.transform.parent.gameObject.GetComponent<DropZone>() != null
-                || this.transform.parent.parent.gameObject.GetComponent<DropZone>() != null)
-            {
-
-
-                GameObject componentMenu = this.gameObject.transform.Find("SelectedObjectMenu").gameObject;
-                Debug.Log("Activating game object: " + componentMenu.name);
-                componentMenu.SetActive(true);
                 if (image != null)
                 {
                     objectSelect.SelectObject(this.gameObject, false, true);
@@ -122,8 +111,27 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 {
                     objectSelect.SelectObject(this.gameObject, false, false);
                 }
-            }*/
-        }
+            }
 
+            else if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                if (objectSelect.selected != this.gameObject)
+                {
+                    if (image != null)
+                    {
+                        objectSelect.SelectObject(this.gameObject, false, true);
+                    }
+                    else
+                    {
+                        objectSelect.SelectObject(this.gameObject, false, false);
+                    }
+                }
+                Debug.Log("Activating game object: " + componentMenu.name);
+
+                componentMenu.transform.position = new Vector2(eventData.position.x + componentMenu.rect.width / 2,
+                                                                eventData.position.y + componentMenu.rect.height / 2);
+                componentMenu.gameObject.SetActive(true);
+            }
+        }
     }
 }

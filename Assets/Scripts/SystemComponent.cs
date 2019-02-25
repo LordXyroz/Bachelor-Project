@@ -4,12 +4,17 @@ using UnityEngine;
 
 /// <summary>
 /// This script is to be places on all system components.
-/// It keeps a list of all lines connected to the component.
 /// </summary>
 /// 
 
-/// TODO should always spawn as having the menu as parent?
+/// TODO 
+/// 
 /// Have a textbox with the type of component, only visible in the menu (next to the draggable prefab object)
+/// 
+/// Spawn a menu when rightclicked: display name, connect, delete, vulnerability list, vulnerability level
+///     - Load list of available vulnerabilities from file (list of enums)
+/// Save list of vulnerabilities and their vulnerability level
+
 public class SystemComponent : MonoBehaviour
 {
 
@@ -24,11 +29,13 @@ public class SystemComponent : MonoBehaviour
 
     [Header("Items needed for deleting a system component")]
     private SystemComponent systemComponent;
+    private DropZone dropZone;
 
 
     private void Start()
     {
         connectedReferenceLines = new List<GameObject>();
+        dropZone = FindObjectOfType<DropZone>();
     }
 
 
@@ -146,6 +153,7 @@ public class SystemComponent : MonoBehaviour
             systemComponent.connectedReferenceLines.Remove(line);
             Destroy(line);
         }
+        dropZone.editableSystemComponents.Remove(this.gameObject);
         Destroy(this.gameObject);
     }
 }
