@@ -37,16 +37,43 @@ public abstract class BaseUI : MonoBehaviour
     protected const float refHeight = 1080;
     protected const float refWidth = 1920;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// To be implemented by sub classes
+    /// </summary>
     public abstract void Start();
 
-    // Update is called once per frame
+    /// <summary>
+    /// To be implemented by sub classes
+    /// </summary>
     public abstract void Update();
 
+    /// <summary>
+    /// To be implemented by sub classes
+    /// </summary>
     public abstract void EnableStatsPanel();
+
+    /// <summary>
+    /// To be implemented by sub classes
+    /// </summary>
     public abstract void EnableInfoPanel();
+
+    /// <summary>
+    /// To be implemented by sub classes
+    /// </summary>
     public abstract void EnableActionPanel();
 
+    /// <summary>
+    /// To be implemented by sub classes
+    /// </summary>Info to populate the panel with</param>
+    public abstract void PopulateInfoPanel(NodeInfo info);
+
+    /// <summary>
+    /// Enables the tooltip box, and positions it with an offset.
+    /// Changes allignment and direction based on if pos is on the left or right side of the screen.
+    /// </summary>
+    /// <param name="text">Text to be displayed</param>
+    /// <param name="pos">Where to place tooltip</param>
+    /// <param name="rect">Rect of the UI element used for width/height offset</param>
     public void EnableToolTip(string text, Vector2 pos, Rect rect)
     {
         tooltipText.text = text;
@@ -70,6 +97,12 @@ public abstract class BaseUI : MonoBehaviour
         tooltipObject.SetActive(true);
     }
 
+    /// <summary>
+    /// Enables/Disables the progressbar popup, and sets the texts to display.
+    /// </summary>
+    /// <param name="toggle">Whether to enable or disable</param>
+    /// <param name="title">Title text</param>
+    /// <param name="text">Info text</param>
     public void ToggleProgressbar(bool toggle, string title, string text)
     {
         progressbarTitle.text = title;
@@ -78,6 +111,11 @@ public abstract class BaseUI : MonoBehaviour
         progressbarObject.SetActive(toggle);
     }
 
+    /// <summary>
+    /// Toggles the OnClick menu, and moves it to a target position
+    /// </summary>
+    /// <param name="toggle">Whether to enable or disable</param>
+    /// <param name="pos">Position to move to</param>
     public void ToggleOnClickMenu(bool toggle, Vector3 pos)
     {
         if (popupWindowObject.activeSelf || progressbarObject.activeSelf)
@@ -87,6 +125,12 @@ public abstract class BaseUI : MonoBehaviour
         onClickMenu.GetComponent<RectTransform>().position = pos;
     }
 
+    /// <summary>
+    /// Toggles the popup window for displaying success/fail messages etc...
+    /// </summary>
+    /// <param name="toggle">Whether to toggle on or off</param>
+    /// <param name="title">Title text of the window</param>
+    /// <param name="text">Text message</param>
     public void TogglePopupWindow(bool toggle, string title, string text)
     {
         popupWindowTitle.text = title;
@@ -95,21 +139,35 @@ public abstract class BaseUI : MonoBehaviour
         popupWindowObject.SetActive(toggle);
     }
 
-    public abstract void PopulateInfoPanel(NodeInfo info);
-
+    /// <summary>
+    /// Fills the progressbar an amount based on current and max value
+    /// </summary>
+    /// <param name="value">Current value</param>
+    /// <param name="max">Max value</param>
     public void UpdateProgressbar(float value, float max)
     {
         progressbar.fillAmount = value / max;
     }
-    
+
+    /// <summary>
+    /// Disables the OnClick menu
+    /// </summary>
     public void DisableOnClickMenu()
     {
         onClickMenu.SetActive(false);
     }
+
+    /// <summary>
+    /// Hides popup window
+    /// </summary>
     public void DisablePopupWindow()
     {
         popupWindowObject.SetActive(false);
     }
+
+    /// <summary>
+    /// Hides tooltip
+    /// </summary>
     public void DisableToolTip()
     {
         tooltipObject.SetActive(false);

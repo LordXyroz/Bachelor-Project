@@ -22,7 +22,9 @@ public class DefenderUI : BaseUI
     public GameObject defensePanelArea;
     public GameObject defensButtonPrefab;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Adds buttons to the defense panel based on all defenses in the game.
+    /// </summary>
     override public void Start()
     {
         List<DefenseTypes> defenses = VulnerabilityPairings.GetAllDefenses();
@@ -37,7 +39,9 @@ public class DefenderUI : BaseUI
         }
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Checks for escape key, and closes panels/popups based on what is currently open.
+    /// </summary>
     override public void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -55,6 +59,9 @@ public class DefenderUI : BaseUI
         }
     }
 
+    /// <summary>
+    /// Enables the stats panel and disables all other panels
+    /// </summary>
     override public void EnableStatsPanel()
     {
         DisableToolTip();
@@ -65,6 +72,9 @@ public class DefenderUI : BaseUI
         actionsPanelObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Enables the info panel and disables all other panels
+    /// </summary>
     override public void EnableInfoPanel()
     {
         DisableToolTip();
@@ -75,6 +85,9 @@ public class DefenderUI : BaseUI
         actionsPanelObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Enables the defense panel and disables all other panels.
+    /// </summary>
     public void EnableDefensePanel()
     {
         DisableToolTip();
@@ -85,6 +98,9 @@ public class DefenderUI : BaseUI
         actionsPanelObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Enables the action panel and disables all other panels.
+    /// </summary>
     override public void EnableActionPanel()
     {
         DisableToolTip();
@@ -94,14 +110,12 @@ public class DefenderUI : BaseUI
         statsPanelObject.SetActive(false);
         defensePanelObject.SetActive(false);
     }
-    
-    public void UpdateStats(int res, int defLvl, int analyzeLvl)
-    {
-        statsResourcesText.text = res + " GB";
-        statsAtkDefLvlText.text = "Level - " + defLvl;
-        statsAnalyzeLvlText.text = "Level - " + analyzeLvl;
-    }
 
+    /// <summary>
+    /// Populates the info panel with new info.
+    /// Removes old vulnerability entries with new ones.
+    /// </summary>
+    /// <param name="info">Class containing the info to be displayed</param>
     public override void PopulateInfoPanel(NodeInfo info)
     {
         foreach (Transform child in infoPanelArea.transform)
@@ -124,5 +138,18 @@ public class DefenderUI : BaseUI
         }
 
         EnableInfoPanel();
+    }
+
+    /// <summary>
+    /// Updates all the text for the stats panel
+    /// </summary>
+    /// <param name="res">Amount of resources</param>
+    /// <param name="defLvl">Current level of defenses</param>
+    /// <param name="analyzeLvl">Current level of analysis</param>
+    public void UpdateStats(int res, int defLvl, int analyzeLvl)
+    {
+        statsResourcesText.text = res + " GB";
+        statsAtkDefLvlText.text = "Level - " + defLvl;
+        statsAnalyzeLvlText.text = "Level - " + analyzeLvl;
     }
 }

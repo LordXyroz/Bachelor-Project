@@ -117,6 +117,9 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         }
     }
 
+    /// <summary>
+    /// Removes current target selection.
+    /// </summary>
     public void ClearTarget()
     {
         if (!workInProgress)
@@ -168,6 +171,9 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         }
     }
 
+    /// <summary>
+    /// Function to be hooked up to a button. Starts probing a target.
+    /// </summary>
     public void StartProbe()
     {
         if (!workInProgress)
@@ -201,6 +207,10 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         MessagingManager.BroadcastMessage(new AnalyzeMessage(target.name, name, MessageTypes.Game.ANALYZE, analyzeProbability));
     }
 
+    /// <summary>
+    /// Sends a probe message.
+    /// Rests timers/bools.
+    /// </summary>
     public void Probe()
     {
         probeInProgress = false;
@@ -279,6 +289,13 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         uiScript.TogglePopupWindow(true, "Defense", "Implementation was " + ((message.success) ? "successful" : "stopped"));
     }
 
+    /// <summary>
+    /// From the IProbeResponse interface.
+    /// 
+    /// Listens to a MessageTypes.Game.PROBE_RESPONSE.
+    /// Updates the NodeInfo for the sender.
+    /// </summary>
+    /// <param name="message">Message containing the relevant info to be handled by the function</param>
     public void OnProbeResponse(ProbeResponseMessage message)
     {
         if (message.targetName == name)
@@ -300,6 +317,10 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         }
     }
 
+    /// <summary>
+    /// Function for starting upgrade of analysis.
+    /// Returns early if the level is at or above max level.
+    /// </summary>
     public void StartAnalyzeUpgrade()
     {
         if (analyzeLevel >= 3)
@@ -314,6 +335,10 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         }
     }
 
+    /// <summary>
+    /// Function for starting upgrade of defenses.
+    /// Returns early if the level is at or above max level.
+    /// </summary>
     public void StartDefenseUpgrade()
     {
         if (defenseLevel >= 3)
@@ -328,6 +353,11 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         }
     }
 
+    /// <summary>
+    /// Handles the actual upgrade of analysis.
+    /// Increments level and increases probability.
+    /// Resets timers and toggles.
+    /// </summary>
     void UpgradeAnalyze()
     {
         analyzeLevel++;
@@ -343,6 +373,11 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         workInProgress = false;
     }
 
+    /// <summary>
+    /// Handles the actual upgrade of defenses.
+    /// Increments level and increases probability.
+    /// Resets timers and toggles.
+    /// </summary>
     void UpgradeDefense()
     {
         defenseLevel++;

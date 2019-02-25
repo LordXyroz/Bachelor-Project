@@ -112,78 +112,6 @@ public class AttackerUI : BaseUI
     }
 
     /// <summary>
-    /// Enables the tooltip box, and positions it with an offset.
-    /// Changes allignment and direction based on if pos is on the left or right side of the screen.
-    /// </summary>
-    /// <param name="text">Text to be displayed</param>
-    /// <param name="pos">Where to place tooltip</param>
-    /// <param name="rect">Rect of the UI element used for width/height offset</param>
-    /*override public void EnableToolTip(string text, Vector2 pos, Rect rect)
-    {
-        tooltipText.text = text;
-
-        float xOffset = (rect.width / 2f) * (Screen.width /refWidth);
-        float yOffset = rect.height * (Screen.height / refHeight);
-
-        if (pos.x >= Screen.width / 2f)
-        {
-            xOffset = (xOffset * -1);
-            tooltipFrameTransform.pivot = new Vector2(1f, 0.5f);
-        }
-        else
-        {
-            tooltipFrameTransform.pivot = new Vector2(0f, 0.5f);
-        }
-        
-        Vector2 newPos = new Vector2(pos.x + xOffset, pos.y - yOffset);
-        
-        tooltipObject.GetComponent<RectTransform>().position = newPos;
-        tooltipObject.SetActive(true);
-    }*/
-
-    /// <summary>
-    /// Enables/Disables the progressbar popup, and sets the texts to display.
-    /// </summary>
-    /// <param name="toggle">Whether to enable or disable</param>
-    /// <param name="title">Title text</param>
-    /// <param name="text">Info text</param>
-    /*override public void ToggleProgressbar(bool toggle, string title, string text)
-    {
-        progressbarTitle.text = title;
-        progressbarText.text = text;
-
-        progressbarObject.SetActive(toggle);
-    }*/
-
-    /// <summary>
-    /// Toggles the OnClick menu, and moves it to a target position
-    /// </summary>
-    /// <param name="toggle">Whether to enable or disable</param>
-    /// <param name="pos">Position to move to</param>
-    /*override public void ToggleOnClickMenu(bool toggle, Vector3 pos)
-    {
-        if (popupWindowObject.activeSelf || progressbarObject.activeSelf)
-            return;
-
-        onClickMenu.SetActive(toggle);
-        onClickMenu.GetComponent<RectTransform>().position = pos;
-    }*/
-
-    /// <summary>
-    /// Toggles the popup window for displaying success/fail messages etc...
-    /// </summary>
-    /// <param name="toggle">Whether to toggle on or off</param>
-    /// <param name="title">Title text of the window</param>
-    /// <param name="text">Text message</param>
-    /*override public void TogglePopupWindow(bool toggle, string title, string text)
-    {
-        popupWindowTitle.text = title;
-        popupWindowText.text = text;
-
-        popupWindowObject.SetActive(toggle);
-    }*/
-
-    /// <summary>
     /// Populates the info panel with new info.
     /// Removes old vulnerability entries with new ones.
     /// </summary>
@@ -212,16 +140,6 @@ public class AttackerUI : BaseUI
 
         EnableInfoPanel();
     }
-    
-    /// <summary>
-    /// Fills the progressbar an amount based on current and max value
-    /// </summary>
-    /// <param name="value">Current value</param>
-    /// <param name="max">Max value</param>
-    /*override public void UpdateProgressbar(float value, float max)
-    {
-        progressbar.fillAmount = value / max;
-    }*/
 
     /// <summary>
     /// Updates all the text for the stats panel
@@ -237,30 +155,5 @@ public class AttackerUI : BaseUI
         statsAnalyzeLvlText.text = "Level - " + analyzeLvl;
         statsDiscoverLvlText.text = "Level - " + discoverLvl;
     }
-
-    ////// <summary>
-    ////// Disables the OnClick menu
-    ////// </summary>
-    ///public void DisableOnClickMenu()
-    ///{
-    ///    onClickMenu.SetActive(false);
-    ///}
-    ///
-    ////// <summary>
-    ////// Hides popup window
-    ////// </summary>
-    ///public void DisablePopupWindow()
-    ///{
-    ///    popupWindowObject.SetActive(false);
-    ///}
-    ///
-    ////// <summary>
-    ////// Hides tooltip
-    ////// </summary>
-    ///public void DisableToolTip()
-    ///{
-    ///    tooltipObject.SetActive(false);
-    ///}
-
 }
  
