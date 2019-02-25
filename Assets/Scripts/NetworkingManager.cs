@@ -381,7 +381,6 @@ public class NetworkingManager : MonoBehaviour
         /// Look through all available spots and use the first available:
         for (int i = 0; i < attackerNames.Count; i++)
         {
-            Debug.Log("Networking manager - i: " + i);
             /// If spot within attacker list is available; Use spot in that list.
             if (!attackerNames[i].activeSelf)
             {
@@ -432,7 +431,7 @@ public class NetworkingManager : MonoBehaviour
     /// <param name="msg"></param>
     public void GetMessage(string msg)
     {
-        // Put message in textbox for testing:
+        /// Put message in textbox:
         MoveChatBox();
         messageList[messageList.Count - 1].GetComponent<Text>().text = msg;
     }

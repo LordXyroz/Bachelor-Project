@@ -90,14 +90,22 @@ public class ServerBehaviour
             // Enter the listening loop.
             while (server != null)
             {
-                //Debug.Log("newconnection - Waiting for a connection... ");
+                if (m_connections.IsCreated)
+                {
+                    /// Lobby is full:
+                    if (m_connections.Length == 2) /// 2 is total amount of players
+                    {
+                        server.Stop();
+                        return;
+                    }
+                }
 
-                // Perform a blocking call to accept requests.
+                /// Perform a blocking call to accept requests.
                 TcpClient client = server.AcceptTcpClient();
 
                 data = null;
 
-                // Get a stream object for reading and writing
+                /// Get a stream object for reading and writing
                 NetworkStream stream = client.GetStream();
 
                 int i;
