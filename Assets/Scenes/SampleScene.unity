@@ -2877,7 +2877,7 @@ MonoBehaviour:
   popupWindowText: {fileID: 1978180737}
   statsPanelObject: {fileID: 1043722154}
   statsResourcesText: {fileID: 67690529}
-  statsAtkDefLvlText: {fileID: 0}
+  statsAtkDefLvlText: {fileID: 1599480001}
   statsAnalyzeLvlText: {fileID: 1639881221}
   statsDiscoverLvlText: {fileID: 720021774}
   actionsPanelObject: {fileID: 1238397395}
@@ -5437,7 +5437,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bddf1047fed7d544f9f9110618482237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerType: 2
+  playerType: 1
   uiScript: {fileID: 0}
   attackerUI: {fileID: 231441331}
   defenderUI: {fileID: 528354962}
@@ -12233,7 +12233,7 @@ PrefabInstance:
     - target: {fileID: 4682973927837351195, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -117.599976
+      value: -117.59985
       objectReference: {fileID: 0}
     - target: {fileID: 4682973927837351195, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}

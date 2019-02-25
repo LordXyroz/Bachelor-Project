@@ -68,7 +68,7 @@ public class Attack : MonoBehaviour, IAttackResponse
     public void Effect()
     {
         triggered = true;
-        MessagingManager.BroadcastMessage(new AttackMessage(target.name, name, MessageTypes.Game.ATTACK, attackType, probability));
+        MessagingManager.BroadcastMessage(new AttackMessage(target.name, name, MessageTypes.Game.Attack, attackType, probability));
     }
 
     /// <summary>

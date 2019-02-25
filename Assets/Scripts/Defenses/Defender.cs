@@ -100,6 +100,12 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
         if (defenseUpgradeTimer >= defenseUpgradeDuration)
             UpgradeDefense();
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            target = GameObject.Find("GoogleAPI");
+            StartDefense(0);
+        }
     }
 
     /// <summary>
@@ -142,7 +148,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
             string msg = "Started analyzing on: " + target.name;
 
-            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
             uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration);
             uiScript.ToggleProgressbar(true, "Analyze", "Analyzing " + target.name);
@@ -168,7 +174,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
             string msg = "Started implementing defense: " + go.GetComponent<Defense>().defenseType + ", on: " + target.name;
 
-            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
         }
     }
 
@@ -190,7 +196,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
             string msg = "Started probing: " + target.name;
 
-            MessagingManager.BroadcastMessage(new LoggingMessage(target.name, name, MessageTypes.Logging.LOG, msg));
+            MessagingManager.BroadcastMessage(new LoggingMessage(target.name, name, MessageTypes.Logging.Log, msg));
             uiScript.UpdateProgressbar(probeTimer, probeDuration);
             uiScript.ToggleProgressbar(true, "Probe", "Probing " + target.name);
         }
@@ -205,7 +211,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         analyzeInProgress = false;
         analyzeTimer = 0f;
 
-        MessagingManager.BroadcastMessage(new AnalyzeMessage(target.name, name, MessageTypes.Game.ANALYZE, analyzeProbability));
+        MessagingManager.BroadcastMessage(new AnalyzeMessage(target.name, name, MessageTypes.Game.Analyze, analyzeProbability));
     }
 
     /// <summary>
@@ -217,7 +223,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         probeInProgress = false;
         probeTimer = 0f;
 
-        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.PROBE));
+        MessagingManager.BroadcastMessage(new Message(target.name, name, MessageTypes.Game.Probe));
     }
     
     /// <summary>
@@ -265,7 +271,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
                     uiScript.TogglePopupWindow(true, "Failure", "No new vulnerabilties found");
             }
 
-            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
             uiScript.ToggleProgressbar(false, "", "");
             uiScript.PopulateInfoPanel(i);
@@ -284,7 +290,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
         string msg = "Defense response: " + ((message.success) ? "Success" : "Failed");
 
-        MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+        MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Defense", "Implementation was " + ((message.success) ? "successful" : "stopped"));
@@ -310,7 +316,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
             i.difficulty = message.difficulty;
 
             string msg = "Probe response: devices - " + message.numOfChildren + ", difficulty - " + message.difficulty;
-            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.LOG, msg));
+            MessagingManager.BroadcastMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
             uiScript.ToggleProgressbar(false, "", "");
             uiScript.TogglePopupWindow(true, "Success!", "Info on " + message.senderName + " found!");

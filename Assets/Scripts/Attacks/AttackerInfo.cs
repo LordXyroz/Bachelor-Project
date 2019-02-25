@@ -15,11 +15,12 @@ public class NodeInfo
     public bool beenProbed;
     public bool beenAnalyzed;
     public bool beenDiscoveredOn;
+    public bool upToDate;
 
     public int numOfVulnerabilities;
     public int numOfChildren;
     public int difficulty;
-
+    
     /// <summary>
     /// Default constructor that must be used.
     /// Sets up initial values for a newly discovered node.
@@ -34,6 +35,7 @@ public class NodeInfo
         beenProbed = false;
         beenAnalyzed = false;
         beenDiscoveredOn = false;
+        upToDate = true;
 
         numOfVulnerabilities = -1;
         numOfChildren = -1;

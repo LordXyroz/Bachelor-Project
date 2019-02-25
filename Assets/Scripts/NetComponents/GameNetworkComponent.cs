@@ -83,7 +83,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                             isVulnerable = false;
                     }
                 }
-                MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.ATTACK_RESPONSE, isVulnerable));
+                MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.AttackResponse, isVulnerable));
             }
         }
     }
@@ -107,10 +107,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 if (availableDefenses.Remove(message.defense))
                 {
                     implementedDefenses.Add(message.defense);
-                    MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DEFENSE_RESPONSE, true));
+                    MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DefenseResponse, true));
                 }
                 else
-                    MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DEFENSE_RESPONSE, false));
+                    MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DefenseResponse, false));
             }
         }
     }
@@ -137,7 +137,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                     uiElement.SetActive(true);
                     list.Add(this);
                 }
-                MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
+                MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
             }
             else if (message.targetName == name)
             {
@@ -149,7 +149,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                         child.uiElement.SetActive(true);
                     }
                 }
-                MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DISCOVER_RESPONSE, list));
+                MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
             }
         }
     }
@@ -182,7 +182,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 if (vulnerable)
                     vulnList.Add(vuln);
             }
-            MessagingManager.BroadcastMessage(new AnalyzeResponeMessage(message.senderName, name, MessageTypes.Game.ANALYZE_RESPONE, vulnList));
+            MessagingManager.BroadcastMessage(new AnalyzeResponeMessage(message.senderName, name, MessageTypes.Game.AnalyzeResponse, vulnList));
         }
 
     }
@@ -197,7 +197,20 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     {
         if (message.targetName == name)
         {
-            MessagingManager.BroadcastMessage(new ProbeResponseMessage(message.senderName, name, MessageTypes.Game.PROBE_RESPONSE, children.Count, difficulty, vulnerabilities.Count));
+            int i = 0;
+            foreach (var entry in vulnerabilities)
+            {
+                bool stopped = false;
+                foreach (var def in implementedDefenses)
+                    if (VulnerabilityPairings.IsStoppedBy(entry, def))
+                        stopped = true;
+
+                if (!stopped)
+                    i++;
+            }
+            
+            MessagingManager.BroadcastMessage(new ProbeResponseMessage(message.senderName, name, MessageTypes.Game.ProbeResponse, children.Count, difficulty, i));
         }
     }
+    
 }

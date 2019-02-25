@@ -65,7 +65,7 @@ public class Defense : MonoBehaviour, IDefenseResponse
     public void Effect()
     {
         triggered = true;
-        MessagingManager.BroadcastMessage(new DefenseMessage(target.name, name, MessageTypes.Game.DEFENSE, defenseType));
+        MessagingManager.BroadcastMessage(new DefenseMessage(target.name, name, MessageTypes.Game.Defense, defenseType));
     }
 
     /// <summary>
