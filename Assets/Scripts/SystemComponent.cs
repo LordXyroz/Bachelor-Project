@@ -11,15 +11,19 @@ using UnityEngine;
 /// 
 /// Have a textbox with the type of component, only visible in the menu (next to the draggable prefab object)
 /// 
-/// Spawn a menu when rightclicked: display name, connect, delete, vulnerability list, vulnerability level
+/// Spawn a menu when rightclicked: display name, connect, delete, vulnerability list, component vulnerability level
 ///     - Load list of available vulnerabilities from file (list of enums)
-/// Save list of vulnerabilities and their vulnerability level
+/// Save list of vulnerabilities (vulnerabilities do not have levels)
+/// save vulnerability level for component (1-5)
+/// 
+/// Make separate right-click menu for reference lines, name, bool firewall, delete
 
 public class SystemComponent : MonoBehaviour
 {
 
     [Header("Attributes for this object/node")]
-    public List<String> Vulnerabilities;
+    public string componentType;
+    public List<String> componentVulnerabilities;
 
     [Header("Reference line components")]
     public List<GameObject> connectedReferenceLines;
@@ -34,8 +38,10 @@ public class SystemComponent : MonoBehaviour
 
     private void Start()
     {
+        //availableVulnerabilitiesDropdown = gameObject.GetComponentInParent<Canvas>().gameObject.Find("AvailableVulnerabilitiesDropdown");
         connectedReferenceLines = new List<GameObject>();
         dropZone = FindObjectOfType<DropZone>();
+        componentVulnerabilities = new List<string>();
     }
 
 
@@ -156,5 +162,7 @@ public class SystemComponent : MonoBehaviour
         dropZone.editableSystemComponents.Remove(this.gameObject);
         Destroy(this.gameObject);
     }
+
+
 }
 

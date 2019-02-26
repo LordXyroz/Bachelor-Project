@@ -14,8 +14,8 @@ public class SelectedObject : MonoBehaviour
     private Transform lineFromStart;
     private bool connectionStarted;
     private ConnectionReferences connectionReferences;
-    private SystemComponent systemComponentsFromObject;
-    private SystemComponent systemComponentsToObject;
+    private SystemComponent systemComponentOfOldSelected;
+    private SystemComponent systemComponentOfSelected;
     private ConnectionReferences connectionReferencesOfObject;
 
     [Header("Selected object elements")]
@@ -36,8 +36,8 @@ public class SelectedObject : MonoBehaviour
         imageBox = null;
         connectionStarted = false;
         connectionReferences = null;
-        systemComponentsFromObject = null;
-        systemComponentsToObject = null;
+        systemComponentOfOldSelected = null;
+        systemComponentOfSelected = null;
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         images = GetComponentsInChildren<Image>();
         componentMenu = canvas.transform.Find("SystemComponentMenu").gameObject.GetComponent<RectTransform>();
@@ -153,6 +153,7 @@ public class SelectedObject : MonoBehaviour
 
         if (componentMenu.gameObject.activeInHierarchy)
         {
+
             componentMenu.gameObject.SetActive(false);
         }
     }
@@ -175,7 +176,7 @@ public class SelectedObject : MonoBehaviour
     /// </summary>
     public void ConnectObjects()
     {
-        /// checks again to make sure function is not called from somewhere it should not
+        /// Make sure both selected are system components
         if (connectionStarted
             && selected.GetComponent<SystemComponent>() != null
             && oldSelected.GetComponent<SystemComponent>() != null)
@@ -188,12 +189,12 @@ public class SelectedObject : MonoBehaviour
             connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
             connectionReferences.SetReferences(oldSelected, selected);
 
-            systemComponentsToObject = selected.GetComponent<SystemComponent>();
-            systemComponentsFromObject = oldSelected.GetComponent<SystemComponent>();
-            systemComponentsToObject.AddReference(connectionLineClone);
-            systemComponentsFromObject.AddReference(connectionLineClone);
+            systemComponentOfSelected = selected.GetComponent<SystemComponent>();
+            systemComponentOfOldSelected = oldSelected.GetComponent<SystemComponent>();
+            systemComponentOfSelected.AddReference(connectionLineClone);
+            systemComponentOfOldSelected.AddReference(connectionLineClone);
 
-            systemComponentsFromObject.SetConnectionLines(oldSelected.transform.position, selected.transform.position, connectionLineClone);
+            systemComponentOfOldSelected.SetConnectionLines(oldSelected.transform.position, selected.transform.position, connectionLineClone);
             connectionStarted = false;
         }
     }
@@ -207,10 +208,10 @@ public class SelectedObject : MonoBehaviour
     {
         if (selected != null)
         {
-            systemComponentsToObject = selected.GetComponent<SystemComponent>();
-            if (systemComponentsToObject != null)
+            systemComponentOfSelected = selected.GetComponent<SystemComponent>();
+            if (systemComponentOfSelected != null)
             {
-                systemComponentsToObject.DeleteSystemComponent();
+                systemComponentOfSelected.DeleteSystemComponent();
             }
             else
             {

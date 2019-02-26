@@ -9,7 +9,6 @@ public class ConnectionReferences : MonoBehaviour
     [Header("Attributes for this reference line")]
     public bool hasFirewall;
 
-
     [Header("The objects connected")]
     public GameObject referenceFromObject;
     public GameObject referenceToObject;
@@ -22,6 +21,7 @@ public class ConnectionReferences : MonoBehaviour
     {
         hasFirewall = false;
     }
+
 
     public void SetReferences(GameObject from, GameObject to)
     {

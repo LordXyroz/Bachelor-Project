@@ -15,6 +15,8 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private TMP_Text currentToolTipText;
     private Canvas canvas;
     private DropZone dropZone;
+    private SystemComponent systemComponent;
+    public SystemComponentMenu systemComponentMenu;
 
     [Header("Visual properties for this object")]
     public GameObject selectionBox;
@@ -24,7 +26,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private Image[] images;
     private Color originalColor;
     public string tooltipText;
-
 
 
     public void Start()
@@ -46,7 +47,9 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         canvas = GetComponentInParent<Canvas>();
         currentToolTipText = canvas.transform.Find("TooltipText").GetComponent<TMP_Text>();
         currentToolTipText.text = "";
+
         componentMenu = canvas.transform.Find("SystemComponentMenu").gameObject.GetComponent<RectTransform>();
+        systemComponentMenu = canvas.transform.GetComponentInChildren<SystemComponentMenu>(true);
     }
 
 
@@ -119,6 +122,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 {
                     if (image != null)
                     {
+                        systemComponent = this.gameObject.GetComponent<SystemComponent>();
                         objectSelect.SelectObject(this.gameObject, false, true);
                     }
                     else
@@ -128,9 +132,10 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 }
                 Debug.Log("Activating game object: " + componentMenu.name);
 
-                componentMenu.transform.position = new Vector2(eventData.position.x + componentMenu.rect.width / 2,
-                                                                eventData.position.y + componentMenu.rect.height / 2);
                 componentMenu.gameObject.SetActive(true);
+                systemComponentMenu.UpdatePosition(new Vector2(eventData.position.x + componentMenu.rect.width / 2,
+                                                            eventData.position.y + componentMenu.rect.height / 2));
+                systemComponentMenu.SetMenuName(systemComponent.componentType);
             }
         }
     }

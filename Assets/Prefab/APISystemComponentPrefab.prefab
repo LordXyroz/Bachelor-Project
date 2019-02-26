@@ -367,5 +367,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff572229e91d17a49a149191e0b36051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  componentType: API
   Vulnerabilities: []
   connectedReferenceLines: []
