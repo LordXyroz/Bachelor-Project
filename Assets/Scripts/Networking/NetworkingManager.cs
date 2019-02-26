@@ -24,7 +24,6 @@ public class NetworkingManager : MonoBehaviour
     public GameObject chatField;
     public GameObject connectionField;
     public GameObject gameField;
-
     public GameObject hostText;
 
 
@@ -41,6 +40,8 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     private ClientBehaviour cb;
     private ServerBehaviour sb;
+
+    private PlayerManager.PlayerType type;
 
     /// <summary>
     /// When starting the scene default values will be set here in Start.
@@ -96,9 +97,7 @@ public class NetworkingManager : MonoBehaviour
     /// This will start the gameplay scene when all clients in a lobby is ready.
     /// </summary>
     public void StartGame()
-    {
-        /// TODO check for enough players in lobby.
-        
+    {   
         /// Open game view:
         gameField.SetActive(true);
         /// Close lobby view:
@@ -398,6 +397,24 @@ public class NetworkingManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Function run when message is received through network, broadcast it to where it is wanted.
+    /// </summary>
+    /// <param name="msg"></param>
+    public void GetMessage(Message msg)
+    {
+        MessagingManager.BroadcastMessage(msg);
+    }
+
+    /// <summary>
+    /// Sends message to everyone else through network.
+    /// </summary>
+    public void SendMessage(Message msg)
+    {
+        GameObject gm = GameObject.Find("GameManager");
+
+        cb.SendMessage(msg);
+    }
 
     /// <summary>
     /// SendMessage will use the Message given through parameter(temporarily set as string, will be of type 'Message' later)
@@ -428,7 +445,7 @@ public class NetworkingManager : MonoBehaviour
     /// GetMessage will receive message collected through the server/client script.
     /// </summary>
     /// <param name="msg"></param>
-    public void GetMessage(string msg)
+    public void GetChatMessage(string msg)
     {
         /// Put message in textbox:
         MoveChatBox();

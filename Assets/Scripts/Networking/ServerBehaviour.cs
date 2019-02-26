@@ -175,7 +175,7 @@ public class ServerBehaviour
     {
         /// Put message in textbox for chat:
         NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
-        nm.GetMessage(message);
+        nm.GetChatMessage(message);
 
         /// If any client has joined the lobby, the host will send the message to them:
         if (m_connections.IsCreated)
@@ -302,28 +302,23 @@ public class ServerBehaviour
                                 {
                                     m_ServerDriver.Send(m_connections[k], writer);
                                 }
-
-
-                                /*/// Send another message to all other clients that this client has connected:
-                                var connectionWriter = new DataStreamWriter(150, Allocator.Temp);
-                                message = name + "<ClientConnect>";
-                                connectionWriter.Write(Encoding.ASCII.GetBytes(message));
+                            }
+                            else if (data.Contains("<Message>"))
+                            {
+                                Debug.Log("Server - Got message from client.");
                                 
-                                for (int k = 0; k < m_connections.Length; k++)
+                                writer.Write(Encoding.ASCII.GetBytes(data));
+
+                                /// Send a message received to all clients:
+                                for (int j = 0; j < m_connections.Length; j++)
                                 {
-                                    /// Send message to client as long as it is not the connected one.
-                                    if (k != i)
-                                    {
-                                        m_ServerDriver.Send(m_connections[k], connectionWriter);
-                                    }
+                                    m_ServerDriver.Send(m_connections[j], writer);
                                 }
-                                
-                                connectionWriter.Dispose();*/
                             }
                             else if (data.Contains("<ChatMessage>"))
                             {
                                 /// Encode message received to for writer to write:
-                                Debug.Log("Server - Got message: " + data);
+                                Debug.Log("Server - Got chat message: " + data);
                                 data = data.Substring(0, data.Length - 13);
                                 writer.Write(Encoding.ASCII.GetBytes(data + "<MessageReply>"));
 
@@ -334,7 +329,7 @@ public class ServerBehaviour
                                 }
                                 
                                 /// Send message to the chat field.
-                                GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(data);
+                                GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetChatMessage(data);
 
                                 /// Give the message received to the host aswell:
                                 Debug.Log("Host has data: " + data);

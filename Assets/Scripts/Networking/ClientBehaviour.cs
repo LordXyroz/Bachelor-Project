@@ -267,9 +267,27 @@ public class ClientBehaviour
         }
     }
 
+    /// <summary>
+    /// SendMessage will send message about actions happening on the current client, and server will give information about this to other clients.
+    /// </summary>
+    /// <param name="message"></param>
+    public void SendMessage(Message msg)
+    {
+        if (m_clientToServerConnection.IsCreated)
+        {
+            string messageObj = JsonUtility.ToJson(msg) + "<Message>";
+            var classWriter = new DataStreamWriter(messageObj.Length + 2, Allocator.Temp);
+
+            // Setting prefix for server to easily know what kind of msg is being written.
+            byte[] message = Encoding.ASCII.GetBytes(messageObj);
+            classWriter.Write(message);
+            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
+            classWriter.Dispose();
+        }
+    }
     
     /// <summary>
-    /// SendMessage is used to send simple strings through the network, will later on use the type 'Message' to send more data through the network.
+    /// SendChatMessage is used to send chat messages through the network.
     /// </summary>
     /// <param name="message"></param>
     public void SendChatMessage(string message)
@@ -407,17 +425,24 @@ public class ClientBehaviour
                         i++;
                     }
 
-                    /// Add your own name to list:
-                    //nm.AddPlayerName(nm.userName);
-
                     Debug.Log("Client - You are connected to server!");
+                }
+                else if (data.Contains("<Message>"))
+                {
+                    data = data.Substring(0, data.Length - 9);
+
+                    /// Convert data to message of type Message:
+                    Message msg = JsonUtility.FromJson<Message>(data);
+                    
+                    /// Send message to the chat field.
+                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(msg);
                 }
                 else if (data.Contains("<MessageReply>"))
                 {
                     data = data.Substring(0, data.Length - 14);
 
                     /// Send message to the chat field.
-                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(data);
+                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetChatMessage(data);
                 }
                 else if (data.Contains("<Scenario>"))
                 {
