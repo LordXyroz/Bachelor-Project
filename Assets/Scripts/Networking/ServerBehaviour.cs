@@ -261,6 +261,7 @@ public class ServerBehaviour
                             var writer = new DataStreamWriter(150, Allocator.Temp);
                             if (data.Contains("<UpdateConnection>"))
                             {
+                                Debug.Log("Client: " + i + " updates connection.");
                                 writer.Write(Encoding.ASCII.GetBytes("Connection updated<UpdateConnection>"));
                                 m_ServerDriver.Send(m_connections[i], writer);
                             }

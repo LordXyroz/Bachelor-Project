@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    private enum PlayerType
+    public enum PlayerType
     {
         Observer,
         Attacker,

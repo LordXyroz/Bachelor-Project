@@ -15,10 +15,6 @@ using System.Linq;
 
 public class ClientBehaviour
 {
-    /// <summary>
-    /// Debug.Log($"{DateTime.Now:HH:mm:ss.fff}: starting a new callback.");
-    /// This is a way to see time right now, could be useful.
-    /// </summary>
 
     ///  results contain the ipaddresses possible to connect to.
     readonly List<string[]> results = new List<string[]>();
@@ -34,11 +30,8 @@ public class ClientBehaviour
     /// Client behaviour constructor to set up basic settings for having a client behaviour in the game.
     /// </summary>
     /// <param name="myMonoBehaviour"></param>
-    public ClientBehaviour(MonoBehaviour myMonoBehaviour)
+    public ClientBehaviour()
     {
-        /// Makes sure that the client updates connection every now and then to not lose connection;
-        /// Client will lose connection if pursuing actions giving that effect.
-        myMonoBehaviour.StartCoroutine(UpdateConnection());
 
         /// Set values to default.
         connect = false;
@@ -274,25 +267,7 @@ public class ClientBehaviour
         }
     }
 
-    /// <summary>
-    /// UpdateConnection sends a update message to the server every 10 seconds to not lose the connection for being afk for a short period.
-    /// </summary
-    /// <returns></returns>
-    IEnumerator UpdateConnection()
-    {
-        while (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
-        {
-            var updateWriter = new DataStreamWriter(30, Allocator.Temp);
-            // Setting prefix for server to easily know what kind of msg is being written.
-            string message = "<UpdateConnection>";
-            byte[] msg = Encoding.ASCII.GetBytes(message);
-            updateWriter.Write(msg);
-            m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
-            updateWriter.Dispose();
-            yield return new WaitForSeconds(10);
-        }
-    }
-
+    
     /// <summary>
     /// SendMessage is used to send simple strings through the network, will later on use the type 'Message' to send more data through the network.
     /// </summary>
@@ -358,12 +333,23 @@ public class ClientBehaviour
     /// </summary>
     public void FixedUpdate()
     {
-        // Update the NetworkDriver. Needs to be done before trying to pop events.
+        /// Update the NetworkDriver. Needs to be done before trying to pop events.
         m_ClientDriver.ScheduleUpdate().Complete();
 
+        /// Update clients connecion to the server:
+        if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
+        {
+            var updateWriter = new DataStreamWriter(30, Allocator.Temp);
+            // Setting prefix for server to easily know what kind of msg is being written.
+            string message = "<UpdateConnection>";
+            updateWriter.Write(Encoding.ASCII.GetBytes(message));
+            m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
+            updateWriter.Dispose();
+        }
+           
 
         NetworkEvent.Type cmd;
-        // Process all events on the connection. If the connection is invalid it will return Empty immediately
+        /// Process all events on the connection. If the connection is invalid it will return Empty immediately
         while ((cmd = m_clientToServerConnection.PopEvent(m_ClientDriver, out DataStreamReader strm)) != NetworkEvent.Type.Empty)
         {
             if (cmd == NetworkEvent.Type.Connect)

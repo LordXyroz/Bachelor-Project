@@ -197,7 +197,7 @@ public class NetworkingManager : MonoBehaviour
                 /// Add client behaviour and try to find a host.
                 if (cb == null && sb == null)
                 {
-                    cb = new ClientBehaviour(this);
+                    cb = new ClientBehaviour();
                 }
                 
                 /// Set to false as host no client has joined a lobby before it starts.
@@ -377,7 +377,6 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void AddPlayerName(string newName)
     {
-        Debug.Log("Networking manager adding name");
         /// Look through all available spots and use the first available:
         for (int i = 0; i < attackerNames.Count; i++)
         {
