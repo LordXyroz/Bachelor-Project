@@ -37,7 +37,7 @@
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0",
 
-    "com.unity.transport": "file:../multiplayer/com.unity.transport",
+    "com.unity.transport": "file:../Networking/com.unity.transport",
     "com.unity.mathematics": "0.0.12-preview.19"
   }
 }
