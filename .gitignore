@@ -388,6 +388,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database 
 healthchecksdb
 
-
-!./multiplayer/*
-!./Packages/manifest.json
+!/Packages/manifest.json
