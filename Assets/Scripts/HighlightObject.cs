@@ -11,6 +11,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 {
     [Header("The objects that need to be referenced")]
     public SystemComponentMenu systemComponentMenu;
+    private ReferenceLineMenu referenceLineMenu;
     private RectTransform componentMenu;
     private SelectedObject objectSelect;
     private TMP_Text currentToolTipText;
@@ -53,6 +54,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         componentMenu = canvas.transform.Find("SystemComponentMenu").gameObject.GetComponent<RectTransform>();
         systemComponentMenu = canvas.transform.GetComponentInChildren<SystemComponentMenu>(true);
+        referenceLineMenu = canvas.transform.GetComponentInChildren<ReferenceLineMenu>(true);
     }
 
 
@@ -105,6 +107,10 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             componentMenu.gameObject.SetActive(false);
         }
+        if (referenceLineMenu.gameObject.activeInHierarchy)
+        {
+            referenceLineMenu.gameObject.SetActive(false);
+        }
 
         /// Only selectable if it is located in the SystemSetupScreen editor area
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null
@@ -147,7 +153,9 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 }
                 else
                 {
-                    // reference line menu
+                    referenceLineMenu.gameObject.SetActive(true);
+                    referenceLineMenu.UpdatePosition(new Vector2(eventData.position.x + componentMenu.rect.width / 2,
+                                                                eventData.position.y + componentMenu.rect.height / 2));
                 }
             }
         }

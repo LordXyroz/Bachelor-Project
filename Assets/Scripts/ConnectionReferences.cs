@@ -32,8 +32,6 @@ public class ConnectionReferences : MonoBehaviour
 
     public void RemoveConnectionComponent()
     {
-        Debug.Log("Deleting connecting line: " + this.gameObject.name);
-
         systemComponent = referenceFromObject.GetComponent<SystemComponent>();
         systemComponent.connectedReferenceLines.Remove(this.gameObject);
         systemComponent = referenceToObject.GetComponent<SystemComponent>();

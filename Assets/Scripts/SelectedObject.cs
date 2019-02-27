@@ -27,6 +27,7 @@ public class SelectedObject : MonoBehaviour
     private Image[] images;     /// For reference lines
     private Image imageBox;     /// For system components
     private RectTransform componentMenu;
+    private ReferenceLineMenu referenceLineMenu;
 
 
     void Start()
@@ -41,6 +42,7 @@ public class SelectedObject : MonoBehaviour
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         images = GetComponentsInChildren<Image>();
         componentMenu = canvas.transform.Find("SystemComponentMenu").gameObject.GetComponent<RectTransform>();
+        referenceLineMenu = canvas.transform.Find("ReferenceLineMenu").gameObject.GetComponent<ReferenceLineMenu>();
     }
 
 
@@ -153,8 +155,11 @@ public class SelectedObject : MonoBehaviour
 
         if (componentMenu.gameObject.activeInHierarchy)
         {
-
             componentMenu.gameObject.SetActive(false);
+        }
+        if (referenceLineMenu.gameObject.activeInHierarchy)
+        {
+            referenceLineMenu.gameObject.SetActive(false);
         }
     }
 
