@@ -15,20 +15,20 @@ public class SystemComponentMenu : MonoBehaviour
     public List<String> displayedSecurityLevels;
     private Dropdown componentSecurityLevelDropdown;
     private List<int> availableSecurityLevels;
-    public SelectedObject selectedObject;
+    private SelectedObject selectedObject;
 
     [Header("Linking to the vulnerabilities menu")]
     private Canvas canvas;
-    public VulnerabilityMenu vulnerabilityMenu;
+    private VulnerabilityMenu vulnerabilityMenu;
 
 
     void Start()
     {
-        componentSecurityLevelDropdown = GetComponentInChildren<Dropdown>();
+        componentSecurityLevelDropdown = GetComponentInChildren<Dropdown>(true);
         availableSecurityLevels = new List<int>();
 
         canvas = GetComponentInParent<Canvas>();
-        vulnerabilityMenu = canvas.transform.Find("VulnerabilityMenu").GetComponent<VulnerabilityMenu>();
+        vulnerabilityMenu = canvas.transform.GetComponentInChildren<VulnerabilityMenu>(true);
         selectedObject = canvas.transform.Find("Scripts").GetComponent<SelectedObject>();
 
         for (int i = 1; i <= 5; i++)
@@ -62,6 +62,7 @@ public class SystemComponentMenu : MonoBehaviour
 
     public void SetMenuInformation(string name, int security)
     {
+        componentSecurityLevelDropdown = GetComponentInChildren<Dropdown>(true);
         componentMenuName.text = name;
         componentSecurityLevelDropdown.value = security - 1;    // compensate for no security level 0 (lvl 1-5)
     }

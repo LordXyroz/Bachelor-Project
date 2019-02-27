@@ -62,7 +62,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             image.color = Color.red;
             systemComponent = this.gameObject.GetComponent<SystemComponent>();
-            informationColumn.PopulateInformationColumn(systemComponent.componentType, systemComponent.componentVulnerabilities);
+            informationColumn.PopulateInformationColumn(systemComponent.componentType, systemComponent.componentVulnerabilities, systemComponent.securityLevel);
         }
         else
         {
@@ -137,10 +137,18 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                     }
                 }
 
-                componentMenu.gameObject.SetActive(true);
-                systemComponentMenu.UpdatePosition(new Vector2(eventData.position.x + componentMenu.rect.width / 2,
-                                                            eventData.position.y + componentMenu.rect.height / 2));
-                systemComponentMenu.SetMenuInformation(systemComponent.componentType, systemComponent.securityLevel);
+                if (image != null)
+                {
+
+                    componentMenu.gameObject.SetActive(true);
+                    systemComponentMenu.UpdatePosition(new Vector2(eventData.position.x + componentMenu.rect.width / 2,
+                                                                eventData.position.y + componentMenu.rect.height / 2));
+                    systemComponentMenu.SetMenuInformation(systemComponent.componentType, systemComponent.securityLevel);
+                }
+                else
+                {
+                    // reference line menu
+                }
             }
         }
     }
