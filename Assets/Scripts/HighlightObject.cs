@@ -140,7 +140,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 componentMenu.gameObject.SetActive(true);
                 systemComponentMenu.UpdatePosition(new Vector2(eventData.position.x + componentMenu.rect.width / 2,
                                                             eventData.position.y + componentMenu.rect.height / 2));
-                systemComponentMenu.SetMenuName(systemComponent.componentType);
+                systemComponentMenu.SetMenuInformation(systemComponent.componentType, systemComponent.securityLevel);
             }
         }
     }

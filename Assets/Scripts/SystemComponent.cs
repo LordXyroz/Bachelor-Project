@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -14,7 +13,6 @@ using UnityEngine;
 /// Spawn a menu when rightclicked: display name, connect, delete, vulnerability list, component vulnerability level
 ///     - Load list of available vulnerabilities from file (list of enums)
 /// Save list of vulnerabilities (vulnerabilities do not have levels)
-/// save vulnerability level for component (1-5)
 /// 
 /// Make separate right-click menu for reference lines, name, bool firewall, delete
 
@@ -23,7 +21,8 @@ public class SystemComponent : MonoBehaviour
 
     [Header("Attributes for this object/node")]
     public string componentType;
-    public List<String> componentVulnerabilities;
+    public List<string> componentVulnerabilities;
+    public int securityLevel;
 
     [Header("Reference line components")]
     public List<GameObject> connectedReferenceLines;
@@ -38,13 +37,13 @@ public class SystemComponent : MonoBehaviour
 
     private void Start()
     {
-        //availableVulnerabilitiesDropdown = gameObject.GetComponentInParent<Canvas>().gameObject.Find("AvailableVulnerabilitiesDropdown");
         connectedReferenceLines = new List<GameObject>();
         dropZone = FindObjectOfType<DropZone>();
         componentVulnerabilities = new List<string>();
         componentVulnerabilities.Add("Test vulnerability 1");
         componentVulnerabilities.Add("Test vulnerability 2");
         componentVulnerabilities.Add("Test vulnerability 3");
+        securityLevel = 1;
     }
 
 
@@ -167,5 +166,10 @@ public class SystemComponent : MonoBehaviour
     }
 
 
+    public void UpdateComponentVulnerabilityInformation(int security, List<string> vulnerabilities)
+    {
+        securityLevel = security;
+        componentVulnerabilities = vulnerabilities;
+    }
 }
 
