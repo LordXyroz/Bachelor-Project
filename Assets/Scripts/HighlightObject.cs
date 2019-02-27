@@ -10,22 +10,23 @@ using UnityEngine.UI;
 public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("The objects that need to be referenced")]
+    public SystemComponentMenu systemComponentMenu;
     private RectTransform componentMenu;
     private SelectedObject objectSelect;
     private TMP_Text currentToolTipText;
     private Canvas canvas;
     private DropZone dropZone;
     private SystemComponent systemComponent;
-    public SystemComponentMenu systemComponentMenu;
+    private InformationColumn informationColumn;
 
     [Header("Visual properties for this object")]
     public GameObject selectionBox;
     public Sprite spriteDefault;
     public Sprite spriteHighlight;
+    public string tooltipText;
     private Image image;
     private Image[] images;
     private Color originalColor;
-    public string tooltipText;
 
 
     public void Start()
@@ -48,6 +49,8 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         currentToolTipText = canvas.transform.Find("TooltipText").GetComponent<TMP_Text>();
         currentToolTipText.text = "";
 
+        informationColumn = canvas.GetComponentInChildren<InformationColumn>();
+
         componentMenu = canvas.transform.Find("SystemComponentMenu").gameObject.GetComponent<RectTransform>();
         systemComponentMenu = canvas.transform.GetComponentInChildren<SystemComponentMenu>(true);
     }
@@ -58,6 +61,8 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (image != null)  // Component
         {
             image.color = Color.red;
+            systemComponent = this.gameObject.GetComponent<SystemComponent>();
+            informationColumn.PopulateInformationColumn(systemComponent.componentType, systemComponent.componentVulnerabilities);
         }
         else
         {
@@ -90,6 +95,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
             }
         }
         currentToolTipText.text = "";
+        informationColumn.ClearInformationColumn();
     }
 
 
@@ -130,7 +136,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                         objectSelect.SelectObject(this.gameObject, false, false);
                     }
                 }
-                Debug.Log("Activating game object: " + componentMenu.name);
 
                 componentMenu.gameObject.SetActive(true);
                 systemComponentMenu.UpdatePosition(new Vector2(eventData.position.x + componentMenu.rect.width / 2,

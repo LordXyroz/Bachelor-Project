@@ -42,6 +42,9 @@ public class SystemComponent : MonoBehaviour
         connectedReferenceLines = new List<GameObject>();
         dropZone = FindObjectOfType<DropZone>();
         componentVulnerabilities = new List<string>();
+        componentVulnerabilities.Add("Test vulnerability 1");
+        componentVulnerabilities.Add("Test vulnerability 2");
+        componentVulnerabilities.Add("Test vulnerability 3");
     }
 
 
