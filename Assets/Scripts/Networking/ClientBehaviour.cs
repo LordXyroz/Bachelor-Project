@@ -27,12 +27,17 @@ public class ClientBehaviour
     private bool m_clientWantsConnection;
 
     /// <summary>
+    /// Keeps info about current swap(Null, Waiting, Accepted)
+    /// </summary>
+    private SwapInfo swapInfo;
+
+    /// <summary>
     /// Client behaviour constructor to set up basic settings for having a client behaviour in the game.
     /// </summary>
     /// <param name="myMonoBehaviour"></param>
     public ClientBehaviour()
     {
-
+        swapInfo = SwapInfo.Null;
         /// Set values to default.
         connect = false;
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
@@ -50,6 +55,17 @@ public class ClientBehaviour
         m_clientToServerConnection.Close(m_ClientDriver);
         m_clientToServerConnection = default;
         m_ClientDriver.Dispose();
+    }
+
+    public enum SwapInfo{
+        Null,
+        Waiting,
+        Accepted
+    }
+
+    public SwapInfo GetSwapInfo()
+    {
+        return swapInfo;
     }
 
     /// <summary>
@@ -202,9 +218,7 @@ public class ClientBehaviour
         /// Text visible to the client that shows the connection status.(Offline/Connecting/Online)
         Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
         Debug.Log("<color=blue>Looking for connection</color>");
-
-        Debug.Log("m_clienttoserver Connection: " + m_clientToServerConnection.IsCreated);
-
+        
         /// While the player still wants to connect to a host and no host is found, look for a new one:
         while (m_clientToServerConnection.IsCreated == false && m_clientWantsConnection)
         {
@@ -225,6 +239,7 @@ public class ClientBehaviour
                 /// Get IP of host that wants to serve a match.
                 Task setupHostIp = Task.Run(() => FindHost(ips[i]));
                 setupHostIp.Wait();
+                setupHostIp.Dispose();
                 if (ServerEndPoint.IsValid)
                 {
                     break;
@@ -268,6 +283,64 @@ public class ClientBehaviour
     }
 
     /// <summary>
+    /// Client sends message to other client about accepting swap.
+    /// </summary>
+    public void AcceptSwap(string name)
+    {
+        swapInfo = SwapInfo.Accepted;
+        if (m_clientToServerConnection.IsCreated)
+        {
+            string msg = name + "<AcceptSwap>";
+            var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
+
+            // Setting prefix for server to easily know what kind of msg is being written.
+            byte[] message = Encoding.ASCII.GetBytes(msg);
+            classWriter.Write(message);
+            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
+            classWriter.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Client sends message to other client about declining swap.
+    /// </summary>
+    public void DeclineSwap(string name)
+    {
+        swapInfo = SwapInfo.Null;
+        if (m_clientToServerConnection.IsCreated)
+        {
+            string msg = name + "<DeclineSwap>";
+            var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
+
+            // Setting prefix for server to easily know what kind of msg is being written.
+            byte[] message = Encoding.ASCII.GetBytes(msg);
+            classWriter.Write(message);
+            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
+            classWriter.Dispose();
+        }
+    }
+    
+    /// <summary>
+    /// Sends message to client with to and from names within message.
+    /// </summary>
+    public void SendSwapMessage(string msg)
+    {
+        swapInfo = SwapInfo.Waiting;
+        Debug.Log("sending swap message");
+        if (m_clientToServerConnection.IsCreated)
+        {
+            // Setting prefix for server to easily know what kind of msg is being written.
+            msg += "<SwapMessage>";
+            var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
+
+            byte[] message = Encoding.ASCII.GetBytes(msg);
+            classWriter.Write(message);
+            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
+            classWriter.Dispose();
+        }
+    }
+
+    /// <summary>
     /// SendMessage will send message about actions happening on the current client, and server will give information about this to other clients.
     /// </summary>
     /// <param name="message"></param>
@@ -277,8 +350,7 @@ public class ClientBehaviour
         {
             string messageObj = JsonUtility.ToJson(msg) + "<Message>";
             var classWriter = new DataStreamWriter(messageObj.Length + 2, Allocator.Temp);
-
-            // Setting prefix for server to easily know what kind of msg is being written.
+            
             byte[] message = Encoding.ASCII.GetBytes(messageObj);
             classWriter.Write(message);
             m_ClientDriver.Send(m_clientToServerConnection, classWriter);
@@ -349,7 +421,7 @@ public class ClientBehaviour
     /// FixedUpdate is a function called ca. 50 times per second. Used to see for events through the network.
     /// If any messages is sent in, and will according to event happened send message through the network.
     /// </summary>
-    public void FixedUpdate()
+    public void FixedUpdate( MonoBehaviour monoBehaviour)
     {
         /// Update the NetworkDriver. Needs to be done before trying to pop events.
         m_ClientDriver.ScheduleUpdate().Complete();
@@ -396,7 +468,6 @@ public class ClientBehaviour
                     NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
 
                     /// Receives hostname:
-                    Debug.Log("Names gotten from server: " + data);
                     nm.hostText.GetComponent<Text>().text = "Host: " + data.Substring(0, data.IndexOf("<HostName>"));
                     data = data.Substring(data.IndexOf("<HostName>") + 10, data.Length - (data.IndexOf("<HostName>") + 10));
                     
@@ -425,6 +496,9 @@ public class ClientBehaviour
                         i++;
                     }
 
+                    /// Receive what playerType the client is set as; May be changed by client itself after it has been set once.
+                    nm.playerType = nm.FindPlayerType();
+
                     Debug.Log("Client - You are connected to server!");
                 }
                 else if (data.Contains("<Message>"))
@@ -444,6 +518,73 @@ public class ClientBehaviour
                     /// Send message to the chat field.
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetChatMessage(data);
                 }
+                else if (data.Contains("<DeclineSwap>"))
+                {
+                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().DestroySwap();
+                    swapInfo = SwapInfo.Null;
+                }
+                else if (data.Contains("<AcceptSwap>"))
+                {
+                    /// If first client has not declined while second client accepted, start the swapping.
+                    if (swapInfo == SwapInfo.Waiting)
+                    {
+                        /// Send message to client nr.2 to do the swap.
+                        string fromName = data.Substring(0, data.IndexOf("<AcceptSwap>"));
+                        string msg = fromName + "<SwapAccepted>";
+                        var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
+
+                        byte[] message = Encoding.ASCII.GetBytes(msg);
+                        classWriter.Write(message);
+                        m_ClientDriver.Send(m_clientToServerConnection, classWriter);
+                        classWriter.Dispose();
+
+                        swapInfo = SwapInfo.Null;
+                        /// Swap the two clients on client nr.1's screen.
+                        string toName = GameObject.Find("GameManager").GetComponent<NetworkingManager>().userName;
+                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindSwapNames(fromName, toName);
+
+                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().DestroySwap();
+                    }
+                    else
+                    {
+                        /// Just to be sure.
+                        swapInfo = SwapInfo.Null;
+
+                        /// Client has most likely declined, so send decline message back:
+                        string name = data.Substring(0, data.IndexOf("<AcceptSwap>"));
+                        string msg = name + "<DeclineSwap>";
+                        var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
+
+                        byte[] message = Encoding.ASCII.GetBytes(msg);
+                        classWriter.Write(message);
+                        m_ClientDriver.Send(m_clientToServerConnection, classWriter);
+                        classWriter.Dispose();
+                    }
+                }
+                else if (data.Contains("<SwapAccepted>"))
+                {
+                    Debug.Log("swapAccepted");
+                    /// Should not really be neccessary, since this is run when client has already accepted. But nice to have :)
+                    if (swapInfo == SwapInfo.Accepted)
+                    {
+                        swapInfo = SwapInfo.Null;
+                        /// Swap the two clients on client nr.2's screen.
+                        string fromName = data.Substring(0, data.IndexOf("<SwapAccepted>"));
+                        string toName = GameObject.Find("GameManager").GetComponent<NetworkingManager>().userName;
+                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindSwapNames(fromName, toName);
+
+                        /// Finish up the swap:
+                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().DestroySwap();
+                        swapInfo = SwapInfo.Null;
+                    }
+                }
+                else if (data.Contains("<SwapMessage>"))
+                {
+                    NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
+                    /// Start swap loading screen for client with name given from client that wants to swap.
+                    string name = data.Substring(0, data.IndexOf("<SwapMessage>"));
+                    monoBehaviour.StartCoroutine(nm.StartSwapLoadBar(name, false));
+                }
                 else if (data.Contains("<Scenario>"))
                 {
                     data = data.Substring(0, data.Length - 10);
@@ -459,7 +600,7 @@ public class ClientBehaviour
                 {
                     string name = data.Substring(0, data.IndexOf("<ClientDisconnect>"));
                     /// Remove client that disconnected from list of people who ARE indeed connected.
-                    Debug.Log("removing other client");
+                    Debug.Log("Client - removing other client");
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindPlayerForRemoval(name);
                 }
                 else if (data.Contains("<Disconnect>"))

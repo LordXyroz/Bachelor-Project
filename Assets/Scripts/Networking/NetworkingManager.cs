@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -25,6 +28,7 @@ public class NetworkingManager : MonoBehaviour
     public GameObject connectionField;
     public GameObject gameField;
     public GameObject hostText;
+    public GameObject SwapLoadingScreen;
 
 
     /// <summary>
@@ -41,7 +45,7 @@ public class NetworkingManager : MonoBehaviour
     private ClientBehaviour cb;
     private ServerBehaviour sb;
 
-    private PlayerManager.PlayerType type;
+    public PlayerManager.PlayerType playerType;
 
     /// <summary>
     /// When starting the scene default values will be set here in Start.
@@ -53,6 +57,7 @@ public class NetworkingManager : MonoBehaviour
         cb = null;
         sb = null;
 
+        playerType = default;
         hostText = GameObject.Find("HostText");
 
         /// Get playername positions from the beginning for use in future.
@@ -110,8 +115,12 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void ExitGame()
     {
+        /// If client is trying to swap with another player when exiting game, the swapping should be stopped.
+        DeclineSwap();
+
         /// Stop connection.
         DisconnectFromServer();
+
         /// Close game view:
         gameField.SetActive(false);
         /// Open connection view:
@@ -126,7 +135,7 @@ public class NetworkingManager : MonoBehaviour
     {
         if (cb != null)
         {
-            cb.FixedUpdate();
+            cb.FixedUpdate(this);
         }
         else if (sb != null)
         {
@@ -169,6 +178,7 @@ public class NetworkingManager : MonoBehaviour
                 if (sb == null && cb == null)
                 {
                     sb = new ServerBehaviour();
+                    playerType = PlayerManager.PlayerType.Observer;
                 }
 
                 /// Changing view:
@@ -232,6 +242,8 @@ public class NetworkingManager : MonoBehaviour
     /// <returns></returns>
     private IEnumerator Disconnect()
     {
+        /// When player disconnects/exits game, the player may start over with different playerType.(Observer, defender/attacker)
+        playerType = default;
         yield return new WaitForSeconds(0.01f);
 
         if (isSpectator)
@@ -306,11 +318,222 @@ public class NetworkingManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Will swap the position of two players in lobby, so that they can switch between being a defender/attacker. TODO make this shit
+    /// Will swap the position of two players in lobby, so that they can switch between being a defender/attacker.
     /// </summary>
     public void SwapPosition()
     {
-        throw new NotImplementedException();
+        /// Hosts are not playing the game themselves so they may not swap positions.
+        if (isSpectator)
+        {
+            return;
+        }
+        
+        /// Check if player is yourself:
+        if (EventSystem.current.currentSelectedGameObject.transform.Find("Text").GetComponent<Text>().text == userName)
+        {
+            Debug.Log("This is yourself!");
+            return;
+        }
+
+        /// Check if player is on your team:
+        if (EventSystem.current.currentSelectedGameObject.transform.parent.gameObject.name == "Attackers")
+        {
+            if (playerType == PlayerManager.PlayerType.Attacker)
+            {
+                /// You are attacker, same as client clicked on.
+                Debug.Log("This is your teammate!");
+                return;
+            }
+        }
+        else /// Defender:
+        {
+            if (playerType == PlayerManager.PlayerType.Defender)
+            {
+                /// You are defender, same as client clicked on.
+                Debug.Log("This is your teammate!");
+                return;
+            }
+        }
+
+        /// Get name of player you want to swap with and your own name for that client to know who wants to swap.
+        string clientName = EventSystem.current.currentSelectedGameObject.transform.Find("Text").GetComponent<Text>().text;
+
+        /// Send message to other client about wanting to swap.
+        cb.SendSwapMessage((clientName + "<Name>" + userName));
+
+        /// Start the loading bar countdown.
+        StartCoroutine(StartSwapLoadBar(clientName, true));
+    }
+
+    /// <summary>
+    /// Starts loading bar for client wanting to swap playertype with another client; It will only last for x seconds.
+    /// </summary>
+    public IEnumerator StartSwapLoadBar(string name, bool isSettingUp)
+    {
+        
+        /// Create SwapLoadScreen:
+        GameObject sls = Instantiate(SwapLoadingScreen, GameObject.Find("Canvas").transform);
+        sls.transform.SetParent(GameObject.Find("Canvas").transform);
+        sls.name = "SwapLoadingScreen";
+
+        /// Set name: 
+        sls.transform.Find("Name").GetComponent<Text>().text = name;
+
+        /// Set listener for buttons:
+        sls.transform.Find("AcceptButton").GetComponent<Button>().onClick.AddListener(() => AcceptSwap());
+        sls.transform.Find("DeclineButton").GetComponent<Button>().onClick.AddListener(() => DeclineSwap());
+
+
+        /// Do not show accept button if client is the one setting up loadbar.
+        if (isSettingUp)
+        {
+            sls.transform.Find("AcceptButton").gameObject.SetActive(false);
+            /// Set declinebutton to center:
+            Vector3 tempPosition = sls.transform.Find("DeclineButton").transform.position;
+            tempPosition.x -= 1; /// Default is x = 130;
+            sls.transform.Find("DeclineButton").transform.position = tempPosition;
+        }
+
+        /// Set position and scale of loadbar:
+        sls.transform.position = GameObject.Find("Attackers").transform.position; //TODO change depending on position of player.
+
+        
+        /// Update SwapLoadScreen:
+        while (sls != null)
+        {
+            sls.transform.Find("Slider").GetComponent<Slider>().value += 0.01f;    /// Just a number to get the bar loading at a decent speed.
+            if (sls.transform.Find("Slider").GetComponent<Slider>().value == 1)
+            {
+                /// Finished task, delete loading screen.
+                Destroy(sls);
+                break;
+            }
+            yield return new WaitForSecondsRealtime(0.1f);
+        }
+    }
+
+    private void Swap(GameObject currentClient, GameObject otherClient)
+    {
+        string temp = otherClient.transform.Find("Text").GetComponent<Text>().text;
+        otherClient.transform.Find("Text").GetComponent<Text>().text = currentClient.transform.Find("Text").GetComponent<Text>().text;
+        currentClient.transform.Find("Text").GetComponent<Text>().text = temp;
+    }
+
+    /// <summary>
+    /// Swap the names of current client(userName) and client with name sent as parameter.
+    /// </summary>
+    /// <param name="otherClientName"></param>
+    public void FindSwapNames(string fromClientName, string toClientName)
+    {
+        /// Swap names:
+        GameObject currentClient = attackerNames.Find(x => x.transform.Find("Text").GetComponent<Text>().text == toClientName);
+        if (currentClient)
+        {
+            /// Username lies in attacker list.
+            GameObject otherClient = attackerNames.Find(x => x.transform.Find("Text").GetComponent<Text>().text == fromClientName);
+            if (otherClient)
+            {
+                /// OtherClient lies in attackerList.
+                Swap(currentClient, otherClient);
+            }
+            else
+            {
+                /// OtherClient lies in defenderList.
+                otherClient = defenderNames.Find(x => x.transform.Find("Text").GetComponent<Text>().text == fromClientName);
+                Swap(currentClient, otherClient);
+            }
+        }
+        else if ((currentClient = defenderNames.Find(x => x.transform.Find("Text").GetComponent<Text>().text == toClientName)))
+        {
+            /// Username lies in defenderNames list.
+            currentClient = defenderNames.Find(x => x.transform.Find("Text").GetComponent<Text>().text == toClientName);
+            GameObject otherClient = attackerNames.Find(x => x.transform.Find("Text").GetComponent<Text>().text == fromClientName);
+            if (otherClient)
+            {
+                /// OtherClient lies in attackerList.
+                Swap(currentClient, otherClient);
+            }
+            else
+            {
+                /// OtherClient lies in defenderList.
+                otherClient = defenderNames.Find(x => x.transform.Find("Text").GetComponent<Text>().text == fromClientName);
+                Swap(currentClient, otherClient);
+            }
+        }
+
+        /// Switch type:
+        if (playerType == PlayerManager.PlayerType.Attacker)
+        {
+            playerType = PlayerManager.PlayerType.Defender;
+        }
+        else
+        {
+            playerType = PlayerManager.PlayerType.Attacker;
+        }
+    }
+    
+    /// <summary>
+    /// Client Accepts swap. and deletes loadingscreen:
+    /// </summary>
+    public void AcceptSwap()
+    {
+        /// Get name of other client to send message to:
+        GameObject screen = GameObject.Find("Canvas").transform.Find("SwapLoadingScreen").gameObject;
+        GameObject screen2 = screen.transform.Find("Name").gameObject;
+        string name = screen2.GetComponent<Text>().text;
+        
+        cb.AcceptSwap(name);
+
+        DestroySwap();
+    }
+
+    /// <summary>
+    /// Client declines/stops swap.
+    /// </summary>
+    public void DeclineSwap()
+    {
+        /// Get name of other client to send message to:
+        string name = GameObject.Find("Canvas").transform.Find("SwapLoadingScreen").transform.Find("Name").GetComponent<Text>().text;
+        cb.DeclineSwap(name);
+
+        DestroySwap();
+    }
+
+    /// <summary>
+    /// Destroy swaploadingscreen from the UI when not needed anymore.
+    /// </summary>
+    public void DestroySwap()
+    {
+        try
+        {
+            Destroy(GameObject.Find("Canvas").transform.Find("SwapLoadingScreen").gameObject);
+        }
+        catch
+        {
+            /// Could most likely not find the loading bar screen.
+        }
+    }
+
+    /// <summary>
+    /// Finds the type for the player based on positioning in the UI.
+    /// </summary>
+    /// <returns></returns>
+    public PlayerManager.PlayerType FindPlayerType()
+    {
+        /// Find type:
+        for (int i = 0; i < attackerNames.Count; i++)
+        {
+            /// Check for player being in attackerlist:
+            if (attackerNames[i].activeSelf)
+            {
+                if (attackerNames[i].transform.Find("Text").GetComponent<Text>().text == userName)
+                {
+                    return PlayerManager.PlayerType.Attacker;
+                }
+            }
+        }
+        /// Return type defender to client if not found in attackerlist:
+        return PlayerManager.PlayerType.Defender;
     }
     
     /// <summary>
@@ -411,8 +634,6 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void SendMessage(Message msg)
     {
-        GameObject gm = GameObject.Find("GameManager");
-
         cb.SendMessage(msg);
     }
 
