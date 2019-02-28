@@ -9,7 +9,6 @@ using UnityEngine;
 /// TODO 
 /// 
 /// Load list of available vulnerabilities from file (list of enums)
-/// Save list of vulnerabilities to file
 /// 
 /// Save scenario to file
 /// Load scenario from file
@@ -32,6 +31,14 @@ public class SystemComponent : MonoBehaviour
     [Header("Items needed for deleting a system component")]
     private SystemComponent systemComponent;
     private DropZone dropZone;
+
+    [Header("Empty objects intended for later development cycles")]
+    public string OS = null;
+    public string subnet = null;
+    public GameObject configPresent = null;
+    public string keypair = null;
+    public bool floatingIP = false;
+    public User user = new User();
 
 
     private void Start()
