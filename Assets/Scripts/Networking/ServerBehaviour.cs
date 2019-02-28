@@ -93,7 +93,7 @@ public class ServerBehaviour
                 if (m_connections.IsCreated)
                 {
                     /// Lobby is full:
-                    if (m_connections.Length == 3) /// 2 is total amount of players
+                    if (m_connections.Length == 2) /// 2 is total amount of clients
                     {
                         server.Stop();
                         return;
@@ -180,17 +180,16 @@ public class ServerBehaviour
         /// If any client has joined the lobby, the host will send the message to them:
         if (m_connections.IsCreated)
         {
+            var messageWriter = new DataStreamWriter(message.Length + 15, Allocator.Temp);
+
+            message += "<MessageReply>";
+            messageWriter.Write(Encoding.ASCII.GetBytes(message));
             /// Go through all joined clients:
             for (int i = 0; i < m_connections.Length; i++)
             {
-                var messageWriter = new DataStreamWriter(message.Length+15, Allocator.Temp);
-
-                message += "<MessageReply>";
-                messageWriter.Write(Encoding.ASCII.GetBytes(message));
-
                 m_ServerDriver.Send(m_connections[i], messageWriter);
-                messageWriter.Dispose();
             }
+            messageWriter.Dispose();
         }
     }
 

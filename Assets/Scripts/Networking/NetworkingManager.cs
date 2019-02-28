@@ -240,14 +240,16 @@ public class NetworkingManager : MonoBehaviour
     /// <returns></returns>
     private IEnumerator Disconnect()
     {
+        Debug.Log("Trying to disconnect");
         /// When player disconnects/exits game, the player may start over with different playerType.(Observer, defender/attacker)
-        playerType = default;
+        
         yield return new WaitForSeconds(0.01f);
 
         if (playerType == PlayerManager.PlayerType.Observer)
         {
             /// Disconnect clients from server:
-            
+            Debug.Log("server disconnect");
+
             if (sb.m_ServerDriver.IsCreated)
             {
                 sb.m_ServerDriver.ScheduleUpdate().Complete();
@@ -294,9 +296,9 @@ public class NetworkingManager : MonoBehaviour
             chatField.SetActive(false);
             connectionField.SetActive(true);
         }
-        else
+        else if (playerType == PlayerManager.PlayerType.Attacker || playerType == PlayerManager.PlayerType.Defender)
         {
-            
+            Debug.Log("client disconnect");
             /// Delete past chat:
             for (int i = 1; i < messageList.Count; i++)
             {
@@ -313,6 +315,7 @@ public class NetworkingManager : MonoBehaviour
             cb = null;
             yield return new WaitForSeconds(1);
         }
+        playerType = default;
     }
 
     /// <summary>
@@ -648,7 +651,7 @@ public class NetworkingManager : MonoBehaviour
     public void SendChatMessage()
     {
         GameObject gm = GameObject.Find("GameManager");
-        string msg = userName + " - " + GameObject.Find("ChatInputField").GetComponent<InputField>().text;
+        string msg = playerType.ToString() + ":" + userName + " - " + GameObject.Find("ChatInputField").GetComponent<InputField>().text;
         if (playerType != PlayerManager.PlayerType.Observer)
         {
             if (cb != null)
