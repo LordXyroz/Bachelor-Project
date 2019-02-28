@@ -5437,10 +5437,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bddf1047fed7d544f9f9110618482237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerType: 1
+  playerType: 2
   uiScript: {fileID: 0}
   attackerUI: {fileID: 231441331}
   defenderUI: {fileID: 528354962}
+  attacker: {fileID: 1480980483}
+  defender: {fileID: 1187280284}
+  observer: {fileID: 1140662922}
 --- !u!4 &542831246
 Transform:
   m_ObjectHideFlags: 0

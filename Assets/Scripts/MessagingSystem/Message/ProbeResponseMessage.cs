@@ -1,4 +1,5 @@
-﻿public class ProbeResponseMessage : Message
+﻿[System.Serializable]
+public class ProbeResponseMessage : Message
 {
     public int numOfVulnerabilities;
     public int numOfChildren;

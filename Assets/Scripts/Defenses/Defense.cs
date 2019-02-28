@@ -36,12 +36,15 @@ public class Defense : MonoBehaviour, IDefenseResponse
     private bool triggered = false;
 
     private DefenderUI uiScript;
+    private NetworkingManager networking;
 
     public void Start()
     {
         uiScript = FindObjectOfType<DefenderUI>();
         uiScript.ToggleProgressbar(true, "Defending", description + " on: " + target.name);
         uiScript.UpdateProgressbar(timer, duration);
+
+        networking = FindObjectOfType<NetworkingManager>();
     }
 
     /// <summary>
@@ -65,7 +68,7 @@ public class Defense : MonoBehaviour, IDefenseResponse
     public void Effect()
     {
         triggered = true;
-        MessagingManager.BroadcastMessage(new DefenseMessage(target.name, name, MessageTypes.Game.Defense, defenseType));
+        networking.SendMessage(new DefenseMessage(target.name, name, MessageTypes.Game.Defense, defenseType));
     }
 
     /// <summary>

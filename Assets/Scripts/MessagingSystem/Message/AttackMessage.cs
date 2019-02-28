@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Child class of Message for storing attack event data.
 /// </summary>
+[System.Serializable]
 public class AttackMessage : Message
 {
     public AttackTypes attack;

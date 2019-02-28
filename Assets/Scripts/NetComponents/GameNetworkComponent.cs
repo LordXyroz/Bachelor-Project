@@ -21,6 +21,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     [Header("Variables")]
     [Range(1f, 5f)]
     public int difficulty = 1;
+    private NetworkingManager networking;
 
     [SerializeField]
     private GameObject uiElement;
@@ -43,12 +44,18 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         RectTransform rectTransform = GetComponent<RectTransform>();
         Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
         uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
-        uiButton.onClick.AddListener(() => FindObjectOfType<Attacker>().SetTarget(gameObject));
-        uiButton.onClick.AddListener(() => FindObjectOfType<Defender>().SetTarget(gameObject));
+
+        if (FindObjectOfType<PlayerManager>().IsAttacker())
+            uiButton.onClick.AddListener(() => FindObjectOfType<Attacker>().SetTarget(gameObject));
+        else 
+            uiButton.onClick.AddListener(() => FindObjectOfType<Defender>().SetTarget(gameObject));
+
         uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
 
         if (FindObjectOfType<PlayerManager>().IsAttacker())
             uiElement.SetActive(false);
+
+        networking = FindObjectOfType<NetworkingManager>();
     }
 
     /// <summary>
@@ -83,7 +90,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                             isVulnerable = false;
                     }
                 }
-                MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.AttackResponse, isVulnerable));
+                networking.SendMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.AttackResponse, isVulnerable));
             }
         }
     }
@@ -107,10 +114,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 if (availableDefenses.Remove(message.defense))
                 {
                     implementedDefenses.Add(message.defense);
-                    MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DefenseResponse, true));
+                    networking.SendMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DefenseResponse, true));
                 }
                 else
-                    MessagingManager.BroadcastMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DefenseResponse, false));
+                    networking.SendMessage(new SuccessMessage(message.senderName, name, MessageTypes.Game.DefenseResponse, false));
             }
         }
     }
@@ -137,7 +144,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                     uiElement.SetActive(true);
                     list.Add(this);
                 }
-                MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
+                networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
             }
             else if (message.targetName == name)
             {
@@ -149,7 +156,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                         child.uiElement.SetActive(true);
                     }
                 }
-                MessagingManager.BroadcastMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
+                networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
             }
         }
     }
@@ -182,7 +189,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 if (vulnerable)
                     vulnList.Add(vuln);
             }
-            MessagingManager.BroadcastMessage(new AnalyzeResponeMessage(message.senderName, name, MessageTypes.Game.AnalyzeResponse, vulnList));
+            networking.SendMessage(new AnalyzeResponeMessage(message.senderName, name, MessageTypes.Game.AnalyzeResponse, vulnList));
         }
 
     }
@@ -209,7 +216,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                     i++;
             }
             
-            MessagingManager.BroadcastMessage(new ProbeResponseMessage(message.senderName, name, MessageTypes.Game.ProbeResponse, children.Count, difficulty, i));
+            networking.SendMessage(new ProbeResponseMessage(message.senderName, name, MessageTypes.Game.ProbeResponse, children.Count, difficulty, i));
         }
     }
     

@@ -36,6 +36,7 @@ public class Attack : MonoBehaviour, IAttackResponse
     private bool triggered = false;
 
     private AttackerUI uiScript;
+    private NetworkingManager networking;
 
     /// <summary>
     /// Finds the UI script and toggles the progress bar.
@@ -45,6 +46,8 @@ public class Attack : MonoBehaviour, IAttackResponse
         uiScript = FindObjectOfType<AttackerUI>();
         uiScript.ToggleProgressbar(true, "Attacking", description + " on: " + target.name);
         uiScript.UpdateProgressbar(timer, duration);
+
+        networking = FindObjectOfType<NetworkingManager>();
     }
 
     /// <summary>
@@ -68,7 +71,7 @@ public class Attack : MonoBehaviour, IAttackResponse
     public void Effect()
     {
         triggered = true;
-        MessagingManager.BroadcastMessage(new AttackMessage(target.name, name, MessageTypes.Game.Attack, attackType, probability));
+        networking.SendMessage(new AttackMessage(target.name, name, MessageTypes.Game.Attack, attackType, probability));
     }
 
     /// <summary>

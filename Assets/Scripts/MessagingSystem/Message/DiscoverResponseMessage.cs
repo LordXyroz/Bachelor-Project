@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Child class of Message for storing response data from a discover event.
 /// </summary>
+[System.Serializable]
 public class DiscoverResponseMessage : Message
 {
     public List<GameNetworkComponent> discovered;

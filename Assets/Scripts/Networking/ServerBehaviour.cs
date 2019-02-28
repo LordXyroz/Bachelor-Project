@@ -13,7 +13,7 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-
+using UnityEngine.SceneManagement;
 
 public class ServerBehaviour
 {
@@ -263,7 +263,7 @@ public class ServerBehaviour
                     string data = Encoding.ASCII.GetString(bytes);
 
                     /// Create a temporary DataStreamWriter to write back a receival message to the client:
-                    var writer = new DataStreamWriter(150, Allocator.Temp);
+                    var writer = new DataStreamWriter(1024, Allocator.Temp);
                     if (data.Contains("<UpdateConnection>"))
                     {
                         writer.Write(Encoding.ASCII.GetBytes("Connection updated<UpdateConnection>"));
@@ -385,6 +385,15 @@ public class ServerBehaviour
                         {
                             m_ServerDriver.Send(m_connections[j], writer);
                         }
+
+                        var type = data.Substring(data.LastIndexOf("<Message>") + 9);
+                        Type typed = Type.GetType(type);
+                        
+                        data = data.Substring(0, data.IndexOf("<Message>"));
+
+                        dynamic msg = JsonUtility.FromJson(data, typed);
+                        
+                        MessagingManager.BroadcastMessage(msg);
                     }
                     else if (data.Contains("<ChatMessage>"))
                     {
@@ -451,5 +460,24 @@ public class ServerBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Tells all clients to start game, and loads game scene for host
+    /// </summary>
+    public void StartGame()
+    {
+        var writer = new DataStreamWriter(128, Allocator.Temp);
+        writer.Write(Encoding.ASCII.GetBytes("Start game<StartGame>"));
+
+        for (int i = 0; i < m_connections.Length; i++)
+            m_ServerDriver.Send(m_connections[i], writer);
+
+        writer.Dispose();
+
+
+        GameObject.Find("Canvas").SetActive(false);
+
+        SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 }

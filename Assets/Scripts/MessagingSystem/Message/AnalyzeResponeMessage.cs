@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Child class of Message for storing response data from an analyze event.
 /// </summary>
+[System.Serializable]
 public class AnalyzeResponeMessage : Message
 {
     public List<AttackTypes> attacks;

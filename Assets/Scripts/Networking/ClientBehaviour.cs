@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class ClientBehaviour
 {
@@ -344,11 +345,11 @@ public class ClientBehaviour
     /// SendMessage will send message about actions happening on the current client, and server will give information about this to other clients.
     /// </summary>
     /// <param name="message"></param>
-    public void SendMessage(Message msg)
+    public void SendMessage(dynamic msg)
     {
         if (m_clientToServerConnection.IsCreated)
         {
-            string messageObj = JsonUtility.ToJson(msg) + "<Message>";
+            string messageObj = JsonUtility.ToJson(msg) + "<Message>" + msg.GetType().ToString();
             var classWriter = new DataStreamWriter(messageObj.Length + 2, Allocator.Temp);
             
             byte[] message = Encoding.ASCII.GetBytes(messageObj);
@@ -503,13 +504,16 @@ public class ClientBehaviour
                 }
                 else if (data.Contains("<Message>"))
                 {
-                    data = data.Substring(0, data.Length - 9);
-
                     /// Convert data to message of type Message:
-                    Message msg = JsonUtility.FromJson<Message>(data);
+                    var type = data.Substring(data.LastIndexOf("<Message>") + 9);
+                    Type typed = Type.GetType(type);
+
+                    data = data.Substring(0, data.IndexOf("<Message>"));
+
+                    dynamic msg = JsonUtility.FromJson(data, typed);
                     
                     /// Send message to the chat field.
-                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage(msg);
+                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage((Message)msg);
                 }
                 else if (data.Contains("<MessageReply>"))
                 {
@@ -623,6 +627,10 @@ public class ClientBehaviour
                     /// If the server disconnected us we clear out connection
                     m_clientToServerConnection = default(NetworkConnection);
                 }
+                else if (data.Contains("<StartGame>"))
+                {
+                    StartGame();
+                }
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
@@ -657,5 +665,12 @@ public class ClientBehaviour
         GameObject.Find("MessageText4").GetComponent<Text>().text = GameObject.Find("MessageText3").GetComponent<Text>().text;
         GameObject.Find("MessageText3").GetComponent<Text>().text = GameObject.Find("MessageText2").GetComponent<Text>().text;
         GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
+    }
+
+    void StartGame()
+    {
+        GameObject.Find("Canvas").SetActive(false);
+
+        SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 }

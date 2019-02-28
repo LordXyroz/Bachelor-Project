@@ -20,19 +20,41 @@ public class PlayerManager : MonoBehaviour
     [Header("GameObjects")]
     public GameObject attackerUI;
     public GameObject defenderUI;
+    public GameObject attacker;
+    public GameObject defender;
+    public GameObject observer;
 
     // Start is called before the first frame update
     void Awake()
     {
+        playerType = FindObjectOfType<NetworkingManager>().playerType;
+
         if (playerType == PlayerType.Attacker)
         {
             uiScript = FindObjectOfType<AttackerUI>();
             defenderUI.SetActive(false);
+
+            attacker.SetActive(true);
+            defender.SetActive(false);
+            observer.SetActive(false);
         }
         else if (playerType == PlayerType.Defender)
         {
             uiScript = FindObjectOfType<DefenderUI>();
             attackerUI.SetActive(false);
+
+            attacker.SetActive(false);
+            defender.SetActive(true);
+            observer.SetActive(false);
+        }
+        else if (playerType == PlayerType.Observer)
+        {
+            attackerUI.SetActive(false);
+            defenderUI.SetActive(false);
+
+            attacker.SetActive(false);
+            defender.SetActive(false);
+            observer.SetActive(true);
         }
     }
 

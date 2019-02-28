@@ -102,11 +102,8 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void StartGame()
     {   
-        /// Open game view:
-        gameField.SetActive(true);
-        /// Close lobby view:
-        chatField.SetActive(false);
-        SceneManager.LoadScene("TestScene", LoadSceneMode.Additive);
+        if (playerType == PlayerManager.PlayerType.Observer)
+            sb.StartGame();
     }
 
     /// <summary>
