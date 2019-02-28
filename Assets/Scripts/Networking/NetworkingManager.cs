@@ -22,8 +22,7 @@ using UnityEngine.UI;
 public class NetworkingManager : MonoBehaviour
 {
     public string userName;
-
-    public bool isSpectator;
+    
     public GameObject chatField;
     public GameObject connectionField;
     public GameObject gameField;
@@ -56,7 +55,7 @@ public class NetworkingManager : MonoBehaviour
 
         cb = null;
         sb = null;
-
+        
         playerType = default;
         hostText = GameObject.Find("HostText");
 
@@ -162,7 +161,7 @@ public class NetworkingManager : MonoBehaviour
     /// Function used to set up default values for networking based on player wanting to be host or client(given as bool).
     /// </summary>
     /// <param name="isSpec"></param>
-    public void SetupNetworkingManager(bool isSpec)
+    public void SetupNetworkingManager(bool isHost)
     {
         /// Get username from user before changing view:
         userName = GameObject.Find("UserNameInputField").GetComponent<InputField>().text;
@@ -170,9 +169,8 @@ public class NetworkingManager : MonoBehaviour
         /// Can try to join lobby/start game when player actually has a name.
         if (userName != null && userName != "")
         {
-            isSpectator = isSpec;
             GameObject gm = GameObject.Find("GameManager");
-            if (isSpectator)
+            if (isHost)
             {
                 /// Instantiate behaviour:
                 if (sb == null && cb == null)
@@ -246,7 +244,7 @@ public class NetworkingManager : MonoBehaviour
         playerType = default;
         yield return new WaitForSeconds(0.01f);
 
-        if (isSpectator)
+        if (playerType == PlayerManager.PlayerType.Observer)
         {
             /// Disconnect clients from server:
             
@@ -323,7 +321,7 @@ public class NetworkingManager : MonoBehaviour
     public void SwapPosition()
     {
         /// Hosts are not playing the game themselves so they may not swap positions.
-        if (isSpectator)
+        if (playerType == PlayerManager.PlayerType.Observer)
         {
             return;
         }
@@ -373,7 +371,6 @@ public class NetworkingManager : MonoBehaviour
         
         /// Create SwapLoadScreen:
         GameObject sls = Instantiate(SwapLoadingScreen, GameObject.Find("Canvas").transform);
-        sls.transform.SetParent(GameObject.Find("Canvas").transform);
         sls.name = "SwapLoadingScreen";
 
         /// Set name: 
@@ -394,8 +391,15 @@ public class NetworkingManager : MonoBehaviour
             sls.transform.Find("DeclineButton").transform.position = tempPosition;
         }
 
-        /// Set position and scale of loadbar:
-        sls.transform.position = GameObject.Find("Attackers").transform.position; //TODO change depending on position of player.
+        /// Set position of loadbar:
+        if (FindPlayerType() == PlayerManager.PlayerType.Attacker)
+        {
+            sls.transform.position = GameObject.Find("Attackers").transform.position;
+        }
+        else
+        {
+            sls.transform.position = GameObject.Find("Defenders").transform.position;
+        }
 
         
         /// Update SwapLoadScreen:
@@ -466,7 +470,7 @@ public class NetworkingManager : MonoBehaviour
         {
             playerType = PlayerManager.PlayerType.Defender;
         }
-        else
+        else if (playerType == PlayerManager.PlayerType.Defender)
         {
             playerType = PlayerManager.PlayerType.Attacker;
         }
@@ -645,7 +649,7 @@ public class NetworkingManager : MonoBehaviour
     {
         GameObject gm = GameObject.Find("GameManager");
         string msg = userName + " - " + GameObject.Find("ChatInputField").GetComponent<InputField>().text;
-        if (!isSpectator)
+        if (playerType != PlayerManager.PlayerType.Observer)
         {
             if (cb != null)
             {

@@ -93,7 +93,7 @@ public class ServerBehaviour
                 if (m_connections.IsCreated)
                 {
                     /// Lobby is full:
-                    if (m_connections.Length == 2) /// 2 is total amount of players
+                    if (m_connections.Length == 3) /// 2 is total amount of players
                     {
                         server.Stop();
                         return;
@@ -422,11 +422,11 @@ public class ServerBehaviour
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
-                    Debug.Log("Server - Disconnecting client...");
-
                     /// Remove client that disconnected from list of people who ARE indeed connected.
                     string name = connectionNames.Where(x => x.connectionNumber == i).First().name;  /// TODO check that they don't have the same name?;
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindPlayerForRemoval(name);
+
+                    Debug.Log("Server - Disconnecting client named " + name);
 
                     /// Create writer to send message to other clients that client with connection i is disconnecting.
                     var writer = new DataStreamWriter(100, Allocator.Temp);
