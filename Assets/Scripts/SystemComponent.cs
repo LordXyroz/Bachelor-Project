@@ -8,13 +8,12 @@ using UnityEngine;
 
 /// TODO 
 /// 
-/// Have a textbox with the type of component, only visible in the menu (next to the draggable prefab object)
+/// Load list of available vulnerabilities from file (list of enums)
+/// Save list of vulnerabilities to file
 /// 
-/// Spawn a menu when rightclicked: display name, connect, delete, vulnerability list, component vulnerability level
-///     - Load list of available vulnerabilities from file (list of enums)
-/// Save list of vulnerabilities (vulnerabilities do not have levels)
-/// 
-/// Make separate right-click menu for reference lines, name, bool firewall, delete
+/// Save scenario to file
+/// Load scenario from file
+
 
 public class SystemComponent : MonoBehaviour
 {

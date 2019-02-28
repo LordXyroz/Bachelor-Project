@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("The objects that need to be referenced")]
-    public SystemComponentMenu systemComponentMenu;
+    private SystemComponentMenu systemComponentMenu;
     private ReferenceLineMenu referenceLineMenu;
     private RectTransform componentMenu;
     private SelectedObject objectSelect;
@@ -52,7 +52,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         informationColumn = canvas.GetComponentInChildren<InformationColumn>();
 
-        componentMenu = canvas.transform.Find("SystemComponentMenu").gameObject.GetComponent<RectTransform>();
+        componentMenu = canvas.transform.GetComponentInChildren<SystemComponentMenu>(true).gameObject.GetComponent<RectTransform>();
         systemComponentMenu = canvas.transform.GetComponentInChildren<SystemComponentMenu>(true);
         referenceLineMenu = canvas.transform.GetComponentInChildren<ReferenceLineMenu>(true);
     }
@@ -154,8 +154,8 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 else
                 {
                     referenceLineMenu.gameObject.SetActive(true);
-                    referenceLineMenu.UpdatePosition(new Vector2(eventData.position.x + componentMenu.rect.width / 2,
-                                                                eventData.position.y + componentMenu.rect.height / 2));
+                    referenceLineMenu.UpdatePosition(new Vector2(eventData.position.x + referenceLineMenu.GetComponent<RectTransform>().rect.width / 2,
+                                                                eventData.position.y + referenceLineMenu.GetComponent<RectTransform>().rect.height / 2));
                 }
             }
         }

@@ -11,9 +11,12 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     [Header("Refferenced objects")]
     private Color originalColor;
     private Camera mainCamera;
+    private Canvas canvas;
     private Image systemComponentImage;
     private SelectedObject objectSelect;
     private SystemComponent systemComponent;
+    private SystemComponentMenu systemComponentMenu;
+    private ReferenceLineMenu referenceLineMenu;
 
     [Header("Positioning objects")]
     private Vector2 offset;
@@ -26,8 +29,11 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     void Start()
     {
         mainCamera = Camera.main;
+        canvas = GetComponentInParent<Canvas>();
         objectSelect = FindObjectOfType<SelectedObject>();
         systemComponent = GetComponent<SystemComponent>();
+        systemComponentMenu = canvas.transform.GetComponentInChildren<SystemComponentMenu>(true);
+        referenceLineMenu = canvas.transform.GetComponentInChildren<ReferenceLineMenu>(true);
 
         /// Only system components are draggable and start with one image object
         if (GetComponent<Image>() != null)
@@ -47,6 +53,14 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         {
             if (this.GetComponent<Image>() != null)
             {
+                if (systemComponentMenu.gameObject.activeInHierarchy)
+                {
+                    systemComponentMenu.gameObject.SetActive(false);
+                }
+                if (referenceLineMenu.gameObject.activeInHierarchy)
+                {
+                    referenceLineMenu.gameObject.SetActive(false);
+                }
                 objectSelect.SelectObject(this.gameObject, true, true);
             }
             else
