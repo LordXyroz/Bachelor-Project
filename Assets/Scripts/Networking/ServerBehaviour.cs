@@ -275,7 +275,8 @@ public class ServerBehaviour
 
                         /// Add new client to list of players in lobby:
                         string name = data.Substring(0, data.Length - 12);
-                        Debug.Log("Server - Connecting client with name: " + name);
+                        Debug.Log("Server - Connecting client with name: " + name + " , nr of clients: " + m_connections.Length);
+                        Debug.Log("server - connectionnames lenght: " + connectionNames.Count);
                         nm.AddPlayerName(name);
 
                         /// Add name of the client to serverlist:
@@ -431,7 +432,8 @@ public class ServerBehaviour
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
                     /// Remove client that disconnected from list of people who ARE indeed connected.
-                    string name = connectionNames.Where(x => x.connectionNumber == i).First().name;  /// TODO check that they don't have the same name?;
+                    string name = connectionNames.Find(x => x.connectionNumber == i).name;  /// TODO check that they don't have the same name?
+                    connectionNames.Remove(connectionNames.Find(x => x.name == name));
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindPlayerForRemoval(name);
 
                     Debug.Log("Server - Disconnecting client named " + name);
@@ -452,7 +454,7 @@ public class ServerBehaviour
                     /// Dispose the writer when message has been sent.
                     writer.Dispose();
 
-
+                    m_ServerDriver.Disconnect(m_connections[i]);
                     /// This connection no longer exists.
                     m_connections.RemoveAtSwapBack(i);
                     if (i >= m_connections.Length)

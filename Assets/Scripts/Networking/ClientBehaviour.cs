@@ -92,7 +92,7 @@ public class ClientBehaviour
     /// </summary>
     /// <param name="ip"></param>
     public void FindHost(string ip)
-    {   
+    {
         string message = "Connecting";
         try
         {
@@ -107,7 +107,6 @@ public class ClientBehaviour
             NetworkStream stream = client.GetStream();
 
             /// Send the message to the connected TcpServer. 
-            //Debug.Log("newconnection - client sending message");
             stream.Write(data, 0, data.Length);
             
             /// Buffer to store the response bytes.
@@ -147,7 +146,9 @@ public class ClientBehaviour
         // Disconnect client from host:
         m_clientToServerConnection.Disconnect(m_ClientDriver);
         ServerEndPoint = default;
-        
+        m_clientToServerConnection = default;
+        m_ClientDriver.Dispose();
+
 
         /// Change connectionText according to connection status:
         GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
@@ -209,12 +210,84 @@ public class ClientBehaviour
         return results;
     }
 
+    IEnumerator WaitForHost()
+    {
+        /// Text visible to the client that shows the connection status.(Offline/Connecting/Online)
+        Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
+        Debug.Log("<color=blue>Looking for connection</color>");
+        connectionText.text = "Connecting";
+        Debug.Log("Connecting");
+
+        List<string> ips = FindIPs();
+        Task setupHostIp = Task.Run(() => FindHost(ips[0]));
+
+        /// Go through possible ips.
+        for (int i = 0; i < ips.Count; i++)
+        {
+            Debug.Log(ips[i]);
+            /// Cosmetics:
+            if (i%4 == 0)
+            {
+                connectionText.text = "Connecting";
+                yield return new WaitForSeconds(0.1f);
+            }
+            connectionText.text = connectionText.text + ".";
+
+            /// Get IP of host that wants to serve a match.
+            setupHostIp.ContinueWith((t1) => FindHost(ips[i]));
+            //setupHostIp = Task.Run(() => FindHost(ips[i]));
+            yield return new WaitForSeconds(0.25f);
+            if (ServerEndPoint.IsValid)
+            {
+                break;
+            }
+        }
+
+        try
+        {
+            /// Connect to host if one is found and connection isn't already made.
+            if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
+            {
+                
+                /// Try to connect to the ServerEndPoint.
+                m_clientToServerConnection = m_ClientDriver.Connect(ServerEndPoint);
+
+                /// Change UI to show client that they are connected, and stop the coroutine that shows a connecting version of the UI.
+                connect = true;
+                connectionText.text = "Online";
+                connectionText.color = Color.green;
+
+                GameObject gm = GameObject.Find("GameManager");
+                gm.GetComponent<NetworkingManager>().chatField.SetActive(true);
+                gm.GetComponent<NetworkingManager>().connectionField.SetActive(false);
+
+                /// Client has found a connection, so won't need to look for a new one:
+                m_clientWantsConnection = false;
+
+                /// Remove task:
+                setupHostIp.Dispose();
+                /// Finish this instance of coroutines:
+                yield break;
+            }
+        }
+        catch
+        {
+            Debug.Log("Could not find a host!");
+        }
+
+        /// Change text to Offline if the connection failed/was closed.
+        if (!connect)
+        {
+            connectionText.text = "Offline";
+        }
+    }
+
 
     /// <summary>
     /// WaitForHost is a routine where the client searches for a host until one is found, or the client stops the connecting.
     /// </summary>
     /// <returns></returns>
-    IEnumerator WaitForHost()
+    /*IEnumerator WaitForHost()
     {
         /// Text visible to the client that shows the connection status.(Offline/Connecting/Online)
         Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
@@ -229,7 +302,7 @@ public class ClientBehaviour
             connectionText.text = "Connecting.";
             yield return new WaitForSeconds(1);
             connectionText.text = "Connecting..";
-            yield return new WaitForSeconds(0.15f);
+            yield return new WaitForSeconds(0.2f);
             connectionText.text = "Connecting...";
 
             List<string> ips = FindIPs();
@@ -239,8 +312,7 @@ public class ClientBehaviour
             {
                 /// Get IP of host that wants to serve a match.
                 Task setupHostIp = Task.Run(() => FindHost(ips[i]));
-                setupHostIp.Wait();
-                setupHostIp.Dispose();
+                Debug.Log("ipaddress: " + ips[i]);
                 if (ServerEndPoint.IsValid)
                 {
                     break;
@@ -281,7 +353,7 @@ public class ClientBehaviour
         {
             connectionText.text = "Offline";
         }
-    }
+    }*/
 
     /// <summary>
     /// Client sends message to other client about accepting swap.
@@ -428,9 +500,9 @@ public class ClientBehaviour
         m_ClientDriver.ScheduleUpdate().Complete();
 
         /// Update clients connecion to the server:
-        if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
+        if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid && m_clientWantsConnection == false)
         {
-            var updateWriter = new DataStreamWriter(30, Allocator.Temp);
+            var updateWriter = new DataStreamWriter(32, Allocator.Temp);
             // Setting prefix for server to easily know what kind of msg is being written.
             string message = "<UpdateConnection>";
             updateWriter.Write(Encoding.ASCII.GetBytes(message));

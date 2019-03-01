@@ -306,12 +306,10 @@ public class NetworkingManager : MonoBehaviour
             cb.Disconnect(messageList);
 
             /// Disconnect client from host.
-            cb.m_clientToServerConnection.Disconnect(cb.m_ClientDriver);
-            cb.m_clientToServerConnection = default;
-            cb.m_ClientDriver.Dispose();
             cb = null;
             yield return new WaitForSeconds(1);
         }
+
         playerType = default;
     }
 
