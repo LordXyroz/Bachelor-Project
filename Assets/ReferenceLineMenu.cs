@@ -9,7 +9,7 @@ public class ReferenceLineMenu : MonoBehaviour
     [Header("Populating the reference menu")]
     public SelectedObject selectedObject;
     private Canvas canvas;
-    private Toggle firewall;
+    private Toggle firewallToggle;
 
 
     // Start is called before the first frame update
@@ -18,18 +18,26 @@ public class ReferenceLineMenu : MonoBehaviour
         canvas = GetComponentInParent<Canvas>();
         selectedObject = canvas.transform.Find("Scripts").GetComponent<SelectedObject>();
 
-        firewall = GetComponentInChildren<Toggle>(true);
-        firewall.isOn = false;
-        firewall.onValueChanged.AddListener(delegate
+        firewallToggle = GetComponentInChildren<Toggle>(true);
+        firewallToggle.onValueChanged.AddListener(delegate
         {
-            ToggleValueChanged(firewall);
+            ToggleValueChanged(firewallToggle);
         });
     }
+
 
     private void ToggleValueChanged(Toggle firewall)
     {
         selectedObject.selected.gameObject.GetComponent<ConnectionReferences>().hasFirewall = firewall.isOn;
     }
+
+
+    public void PopulateReferenceLineMenu(GameObject recievedSelectedObject)
+    {
+        firewallToggle = GetComponentInChildren<Toggle>(true);
+        firewallToggle.isOn = recievedSelectedObject.transform.GetComponent<ConnectionReferences>().hasFirewall;
+    }
+
 
     public void UpdatePosition(Vector2 pos)
     {

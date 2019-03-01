@@ -156,6 +156,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                     referenceLineMenu.gameObject.SetActive(true);
                     referenceLineMenu.UpdatePosition(new Vector2(eventData.position.x + referenceLineMenu.GetComponent<RectTransform>().rect.width / 2,
                                                                 eventData.position.y + referenceLineMenu.GetComponent<RectTransform>().rect.height / 2));
+                    referenceLineMenu.PopulateReferenceLineMenu(objectSelect.selected);
                 }
             }
         }
