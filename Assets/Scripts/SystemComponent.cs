@@ -10,8 +10,14 @@ using UnityEngine;
 /// 
 /// Load list of available vulnerabilities from file (list of enums)
 /// 
+/// 
+/// Automatically generate name of system components upon initiation, where name = component + (no. of this component +1).
+/// Save the components in the system in a script, in order to have number as well as the objects saved?
+/// 
 /// Save scenario to file
 /// Load scenario from file
+/// 
+/// Functionality to delete specific vulnerabilities
 
 
 public class SystemComponent : MonoBehaviour
@@ -25,6 +31,7 @@ public class SystemComponent : MonoBehaviour
     [Header("Reference line components")]
     public List<GameObject> connectedReferenceLines;
     private GameObject connectedSystemCommponent;
+    List<GameObject> connectedSystemComponents = new List<GameObject>();
     private Transform lineToEnd;
     private Transform lineFromStart;
 
@@ -169,6 +176,25 @@ public class SystemComponent : MonoBehaviour
         }
         dropZone.editableSystemComponents.Remove(this.gameObject);
         Destroy(this.gameObject);
+    }
+
+
+    public List<GameObject> GetConnectedComponents()
+    {
+        foreach (GameObject line in connectedReferenceLines)
+        {
+            if (line.GetComponent<ConnectionReferences>().referenceFromObject == this.gameObject)
+            {
+                connectedSystemCommponent = line.GetComponent<ConnectionReferences>().referenceToObject;
+            }
+            else if (line.GetComponent<ConnectionReferences>().referenceToObject == this.gameObject)
+            {
+                connectedSystemCommponent = line.GetComponent<ConnectionReferences>().referenceFromObject;
+            }
+            connectedSystemComponents.Add(connectedSystemCommponent);
+
+        }
+        return connectedSystemComponents;
     }
 
 
