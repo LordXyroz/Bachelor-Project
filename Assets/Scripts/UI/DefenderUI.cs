@@ -27,12 +27,12 @@ public class DefenderUI : BaseUI
     /// </summary>
     override public void Start()
     {
-        List<DefenseTypes> defenses = VulnerabilityPairings.GetAllDefenses();
+        List<DefenseTypes> defenses = VulnerabilityLogic.GetAllDefenses();
         foreach (var d in defenses)
         {
             GameObject go = Instantiate(defensButtonPrefab, defensePanelArea.transform);
 
-            go.GetComponentInChildren<Text>().text = VulnerabilityPairings.GetDefenseString(d);
+            go.GetComponentInChildren<Text>().text = VulnerabilityLogic.GetDefenseString(d);
             go.GetComponent<Button>().onClick.AddListener(() => FindObjectOfType<Defender>().StartDefense((int)d - 1));
             go.GetComponent<Button>().onClick.AddListener(EnableInfoPanel);
             go.AddComponent<PointerHandler>().tooltipInfo = FindObjectOfType<Defender>().defensePrefabs[(int)d - 1].GetComponent<Defense>().description;
@@ -134,7 +134,7 @@ public class DefenderUI : BaseUI
         {
             GameObject go = Instantiate(vulnPrefab, infoPanelArea.transform);
             Text t = go.GetComponentsInChildren<Text>().First(x => x.CompareTag("VarText"));
-            t.text = VulnerabilityPairings.GetAttackString(v);
+            t.text = VulnerabilityLogic.GetAttackString(v);
         }
 
         EnableInfoPanel();
