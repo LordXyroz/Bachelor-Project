@@ -10,64 +10,74 @@ public class SaveScenario : MonoBehaviour
     private Save CreateSaveScenarioObject()
     {
         dropZone = FindObjectOfType<DropZone>();
-
         systemComponentsToSave = dropZone.editableSystemComponents;
-        Save save = new Save();
-        List<string> vulnerabilities = new List<string>();
 
-        foreach (GameObject targetGameObject in systemComponentsToSave)
+        if (!systemComponentsToSave.Count.Equals(0))
         {
-            VulnerabilityWrapper vulnerabilityWrapper = new VulnerabilityWrapper();
-            ConnectedComponentsWrapper connectedComponentWrapper = new ConnectedComponentsWrapper();
+            Save save = new Save();
+            Debug.Log("To save: " + systemComponentsToSave[0]);
+            List<string> vulnerabilities = new List<string>();
 
-            GameObject target = targetGameObject.gameObject;
-            SystemComponent targetComponent = target.GetComponent<SystemComponent>();
-            if (target != null)
+            foreach (GameObject targetGameObject in systemComponentsToSave)
             {
-                save.systemComponentPositionsList.Add(target.transform.position);
-                save.systemComponentTypesList.Add(targetComponent.componentType);
-                save.systemComponentSecurityLevelsList.Add(targetComponent.securityLevel);
+                VulnerabilityWrapper vulnerabilityWrapper = new VulnerabilityWrapper();
+                ConnectedComponentsWrapper connectedComponentWrapper = new ConnectedComponentsWrapper();
 
-                foreach (string vulnerability in targetComponent.componentVulnerabilities)
+                GameObject target = targetGameObject.gameObject;
+                SystemComponent targetComponent = target.GetComponent<SystemComponent>();
+                if (target != null)
                 {
-                    vulnerabilityWrapper.vulnerabilityWrapperList.Add(vulnerability);
-                }
-                save.systemComponentVulnerabilitiesList.Add(vulnerabilityWrapper);
+                    save.systemComponentPositionsList.Add(target.transform.position);
+                    save.systemComponentTypesList.Add(targetComponent.componentType);
+                    save.systemComponentSecurityLevelsList.Add(targetComponent.securityLevel);
 
-                foreach (GameObject connectedObject in targetComponent.GetConnectedComponents())
-                {
-                    connectedComponentWrapper.connectedObjectWrapperList.Add(connectedObject.name);
-                }
-                save.systemComponentConnectedComponents.Add(connectedComponentWrapper);
+                    foreach (string vulnerability in targetComponent.componentVulnerabilities)
+                    {
+                        vulnerabilityWrapper.vulnerabilityWrapperList.Add(vulnerability);
+                    }
+                    save.systemComponentVulnerabilitiesList.Add(vulnerabilityWrapper);
 
-                /// Empty objects intended for later development cycles
-                save.OSList.Add(targetComponent.OS);
-                save.subnetList.Add(targetComponent.subnet);
-                save.configPresentList.Add(targetComponent.configPresent);
-                save.keypairList.Add(targetComponent.keypair);
-                save.floatingIPList.Add(targetComponent.floatingIP);
-                save.usersList.Add(targetComponent.user);
+                    foreach (GameObject connectedObject in targetComponent.GetConnectedComponents())
+                    {
+                        connectedComponentWrapper.connectedObjectWrapperList.Add(connectedObject.name);
+                    }
+                    save.systemComponentConnectedComponents.Add(connectedComponentWrapper);
+
+                    /// Empty objects intended for later development cycles
+                    save.OSList.Add(targetComponent.OS);
+                    save.subnetList.Add(targetComponent.subnet);
+                    save.configPresentList.Add(targetComponent.configPresent);
+                    save.keypairList.Add(targetComponent.keypair);
+                    save.floatingIPList.Add(targetComponent.floatingIP);
+                    save.usersList.Add(targetComponent.user);
+                }
             }
+            return save;
         }
-
-        return save;
+        else
+        {
+            Debug.LogWarning("Nothing to save");
+            return null;
+        }
     }
 
     public void SaveCurrentScenario()
     {
         Save save = CreateSaveScenarioObject();
+        if (save != null)
+        {
+            //FileStream file = File.Create(Application.persistentDataPath + "/scenariosave.save");
+            /*BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(file, save);
 
-        //FileStream file = File.Create(Application.persistentDataPath + "/scenariosave.save");
-        /*BinaryFormatter bf = new BinaryFormatter();
-        bf.Serialize(file, save);
+            Debug.Log("Scenario saved");*/
+            string json = JsonUtility.ToJson(save);
 
-        Debug.Log("Scenario saved");*/
-        string json = JsonUtility.ToJson(save);
+            ///convert the JSON back into an instance of Save
+            Save saveFromJSON = JsonUtility.FromJson<Save>(json);
 
-        ///convert the JSON back into an instance of Save
-        Save saveFromJSON = JsonUtility.FromJson<Save>(json);
-
-        Debug.Log("Saving as JSON: " + json);
-        //file.Close();
+            Debug.Log("Saving as JSON: " + json);
+            //file.Close();
+        }
     }
 }
