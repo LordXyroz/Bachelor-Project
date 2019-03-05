@@ -257,6 +257,10 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
             else
             {
                 msg += "found - ";
+                
+                if (!i.upToDate)
+                    i.vulnerabilities = new List<AttackTypes>();
+
                 bool foundNew = false;
                 foreach (var entry in message.attacks)
                 {
@@ -288,6 +292,12 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     /// <param name="message">Message containing relevant info to be handled by the function</param>
     public void DefenseResponse(SuccessMessage message)
     {
+        NodeInfo i = info.Find(x => x.component.name == message.senderName);
+        if (i != null)
+        {
+            i.upToDate = false;
+        }
+
         workInProgress = false;
 
         string msg = "Defense response: " + ((message.success) ? "Success" : "Failed");
