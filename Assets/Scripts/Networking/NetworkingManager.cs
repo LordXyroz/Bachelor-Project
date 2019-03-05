@@ -685,10 +685,16 @@ public class NetworkingManager : MonoBehaviour
 
     /// <summary>
     /// Sends message to everyone else through network.
+    /// Checks target/sender and player type so we don't get duplicate messages.
     /// </summary>
     public void SendMessage(Message msg)
     {
-        cb.SendMessage(msg);
+        if (msg.targetName == "Attacker" && playerType == PlayerManager.PlayerType.Attacker)
+            cb.SendMessage(msg);
+        else if (msg.targetName == "Defender" && playerType == PlayerManager.PlayerType.Defender)
+            cb.SendMessage(msg);
+        else if (msg.senderName == "Attacker" || msg.senderName == "Defender")
+            cb.SendMessage(msg);
     }
 
     /// <summary>
