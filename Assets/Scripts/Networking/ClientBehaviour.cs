@@ -34,6 +34,7 @@ public class ClientBehaviour
     private Task setupHostIp;
     private CancellationTokenSource cancellationTokenSource;
     private CancellationToken cancellationToken;
+    
 
     /// <summary>
     /// Keeps info about current swap(Null, Waiting, Accepted)
@@ -315,6 +316,8 @@ public class ClientBehaviour
             Debug.Log("Could not find a valid host");
         }
 
+        GameObject.Find("GameManager").GetComponent<NetworkingManager>().joinButton.SetActive(true);
+        GameObject.Find("GameManager").GetComponent<NetworkingManager>().stopJoinButton.SetActive(false);
 
         try
         {
@@ -355,78 +358,6 @@ public class ClientBehaviour
         }
     }
 
-
-    /// <summary>
-    /// WaitForHost is a routine where the client searches for a host until one is found, or the client stops the connecting.
-    /// </summary>
-    /// <returns></returns>
-    /*IEnumerator WaitForHost()
-    {
-        /// Text visible to the client that shows the connection status.(Offline/Connecting/Online)
-        Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
-        Debug.Log("<color=blue>Looking for connection</color>");
-        
-        /// While the player still wants to connect to a host and no host is found, look for a new one:
-        while (m_clientToServerConnection.IsCreated == false && m_clientWantsConnection)
-        {
-
-            /// Cosmetics... Makes it look like there is a connection trying to be done in the background.
-            yield return new WaitForSeconds(1);
-            connectionText.text = "Connecting.";
-            yield return new WaitForSeconds(1);
-            connectionText.text = "Connecting..";
-            yield return new WaitForSeconds(0.2f);
-            connectionText.text = "Connecting...";
-
-            List<string> ips = FindIPs();
-            
-            /// Go through possible ips.
-            for (int i = 0; i < ips.Count; i++)
-            {
-                /// Get IP of host that wants to serve a match.
-                Task setupHostIp = Task.Run(() => FindHost(ips[i]));
-                Debug.Log("ipaddress: " + ips[i]);
-                if (ServerEndPoint.IsValid)
-                {
-                    break;
-                }
-            }
-            
-            try
-            {
-                /// Connect to host if one is found and connection isn't already made.
-                if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
-                {
-                    /// Try to connect to the ServerEndPoint.
-                    m_clientToServerConnection = m_ClientDriver.Connect(ServerEndPoint);
-
-                    /// When the client has connection there is no need to try and create a new, so we set that want to false.
-                    m_clientWantsConnection = false;
-
-                    /// Change UI to show client that they are connected, and stop the coroutine that shows a connecting version of the UI.
-                    connect = true;
-                    connectionText.text = "Online";
-                    connectionText.color = Color.green;
-
-                    GameObject gm = GameObject.Find("GameManager");
-                    gm.GetComponent<NetworkingManager>().chatField.SetActive(true);
-                    gm.GetComponent<NetworkingManager>().connectionField.SetActive(false);
-
-                    /// Finish this instance of coroutines:
-                    yield break;
-                }
-            }
-            catch
-            {
-                Debug.Log("Could not find a host!");
-            }
-        }
-        /// Change text to Offline if the connection failed/was closed.
-        if (!connect)
-        {
-            connectionText.text = "Offline";
-        }
-    }*/
 
     /// <summary>
     /// Client sends message to other client about accepting swap.

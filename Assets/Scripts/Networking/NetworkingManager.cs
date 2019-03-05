@@ -29,6 +29,9 @@ public class NetworkingManager : MonoBehaviour
     public GameObject hostText;
     public GameObject SwapLoadingScreen;
 
+    public GameObject joinButton;
+    public GameObject stopJoinButton;
+
 
     /// <summary>
     /// List of names is used to see name of players currently in the lobby.
@@ -88,6 +91,10 @@ public class NetworkingManager : MonoBehaviour
         }
 
         connectionField = GameObject.Find("ConnectionField");
+        joinButton = connectionField.transform.Find("JoinButton").gameObject;
+        stopJoinButton = connectionField.transform.Find("StopJoinButton").gameObject;
+        stopJoinButton.SetActive(false);
+
         chatField = GameObject.Find("ChatField");
         chatField.SetActive(false);
 
@@ -143,7 +150,7 @@ public class NetworkingManager : MonoBehaviour
             //cb.m_clientToServerConnection.Disconnect(cb.m_ClientDriver);
             cb.m_clientToServerConnection = default;
             cb.m_ClientDriver.Dispose();
-            //cb = null;
+            cb = null;
             playerType = default;
         }
     }
@@ -196,10 +203,10 @@ public class NetworkingManager : MonoBehaviour
                 if (cb != null)
                 {
                     /// Player may not start hosting while looking for connection as a client.
-                    /// TODO instead of returning here, stop thread looking for connection and set values for player to be able to serve a game as a host.
                     return;
                 }
-                else if (sb == null && cb == null)
+
+                if (sb == null)
                 {
                     /// Instantiate behaviour:
                     sb = new ServerBehaviour();
@@ -234,6 +241,10 @@ public class NetworkingManager : MonoBehaviour
                 {
                     cb = new ClientBehaviour();
                 }
+
+                /// Make players able to stop trying to connect.
+                stopJoinButton.SetActive(true);
+                joinButton.SetActive(false);
 
                 /// This is set as a temp value not default for player to be able to stop looking for host.
                 playerType = PlayerManager.PlayerType.Attacker;
