@@ -27,12 +27,12 @@ public class AttackerUI : BaseUI
     /// </summary>
     override public void Start()
     {
-        List<AttackTypes> attacks = VulnerabilityPairings.GetAllAttacks();
+        List<AttackTypes> attacks = VulnerabilityLogic.GetAllAttacks();
         foreach (var a in attacks)
         {
             GameObject go = Instantiate(attackButtonPrefab, attackPanelArea.transform);
 
-            go.GetComponentInChildren<Text>().text = VulnerabilityPairings.GetAttackString(a);
+            go.GetComponentInChildren<Text>().text = VulnerabilityLogic.GetAttackString(a);
             go.GetComponent<Button>().onClick.AddListener(() => FindObjectOfType<Attacker>().StartAttack((int)a - 1));
             go.GetComponent<Button>().onClick.AddListener(EnableInfoPanel);
             go.AddComponent<PointerHandler>().tooltipInfo = FindObjectOfType<Attacker>().attackPrefabs[(int)a - 1].GetComponent<Attack>().description;
@@ -135,7 +135,7 @@ public class AttackerUI : BaseUI
         {
             GameObject go = Instantiate(vulnPrefab, infoPanelArea.transform);
             Text t = go.GetComponentsInChildren<Text>().First(x => x.CompareTag("VarText"));
-            t.text = VulnerabilityPairings.GetAttackString(v);
+            t.text = VulnerabilityLogic.GetAttackString(v);
         }
 
         EnableInfoPanel();

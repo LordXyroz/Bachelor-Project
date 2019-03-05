@@ -82,7 +82,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                         isVulnerable = true;
                         foreach (var def in implementedDefenses)
                         {
-                            if (VulnerabilityPairings.IsStoppedBy(message.attack, def))
+                            if (VulnerabilityLogic.IsStoppedBy(message.attack, def))
                                 isVulnerable = false;
                         }
                       
@@ -183,7 +183,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
 
                 foreach (var def in implementedDefenses)
                 {
-                    if (VulnerabilityPairings.IsStoppedBy(vuln, def))
+                    if (VulnerabilityLogic.IsStoppedBy(vuln, def))
                         vulnerable = false;
                 }
                 if (vulnerable)
@@ -209,7 +209,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             {
                 bool stopped = false;
                 foreach (var def in implementedDefenses)
-                    if (VulnerabilityPairings.IsStoppedBy(entry, def))
+                    if (VulnerabilityLogic.IsStoppedBy(entry, def))
                         stopped = true;
 
                 if (!stopped)
