@@ -1,10 +1,27 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class SaveScenario : MonoBehaviour
 {
     private List<GameObject> systemComponentsToSave = new List<GameObject>();
+    private List<GameObject> connectedComponents = new List<GameObject>();
     private DropZone dropZone;
+    private string fileName = "savefile";
+    private string filePath;
+    private Save save;
+
+
+    //private void Awake()
+    //{
+    //    if (save == null)
+    //    {
+    //        save = new Save();
+    //    }
+    //
+    //    filePath = Path.Combine(Application.dataPath + "/Savefiles", fileName + ".json");
+    //    Debug.Log("Filepath from save: " + filePath);
+    //}
 
 
     private Save CreateSaveScenarioObject()
@@ -14,12 +31,14 @@ public class SaveScenario : MonoBehaviour
 
         if (!systemComponentsToSave.Count.Equals(0))
         {
-            Save save = new Save();
-            Debug.Log("To save: " + systemComponentsToSave[0]);
-            List<string> vulnerabilities = new List<string>();
+            filePath = Path.Combine(Application.dataPath + "/Savefiles", fileName + ".json");
+            Debug.Log("Filepath from save: " + filePath);
 
+            save = new Save();
             foreach (GameObject targetGameObject in systemComponentsToSave)
             {
+                //List<string> vulnerabilities = new List<string>();
+
                 VulnerabilityWrapper vulnerabilityWrapper = new VulnerabilityWrapper();
                 ConnectedComponentsWrapper connectedComponentWrapper = new ConnectedComponentsWrapper();
 
@@ -27,6 +46,7 @@ public class SaveScenario : MonoBehaviour
                 SystemComponent targetComponent = target.GetComponent<SystemComponent>();
                 if (target != null)
                 {
+                    save.systemComponentNamesList.Add(targetComponent.componentName);
                     save.systemComponentPositionsList.Add(target.transform.position);
                     save.systemComponentTypesList.Add(targetComponent.componentType);
                     save.systemComponentSecurityLevelsList.Add(targetComponent.securityLevel);
@@ -35,13 +55,16 @@ public class SaveScenario : MonoBehaviour
                     {
                         vulnerabilityWrapper.vulnerabilityWrapperList.Add(vulnerability);
                     }
-                    save.systemComponentVulnerabilitiesList.Add(vulnerabilityWrapper);
+                    save.systemComponentVulnerabilyWrappersList.Add(vulnerabilityWrapper);
 
-                    foreach (GameObject connectedObject in targetComponent.GetConnectedComponents())
+                    connectedComponents = targetComponent.GetConnectedComponents();
+                    foreach (GameObject connectedObject in connectedComponents)
                     {
-                        connectedComponentWrapper.connectedObjectWrapperList.Add(connectedObject.name);
+                        /*string name = connectedObject.name;
+                        connectedComponentWrapper.connectedObjectWrapperList.Add(name);*/
+                        connectedComponentWrapper.connectedObjectWrapperList.Add(connectedObject);
                     }
-                    save.systemComponentConnectedComponents.Add(connectedComponentWrapper);
+                    save.systemComponentConnectedComponentsWrapperList.Add(connectedComponentWrapper);
 
                     /// Empty objects intended for later development cycles
                     save.OSList.Add(targetComponent.OS);
@@ -50,7 +73,9 @@ public class SaveScenario : MonoBehaviour
                     save.keypairList.Add(targetComponent.keypair);
                     save.floatingIPList.Add(targetComponent.floatingIP);
                     save.usersList.Add(targetComponent.user);
+                    ///////////////////////////////////////////////////////
                 }
+
             }
             return save;
         }
@@ -64,20 +89,25 @@ public class SaveScenario : MonoBehaviour
     public void SaveCurrentScenario()
     {
         Save save = CreateSaveScenarioObject();
+        //if (!File.Exists(filePath))
+        //{
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+            //Debug.Log("Deleted file: " + filePath);
+        }
         if (save != null)
         {
-            //FileStream file = File.Create(Application.persistentDataPath + "/scenariosave.save");
-            /*BinaryFormatter bf = new BinaryFormatter();
-            bf.Serialize(file, save);
-
-            Debug.Log("Scenario saved");*/
+            File.Create(filePath).Dispose();
             string json = JsonUtility.ToJson(save);
 
-            ///convert the JSON back into an instance of Save
-            Save saveFromJSON = JsonUtility.FromJson<Save>(json);
-
-            Debug.Log("Saving as JSON: " + json);
-            //file.Close();
+            //Debug.Log("Saving as JSON: " + json);
+            File.WriteAllText(filePath, json);
         }
+        //}
+        //else
+        //{
+        //    Debug.Log("There already exist a file: " + filePath);
+        //}
     }
 }

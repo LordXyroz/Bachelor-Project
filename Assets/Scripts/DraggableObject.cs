@@ -18,22 +18,29 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private SystemComponentMenu systemComponentMenu;
     private ReferenceLineMenu referenceLineMenu;
 
+
+    public GameObject APIPrefab;
+
     [Header("Positioning objects")]
+    public Vector2 spawnPosition;
     private Vector2 offset;
-    Vector2 objectPosition;
+    private Vector2 objectPosition;
 
     [Header("The parent of the object (usually the list it is placed under)")]
     public Transform parentToReturnTo;
+    private DropZone dropZone;
 
 
     void Start()
     {
+        spawnPosition = new Vector2(300, 650);
         mainCamera = Camera.main;
         canvas = GetComponentInParent<Canvas>();
         objectSelect = FindObjectOfType<SelectedObject>();
         systemComponent = GetComponent<SystemComponent>();
         systemComponentMenu = canvas.transform.GetComponentInChildren<SystemComponentMenu>(true);
         referenceLineMenu = canvas.transform.GetComponentInChildren<ReferenceLineMenu>(true);
+        dropZone = FindObjectOfType<DropZone>();
 
         /// Only system components are draggable and start with one image object
         if (GetComponent<Image>() != null)
@@ -74,6 +81,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         {
             Image systemComponentClone = (Image)Instantiate(systemComponentImage, parentToReturnTo);
             systemComponentClone.color = originalColor;
+            //InstantiateObject();
         }
 
         offset = (Vector2)this.transform.position - eventData.position;
@@ -122,5 +130,18 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 objectSelect.DeleteSelectedObject();
             }
         }
+    }
+
+    public void InstantiateObject()
+    {
+        GameObject systemComponentClone = (GameObject)Instantiate(APIPrefab,
+                                                                    spawnPosition,
+                                                                    Quaternion.identity,
+                                                                    dropZone.transform);
+
+
+        //Image systemComponentClone = (Image)Instantiate(systemComponentImage, parentToReturnTo);
+        //systemComponentClone.transform.position = (new Vector2(50, 600));
+        //systemComponentClone.Imagecolor = originalColor;
     }
 }

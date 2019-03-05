@@ -5,11 +5,12 @@ using UnityEngine;
 public class Save
 {
     [Header("Saved system component data")]
+    public List<string> systemComponentNamesList = new List<string>();
     public List<Vector3> systemComponentPositionsList = new List<Vector3>();
     public List<string> systemComponentTypesList = new List<string>();
     public List<int> systemComponentSecurityLevelsList = new List<int>();
-    public List<VulnerabilityWrapper> systemComponentVulnerabilitiesList = new List<VulnerabilityWrapper>();
-    public List<ConnectedComponentsWrapper> systemComponentConnectedComponents = new List<ConnectedComponentsWrapper>();
+    public List<VulnerabilityWrapper> systemComponentVulnerabilyWrappersList = new List<VulnerabilityWrapper>();
+    public List<ConnectedComponentsWrapper> systemComponentConnectedComponentsWrapperList = new List<ConnectedComponentsWrapper>();
 
     [Header("Empty objects intended for later development cycles")]
     public List<string> OSList = new List<string>();
@@ -21,7 +22,7 @@ public class Save
 }
 
 /// <summary>
-/// Need to make separate wrappers for nested list, as 
+/// Need to make separate wrappers for nested list, as they are not supported by JsonUtility.ToJson
 /// </summary>
 [System.Serializable]
 public class VulnerabilityWrapper
@@ -33,7 +34,8 @@ public class VulnerabilityWrapper
 [System.Serializable]
 public class ConnectedComponentsWrapper
 {
-    public List<string> connectedObjectWrapperList = new List<string>();
+    //public List<string> connectedObjectWrapperList = new List<string>();
+    public List<GameObject> connectedObjectWrapperList = new List<GameObject>();
 }
 
 

@@ -12,7 +12,7 @@ public class SelectedObject : MonoBehaviour
     public GameObject connectionLine;
     private Transform lineToEnd;
     private Transform lineFromStart;
-    private bool connectionStarted;
+    public bool connectionStarted = false;
     private ConnectionReferences connectionReferences;
     private SystemComponent systemComponentOfOldSelected;
     private SystemComponent systemComponentOfSelected;
@@ -99,7 +99,7 @@ public class SelectedObject : MonoBehaviour
                     /// If button pressed for starting a connection
                     if (oldSelected != null && connectionStarted)
                     {
-                        ConnectObjects();
+                        ConnectObjects(oldSelected, newSelected);
                     }
                 }
                 else if (!systemComponent)
@@ -179,27 +179,26 @@ public class SelectedObject : MonoBehaviour
     /// if a new gameobject is selected after the "connect" button is pressed.
     /// Alternatively, if no object is selected when the button is pressed, the two next objects selected will be connected
     /// </summary>
-    public void ConnectObjects()
+    public void ConnectObjects(GameObject fromOld, GameObject toNew)    /// TODO move to SystemComponents script?
     {
         /// Make sure both selected are system components
-        if (connectionStarted
-            && selected.GetComponent<SystemComponent>() != null
-            && oldSelected.GetComponent<SystemComponent>() != null)
+        if (toNew.GetComponent<SystemComponent>() != null
+            && fromOld.GetComponent<SystemComponent>() != null)
         {
             GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
-            connectionLineClone.transform.position = oldSelected.transform.position;
+            connectionLineClone.transform.position = fromOld.transform.position;
             connectionLineClone.transform.SetParent(GameObject.Find("Connections").transform);
             connectionLineClone.transform.SetAsFirstSibling();
 
             connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
-            connectionReferences.SetReferences(oldSelected, selected);
+            connectionReferences.SetReferences(fromOld, toNew);
 
-            systemComponentOfSelected = selected.GetComponent<SystemComponent>();
-            systemComponentOfOldSelected = oldSelected.GetComponent<SystemComponent>();
+            systemComponentOfSelected = toNew.GetComponent<SystemComponent>();
+            systemComponentOfOldSelected = fromOld.GetComponent<SystemComponent>();
             systemComponentOfSelected.AddReference(connectionLineClone);
             systemComponentOfOldSelected.AddReference(connectionLineClone);
 
-            systemComponentOfOldSelected.SetConnectionLines(oldSelected.transform.position, selected.transform.position, connectionLineClone);
+            systemComponentOfOldSelected.SetConnectionLines(fromOld.transform.position, toNew.transform.position, connectionLineClone);
             connectionStarted = false;
         }
     }

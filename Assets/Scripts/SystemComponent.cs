@@ -15,23 +15,26 @@ using UnityEngine;
 /// Save the components in the system in a script, in order to have number as well as the objects saved?
 /// 
 /// Save scenario to file
+///     - Text input field for filename
+///     - Error if file exists, override method?
 /// Load scenario from file
+///     - List up available json document names, select which to load
 /// 
 /// Functionality to delete specific vulnerabilities
 
 
 public class SystemComponent : MonoBehaviour
 {
-
     [Header("Attributes for this object/node")]
-    public string componentType;
-    public List<string> componentVulnerabilities;
     public int securityLevel;
+    public List<string> componentVulnerabilities = new List<string>();
+    public string componentType;   // Must match the prefab name
+    public string componentName;
 
     [Header("Reference line components")]
-    public List<GameObject> connectedReferenceLines;
-    private GameObject connectedSystemCommponent;
+    public List<GameObject> connectedReferenceLines = new List<GameObject>();
     List<GameObject> connectedSystemComponents = new List<GameObject>();
+    private GameObject connectedSystemCommponent;
     private Transform lineToEnd;
     private Transform lineFromStart;
 
@@ -50,14 +53,15 @@ public class SystemComponent : MonoBehaviour
 
     private void Start()
     {
-        connectedReferenceLines = new List<GameObject>();
         dropZone = FindObjectOfType<DropZone>();
-        componentVulnerabilities = new List<string>();
+
+        /// TODO delete these, for testing purposes only
         componentVulnerabilities.Add("Test vulnerability 1");
         componentVulnerabilities.Add("Test vulnerability 2");
         componentVulnerabilities.Add("Test vulnerability 3");
-        securityLevel = 1;
+        ///////////////////////////////////////////////
     }
+
 
 
     /// <summary>
@@ -65,7 +69,7 @@ public class SystemComponent : MonoBehaviour
     /// </summary>
     /// <param name="startPos">The position of the system component GameObject the connection starts</param>
     /// <param name="endPos">The position of the system component GameObject the connection ends</param>
-    /// <param name="connectionLine">The visual line GameObject connecting the two system component GameObjects</param>
+    /// <param name="connectionLine">The visual line GameObject connecting the two system component GameObjects (prefab)</param>
     public void SetConnectionLines(Vector3 startPos, Vector3 endPos, GameObject connectionLine)
     {
         lineToEnd = connectionLine.transform.Find("LineToEnd").GetComponent<RectTransform>().transform;
