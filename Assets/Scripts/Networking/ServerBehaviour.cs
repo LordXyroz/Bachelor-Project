@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
-using System.Net;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Unity.Jobs;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
 using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
 using System;
+using System.Linq;
+using System.Text;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Text;
-using UnityEngine.UI;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine.SceneManagement;
 
 public class ServerBehaviour
 {
@@ -28,6 +28,14 @@ public class ServerBehaviour
     private bool listen;
 
     private List<(string name, int connectionNumber)> connectionNames;
+
+    /// <summary>
+    /// Task used to look for connections, token used to cancel task.
+    /// </summary>
+    private Task findConnections;
+    private CancellationTokenSource cancellationTokenSource;
+    private CancellationToken cancellationToken;
+
 
     /// <summary>
     /// Get ipaddress for pc this function is run on.
@@ -52,8 +60,10 @@ public class ServerBehaviour
     /// </summary>
     public void StopListening()
     {
-        server.Stop();
-        server = null;
+        if (!findConnections.IsCompleted && !findConnections.IsCanceled)
+        {
+            cancellationTokenSource.Cancel();
+        }
     }
    
     
@@ -62,11 +72,13 @@ public class ServerBehaviour
     /// </summary>
     public void FindConnections()
     {
-        /// TODO make sure that I don't add too many?
         server = null;
         try
         {
-            // Set the TcpListener on port 13000.
+            /// Check if we were already canceled for some reason.
+            cancellationToken.ThrowIfCancellationRequested();
+
+            /// Set the TcpListener on port 13000.
             Int32 port = 13000;
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress localAddr = null;
@@ -75,21 +87,33 @@ public class ServerBehaviour
                 if (ipHostInfo.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
                 {
                     localAddr = ipHostInfo.AddressList[i];
+                    //break;// Should I use this? TODO
                 }
             }
 
-            // TcpListener server = new TcpListener(port);
+            /// TcpListener server = new TcpListener(port);
             server = new TcpListener(localAddr, port);
 
-            // Start listening for client requests.
+            /// Start listening for client requests.
             server.Start();
 
-            // Buffer for reading data
+            /// Buffer for reading data
             Byte[] bytes = new Byte[256];
             String data = null;
-            // Enter the listening loop.
+            /// Enter the listening loop.
             while (server != null)
             {
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    /// Clean up.
+                    server.Stop();
+                    server = null;
+
+                    /// Cancel task.
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
                 if (m_connections.IsCreated)
                 {
                     /// Lobby is full:
@@ -110,23 +134,21 @@ public class ServerBehaviour
 
                 int i;
 
-                // Loop to receive all the data sent by the client.
+                /// Loop to receive all the data sent by the client.
                 while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
-                    // Translate data bytes to a ASCII string.
+                    /// Translate data bytes to a ASCII string.
                     data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-                    //Debug.Log("newconnection - Received: " + data);
                     
 
                     byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
 
-                    // Send back a response.
+                    /// Send back a response.
                     stream.Write(msg, 0, msg.Length);
-                    //Debug.Log("newconnection - sent: " + data);
                 }
                
                 Thread.Sleep(80);
-                // Shutdown and end connection
+                /// Shutdown and end connection
                 client.Close();
             }
 
@@ -136,8 +158,14 @@ public class ServerBehaviour
             /// When host wants to close connection there will be sent a block call to WSACancelBlockingCall causing an wanted exception. Debug for testing.
             /// Debug.Log("SocketException: " + e);
         }
+        catch (OperationCanceledException e)
+        {
+            Debug.Log("Canceled task: " + e);
+        }
         finally
         {
+            cancellationTokenSource.Dispose();
+
             /// Stop listening for new clients.
             server.Stop();
         }
@@ -148,10 +176,14 @@ public class ServerBehaviour
     /// </summary>
     public ServerBehaviour()
     {
+        /// Set token for connections.
+        cancellationTokenSource = new CancellationTokenSource();
+        cancellationToken = cancellationTokenSource.Token;
+
 
         connectionNames = new List<(string name, int connectionNumber)> { };
 
-        Task.Factory.StartNew(() => FindConnections());
+        findConnections = Task.Factory.StartNew(() => FindConnections(), cancellationToken);
         
         // Create the server driver, bind it to a port and start listening for incoming connections
         m_ServerDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
@@ -165,7 +197,6 @@ public class ServerBehaviour
 
         m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
     }
-    
     
     /// <summary>
     /// When in lobby view this function will put message wanted to be sent in messageField, and send it to all connected clients.
@@ -209,6 +240,7 @@ public class ServerBehaviour
     /// </summary>
     ~ServerBehaviour()
     {
+
         // All jobs must be completed before we can dispose the data they use
         m_updateHandle.Complete();
         m_ServerDriver.Dispose();

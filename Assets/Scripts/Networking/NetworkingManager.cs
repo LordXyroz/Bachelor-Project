@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 
 /// <summary>
@@ -125,6 +125,30 @@ public class NetworkingManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Used for client to be able to stop looking for a host.
+    /// </summary>
+    public void StopConnecting()
+    {
+        /// Not a client:
+        if (playerType == PlayerManager.PlayerType.Observer)
+        {
+            return;
+        }
+
+        if (cb != null)
+        {
+            cb.StopConnecting();
+
+
+            //cb.m_clientToServerConnection.Disconnect(cb.m_ClientDriver);
+            cb.m_clientToServerConnection = default;
+            cb.m_ClientDriver.Dispose();
+            //cb = null;
+            playerType = default;
+        }
+    }
+
+    /// <summary>
     /// Makes sure to update the Client/Server-Behaviour every 0.02 seconds approximately.
     /// </summary>
     void FixedUpdate()
@@ -169,12 +193,19 @@ public class NetworkingManager : MonoBehaviour
             GameObject gm = GameObject.Find("GameManager");
             if (isHost)
             {
-                /// Instantiate behaviour:
-                if (sb == null && cb == null)
+                if (cb != null)
                 {
+                    /// Player may not start hosting while looking for connection as a client.
+                    /// TODO instead of returning here, stop thread looking for connection and set values for player to be able to serve a game as a host.
+                    return;
+                }
+                else if (sb == null && cb == null)
+                {
+                    /// Instantiate behaviour:
                     sb = new ServerBehaviour();
                     playerType = PlayerManager.PlayerType.Observer;
                 }
+                
 
                 /// Changing view:
                 chatField.SetActive(true);
@@ -203,6 +234,9 @@ public class NetworkingManager : MonoBehaviour
                 {
                     cb = new ClientBehaviour();
                 }
+
+                /// This is set as a temp value not default for player to be able to stop looking for host.
+                playerType = PlayerManager.PlayerType.Attacker;
                 
                 /// Set to false as host no client has joined a lobby before it starts.
                 for (int i = 0; i < attackerNames.Count; i++)
@@ -219,9 +253,7 @@ public class NetworkingManager : MonoBehaviour
             }
         }
     }
-
     
-
     /// <summary>
     /// This function is run through a button that shows ONLY when user is online(connected to server), so it will result in user disconnecting.
     /// TODO stop connecting function before starting new coroutine.
@@ -237,16 +269,19 @@ public class NetworkingManager : MonoBehaviour
     /// <returns></returns>
     private IEnumerator Disconnect()
     {
-        Debug.Log("Trying to disconnect");
+        Debug.Log("Disconnecting");
         /// When player disconnects/exits game, the player may start over with different playerType.(Observer, defender/attacker)
         
         yield return new WaitForSeconds(0.01f);
 
         if (playerType == PlayerManager.PlayerType.Observer)
         {
+            if (sb == null)
+            {
+                /// Already no connection:
+                yield return null;
+            }
             /// Disconnect clients from server:
-            Debug.Log("server disconnect");
-
             if (sb.m_ServerDriver.IsCreated)
             {
                 sb.m_ServerDriver.ScheduleUpdate().Complete();
@@ -295,6 +330,12 @@ public class NetworkingManager : MonoBehaviour
         }
         else if (playerType == PlayerManager.PlayerType.Attacker || playerType == PlayerManager.PlayerType.Defender)
         {
+            if (cb == null)
+            {
+                /// Already no connection:
+                yield return null;
+            }
+
             Debug.Log("client disconnect");
             /// Delete past chat:
             for (int i = 1; i < messageList.Count; i++)

@@ -1,18 +1,19 @@
-﻿using System.Net;
-using UnityEngine;
-using Unity.Networking.Transport;
-using Unity.Collections;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using Unity.Collections;
+using Unity.Networking.Transport;
+using UnityEngine.SceneManagement;
 using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
 using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
-using System.Net.Sockets;
-using System.Text;
 using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Collections;
+using System.Text;
 using System.Linq;
-using UnityEngine.SceneManagement;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections;
+using System.Collections.Generic;
 
 public class ClientBehaviour
 {
@@ -28,6 +29,13 @@ public class ClientBehaviour
     private bool m_clientWantsConnection;
 
     /// <summary>
+    /// Task to look for a host on the network, tokens to cancel tasks.
+    /// </summary>
+    private Task setupHostIp;
+    private CancellationTokenSource cancellationTokenSource;
+    private CancellationToken cancellationToken;
+
+    /// <summary>
     /// Keeps info about current swap(Null, Waiting, Accepted)
     /// </summary>
     private SwapInfo swapInfo;
@@ -38,6 +46,8 @@ public class ClientBehaviour
     /// <param name="myMonoBehaviour"></param>
     public ClientBehaviour()
     {
+        setupHostIp = null;
+
         swapInfo = SwapInfo.Null;
         /// Set values to default.
         connect = false;
@@ -52,10 +62,13 @@ public class ClientBehaviour
     /// </summary>
     ~ClientBehaviour()
     {
+        cancellationTokenSource.Dispose();
+
         m_ClientDriver.ScheduleUpdate().Complete();
         m_clientToServerConnection.Close(m_ClientDriver);
         m_clientToServerConnection = default;
-        m_ClientDriver.Dispose();
+        m_ClientDriver = default;
+        //m_ClientDriver.Dispose();
     }
 
     public enum SwapInfo{
@@ -96,6 +109,11 @@ public class ClientBehaviour
         string message = "Connecting";
         try
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                /// Cancel task.
+                cancellationToken.ThrowIfCancellationRequested();
+            }
             /// Create a TcpClient.
             Int32 port = 13000;
             TcpClient client = new TcpClient(ip, port);
@@ -117,7 +135,6 @@ public class ClientBehaviour
             // Read the first batch of the TcpServer response bytes.
             Int32 bytes = stream.Read(data, 0, data.Length);
             responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-            //Debug.Log("newconnection - client received: " + responseData);
 
             // Close everything.
             stream.Close();
@@ -133,6 +150,31 @@ public class ClientBehaviour
             /// Client will get socket exception when trying to ask other computers if they are hosting or not, and they don't answer yes.
             /// Debug.Log("SocketException:" + e);
         }
+        catch (OperationCanceledException e)
+        {
+            Debug.Log("Canceled task: " + e);
+        }
+        finally
+        {
+            cancellationTokenSource.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// If the client is looking for host but not finding one, the client can still stop the connecting.
+    /// </summary>
+    public void StopConnecting()
+    {
+        if (setupHostIp == null)
+        {
+            return;
+        }
+        /// Cancel task.
+        if (!setupHostIp.IsCompleted && !setupHostIp.IsCanceled)
+        {
+            Debug.Log("Cancelling connection request");
+            cancellationTokenSource.Cancel();
+        }
     }
     
     /// <summary>
@@ -141,7 +183,9 @@ public class ClientBehaviour
     /// <param name="messageTexts"></param>
     public void Disconnect(List<GameObject> messageTexts)
     {
+
         Debug.Log("Disconnecting");
+
 
         // Disconnect client from host:
         m_clientToServerConnection.Disconnect(m_ClientDriver);
@@ -216,32 +260,61 @@ public class ClientBehaviour
         Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
         Debug.Log("<color=blue>Looking for connection</color>");
         connectionText.text = "Connecting";
-        Debug.Log("Connecting");
 
+
+        /// Set token for connections.
+        cancellationTokenSource = new CancellationTokenSource();
+        cancellationToken = cancellationTokenSource.Token;
+
+        /// Setup ips for connections.
         List<string> ips = FindIPs();
-        Task setupHostIp = Task.Run(() => FindHost(ips[0]));
+        setupHostIp = Task.Factory.StartNew(() => FindHost(ips[0]), cancellationToken);
 
         /// Go through possible ips.
         for (int i = 0; i < ips.Count; i++)
         {
-            Debug.Log(ips[i]);
+            /// Stop connecting if user wants to.
+            if (cancellationToken.IsCancellationRequested || cancellationTokenSource.IsCancellationRequested || cancellationTokenSource == null)
+            {
+                break;
+            }
+
             /// Cosmetics:
             if (i%4 == 0)
             {
                 connectionText.text = "Connecting";
-                yield return new WaitForSeconds(0.1f);
+                //yield return new WaitForSeconds(0.1f);
             }
             connectionText.text = connectionText.text + ".";
+            
+            /// Set token for connections.
+            cancellationTokenSource = new CancellationTokenSource();
+            cancellationToken = cancellationTokenSource.Token;
 
-            /// Get IP of host that wants to serve a match.
-            setupHostIp.ContinueWith((t1) => FindHost(ips[i]));
+            /// Get IP of host that wants to serve a match
+            setupHostIp.ContinueWith((t) => FindHost(ips[i]), cancellationToken);
             //setupHostIp = Task.Run(() => FindHost(ips[i]));
+
+
             yield return new WaitForSeconds(0.25f);
             if (ServerEndPoint.IsValid)
             {
+                /// Cancel task.
+                if (!setupHostIp.IsCompleted && !setupHostIp.IsCanceled)
+                {
+                    cancellationTokenSource.Cancel();
+                }
+
                 break;
             }
         }
+        if (!ServerEndPoint.IsValid)
+        {
+            GameObject.Find("GameManager").GetComponent<NetworkingManager>().StopConnecting();
+
+            Debug.Log("Could not find a valid host");
+        }
+
 
         try
         {
@@ -496,8 +569,12 @@ public class ClientBehaviour
     /// </summary>
     public void FixedUpdate( MonoBehaviour monoBehaviour)
     {
+        if(!m_ClientDriver.IsCreated)
+        {
+            return;
+        }
         /// Update the NetworkDriver. Needs to be done before trying to pop events.
-        m_ClientDriver.ScheduleUpdate().Complete();
+        m_ClientDriver.ScheduleUpdate().Complete(); 
 
         /// Update clients connecion to the server:
         if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid && m_clientWantsConnection == false)
