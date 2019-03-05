@@ -60,9 +60,9 @@ public class SaveScenario : MonoBehaviour
                     connectedComponents = targetComponent.GetConnectedComponents();
                     foreach (GameObject connectedObject in connectedComponents)
                     {
-                        /*string name = connectedObject.name;
-                        connectedComponentWrapper.connectedObjectWrapperList.Add(name);*/
-                        connectedComponentWrapper.connectedObjectWrapperList.Add(connectedObject);
+                        string name = connectedObject.name;
+                        connectedComponentWrapper.connectedObjectWrapperList.Add(name);
+                        //connectedComponentWrapper.connectedObjectWrapperList.Add(connectedObject);
                     }
                     save.systemComponentConnectedComponentsWrapperList.Add(connectedComponentWrapper);
 
@@ -101,7 +101,7 @@ public class SaveScenario : MonoBehaviour
             File.Create(filePath).Dispose();
             string json = JsonUtility.ToJson(save);
 
-            //Debug.Log("Saving as JSON: " + json);
+            Debug.Log("Saving as JSON: " + json);
             File.WriteAllText(filePath, json);
         }
         //}

@@ -35,7 +35,7 @@ public class VulnerabilityWrapper
 public class ConnectedComponentsWrapper
 {
     //public List<string> connectedObjectWrapperList = new List<string>();
-    public List<GameObject> connectedObjectWrapperList = new List<GameObject>();
+    public List<string> connectedObjectWrapperList = new List<string>();
 }
 
 

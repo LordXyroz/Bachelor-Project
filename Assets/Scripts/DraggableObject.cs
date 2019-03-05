@@ -132,16 +132,16 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
-    public void InstantiateObject()
-    {
-        GameObject systemComponentClone = (GameObject)Instantiate(APIPrefab,
-                                                                    spawnPosition,
-                                                                    Quaternion.identity,
-                                                                    dropZone.transform);
-
-
-        //Image systemComponentClone = (Image)Instantiate(systemComponentImage, parentToReturnTo);
-        //systemComponentClone.transform.position = (new Vector2(50, 600));
-        //systemComponentClone.Imagecolor = originalColor;
-    }
+    //public void InstantiateObject()
+    //{
+    //    GameObject systemComponentClone = (GameObject)Instantiate(APIPrefab,
+    //                                                                spawnPosition,
+    //                                                                Quaternion.identity,
+    //                                                                dropZone.transform);
+    //
+    //
+    //    //Image systemComponentClone = (Image)Instantiate(systemComponentImage, parentToReturnTo);
+    //    //systemComponentClone.transform.position = (new Vector2(50, 600));
+    //    //systemComponentClone.Imagecolor = originalColor;
+    //}
 }

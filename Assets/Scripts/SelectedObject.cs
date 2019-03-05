@@ -182,25 +182,25 @@ public class SelectedObject : MonoBehaviour
     public void ConnectObjects(GameObject fromOld, GameObject toNew)    /// TODO move to SystemComponents script?
     {
         /// Make sure both selected are system components
-        if (toNew.GetComponent<SystemComponent>() != null
+        /*if (toNew.GetComponent<SystemComponent>() != null
             && fromOld.GetComponent<SystemComponent>() != null)
-        {
-            GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
-            connectionLineClone.transform.position = fromOld.transform.position;
-            connectionLineClone.transform.SetParent(GameObject.Find("Connections").transform);
-            connectionLineClone.transform.SetAsFirstSibling();
+        {*/
+        GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
+        connectionLineClone.transform.position = fromOld.transform.position;
+        connectionLineClone.transform.SetParent(GameObject.Find("Connections").transform);
+        connectionLineClone.transform.SetAsFirstSibling();
 
-            connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
-            connectionReferences.SetReferences(fromOld, toNew);
+        connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
+        connectionReferences.SetReferences(fromOld, toNew);
 
-            systemComponentOfSelected = toNew.GetComponent<SystemComponent>();
-            systemComponentOfOldSelected = fromOld.GetComponent<SystemComponent>();
-            systemComponentOfSelected.AddReference(connectionLineClone);
-            systemComponentOfOldSelected.AddReference(connectionLineClone);
+        systemComponentOfSelected = toNew.GetComponent<SystemComponent>();
+        systemComponentOfOldSelected = fromOld.GetComponent<SystemComponent>();
+        systemComponentOfSelected.AddReference(connectionLineClone);
+        systemComponentOfOldSelected.AddReference(connectionLineClone);
 
-            systemComponentOfOldSelected.SetConnectionLines(fromOld.transform.position, toNew.transform.position, connectionLineClone);
-            connectionStarted = false;
-        }
+        systemComponentOfOldSelected.SetConnectionLines(fromOld.transform.position, toNew.transform.position, connectionLineClone);
+        connectionStarted = false;
+        //}
     }
 
 
