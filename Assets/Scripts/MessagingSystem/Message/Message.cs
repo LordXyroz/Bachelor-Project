@@ -13,6 +13,8 @@ public class Message
 
     public ushort messageType;
 
+    public PlayerManager.PlayerType playerType;
+
     /// <summary>
     /// Constructor when the message isn't an attack, defense, or response
     /// </summary>
@@ -24,5 +26,7 @@ public class Message
         targetName = target;
         senderName = sender;
         messageType = type;
+
+        playerType = Object.FindObjectOfType<PlayerManager>().GetPlayerType();
     }
 }

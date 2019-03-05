@@ -67,4 +67,9 @@ public class PlayerManager : MonoBehaviour
     {
         return playerType == PlayerType.Attacker;
     }
+
+    public PlayerType GetPlayerType()
+    {
+        return playerType;
+    }
 }
