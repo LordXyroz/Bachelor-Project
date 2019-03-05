@@ -118,11 +118,16 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     {
         if (!workInProgress)
         {
+            if (target != null)
+                networking.SendMessage(new Message(target.name, "", MessageTypes.Logging.Targeting));
+
             target = go;
 
             NodeInfo i = info.Find(x => x.component.name == go.name);
             if (i != null)
                 uiScript.PopulateInfoPanel(i);
+            
+            networking.SendMessage(new Message(target.name, name, MessageTypes.Logging.Targeting));
         }
     }
 
@@ -132,7 +137,11 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     public void ClearTarget()
     {
         if (!workInProgress)
+        {
+            if (target != null)
+                networking.SendMessage(new Message(target.name, "", MessageTypes.Logging.Targeting));
             target = null;
+        }
     }
 
     /// <summary>

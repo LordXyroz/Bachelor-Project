@@ -20,6 +20,7 @@ public class PlayerManager : MonoBehaviour
     [Header("GameObjects")]
     public GameObject attackerUI;
     public GameObject defenderUI;
+    public GameObject observerUI;
     public GameObject attacker;
     public GameObject defender;
     public GameObject observer;
@@ -33,6 +34,7 @@ public class PlayerManager : MonoBehaviour
         {
             uiScript = FindObjectOfType<AttackerUI>();
             defenderUI.SetActive(false);
+            observerUI.SetActive(false);
 
             attacker.SetActive(true);
             defender.SetActive(false);
@@ -42,6 +44,7 @@ public class PlayerManager : MonoBehaviour
         {
             uiScript = FindObjectOfType<DefenderUI>();
             attackerUI.SetActive(false);
+            observerUI.SetActive(false);
 
             attacker.SetActive(false);
             defender.SetActive(true);
@@ -49,6 +52,7 @@ public class PlayerManager : MonoBehaviour
         }
         else if (playerType == PlayerType.Observer)
         {
+            uiScript = FindObjectOfType<ObserverUI>();
             attackerUI.SetActive(false);
             defenderUI.SetActive(false);
 

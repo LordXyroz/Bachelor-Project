@@ -144,11 +144,16 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         if (!workInProgress)
         {
+            if (target != null)
+                networking.SendMessage(new Message(target.name, "", MessageTypes.Logging.Targeting));
+
             target = go;
 
             NodeInfo i = info.Find(x => x.component.name == go.name);
             if (i != null)
                 uiScript.PopulateInfoPanel(i);
+
+            networking.SendMessage(new Message(target.name, name, MessageTypes.Logging.Targeting));
         }
     }
 
@@ -158,7 +163,11 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     public void ClearTarget()
     {
         if (!workInProgress)
+        {
+            if (target != null)
+                networking.SendMessage(new Message(target.name, "", MessageTypes.Logging.Targeting));
             target = null;
+        }
     }
 
     /// <summary>

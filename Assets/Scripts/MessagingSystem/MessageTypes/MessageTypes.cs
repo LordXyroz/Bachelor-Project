@@ -19,6 +19,7 @@ namespace MessageTypes
         public const ushort Debug = offset + 2;
         public const ushort Warning = offset + 3;
         public const ushort Error = offset + 4;
+        public const ushort Targeting = offset + 5;
 
     }
 

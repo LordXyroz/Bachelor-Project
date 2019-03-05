@@ -11,7 +11,7 @@ using MessagingInterfaces;
 /// Tweak the lists in the Inspector tab in the Unity Editor to customize vulnerabilities,
 /// and available defenses that can be bought on to it.
 /// </summary>
-public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, IDiscover, IAnalyze, IProbe
+public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, IDiscover, IAnalyze, IProbe, ITargeting
 {
     [Header("Lists")]
     public List<AttackTypes> vulnerabilities;
@@ -34,6 +34,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     public int graphDepth;
     public List<GameNetworkComponent> children;
 
+    [Header("Observer Related")]
+    private bool attackerSelected = false;
+    private bool defenderSelected = false;
+
     /// <summary>
     /// Sets up the OnClick of the button attached to this object.
     /// </summary>
@@ -45,9 +49,9 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
         uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
 
-        if (FindObjectOfType<PlayerManager>().IsAttacker())
+        if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Attacker)
             uiButton.onClick.AddListener(() => FindObjectOfType<Attacker>().SetTarget(gameObject));
-        else 
+        else if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Defender)
             uiButton.onClick.AddListener(() => FindObjectOfType<Defender>().SetTarget(gameObject));
 
         uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
@@ -247,5 +251,47 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             networking.SendMessage(new ProbeResponseMessage(message.senderName, name, MessageTypes.Game.ProbeResponse, children.Count, difficulty, i));
         }
     }
-    
+
+    public void OnTargeting(Message message)
+    {
+        if (FindObjectOfType<PlayerManager>().GetPlayerType() != PlayerManager.PlayerType.Observer)
+            return;
+
+        if (message.targetName != name)
+            return;
+
+        var colors = uiButton.colors;
+
+        if (message.senderName == "Attacker")
+        {
+            colors.normalColor = Color.red;
+            attackerSelected = true;
+        }
+        else if (message.senderName == "Defender")
+        {
+            colors.normalColor = Color.blue;
+            defenderSelected = true;
+        }
+        else if (message.senderName == "")
+        {
+            if (message.playerType == PlayerManager.PlayerType.Attacker && defenderSelected)
+            {
+                colors.normalColor = Color.blue;
+                attackerSelected = false;
+            }
+            else if (message.playerType == PlayerManager.PlayerType.Defender && attackerSelected)
+            {
+                defenderSelected = false;
+                colors.normalColor = Color.red;
+            }
+            else
+            {
+                colors.normalColor = Color.white;
+                attackerSelected = false;
+                defenderSelected = false;
+            }
+        }
+
+        uiButton.colors = colors;
+    }
 }

@@ -55,6 +55,11 @@
         void OnProbeResponse(ProbeResponseMessage message);
     }
 
+    public interface ITargeting
+    {
+        void OnTargeting(Message message);
+    }
+
     public interface IUnderAttack
     {
         void UnderAttack(AttackMessage message);
