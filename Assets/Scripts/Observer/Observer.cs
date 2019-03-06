@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using MessagingInterfaces;
 
@@ -8,6 +9,27 @@ using MessagingInterfaces;
 /// </summary>
 public class Observer : MonoBehaviour, ILogging, IError
 {
+    public ObserverUI uiScript;
+
+    string path;
+    StreamWriter writer;
+    
+
+    void Start()
+    {
+        path = Application.persistentDataPath + "/Logs/";
+
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+
+        writer = new StreamWriter(path + System.DateTime.Now + ".txt");
+    }
+
+    void OnDestroy()
+    {
+        writer.Close();
+    }
+
     /// <summary>
     /// From the IError interface.
     /// 
@@ -27,6 +49,9 @@ public class Observer : MonoBehaviour, ILogging, IError
     /// <param name="message">Message containing relevant info to be handled by the function</param>
     public void OnLog(LoggingMessage message)
     {
-        Debug.Log(System.DateTime.Now.ToLongTimeString() + ": " + message.senderName + " - " + message.message);
+        string msg = System.DateTime.Now.ToLongTimeString() + ": " + message.senderName + " - " + message.message;
+        writer.WriteLine(msg);
+        uiScript.AddLog(msg);
+        Debug.Log(msg);
     }
 }
