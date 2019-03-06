@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -10,13 +11,15 @@ public class SelectedObject : MonoBehaviour
 {
     [Header("Connection line elements")]
     public GameObject connectionLine;
+    public bool connectionStarted = false;
+    public List<GameObject> connectionReferencesList = new List<GameObject>();
     private Transform lineToEnd;
     private Transform lineFromStart;
-    public bool connectionStarted = false;
     private ConnectionReferences connectionReferences;
     private SystemComponent systemComponentOfOldSelected;
     private SystemComponent systemComponentOfSelected;
     private ConnectionReferences connectionReferencesOfObject;
+
 
     [Header("Selected object elements")]
     public GameObject selected;
@@ -199,6 +202,7 @@ public class SelectedObject : MonoBehaviour
         systemComponentOfOldSelected.AddReference(connectionLineClone);
 
         systemComponentOfOldSelected.SetConnectionLines(fromOld.transform.position, toNew.transform.position, connectionLineClone);
+        connectionReferencesList.Add(connectionLineClone);
         connectionStarted = false;
         //}
     }

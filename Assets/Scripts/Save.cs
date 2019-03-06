@@ -10,7 +10,15 @@ public class Save
     public List<string> systemComponentTypesList = new List<string>();
     public List<int> systemComponentSecurityLevelsList = new List<int>();
     public List<VulnerabilityWrapper> systemComponentVulnerabilyWrappersList = new List<VulnerabilityWrapper>();
-    public List<ConnectedComponentsWrapper> systemComponentConnectedComponentsWrapperList = new List<ConnectedComponentsWrapper>();
+    //public List<ConnectedComponentsWrapper> systemComponentConnectedComponentsWrapperList = new List<ConnectedComponentsWrapper>();
+
+    [Header("Saved reference line data")]
+    public List<Vector3> connectionLinePosition = new List<Vector3>();
+    public List<GameObject> referenceFromObject = new List<GameObject>();
+    public List<GameObject> referenceToObject = new List<GameObject>();
+    public List<string> referenceFromObjectName = new List<string>();
+    public List<string> referenceToObjectName = new List<string>();
+    public List<bool> hasFirewall = new List<bool>();
 
     [Header("Empty objects intended for later development cycles")]
     public List<string> OSList = new List<string>();
@@ -20,6 +28,7 @@ public class Save
     public List<bool> floatingIPList = new List<bool>();
     public List<User> usersList = new List<User>();
 }
+
 
 /// <summary>
 /// Need to make separate wrappers for nested list, as they are not supported by JsonUtility.ToJson
@@ -31,11 +40,9 @@ public class VulnerabilityWrapper
 }
 
 
-[System.Serializable]
-public class ConnectedComponentsWrapper
-{
-    //public List<string> connectedObjectWrapperList = new List<string>();
-    public List<string> connectedObjectWrapperList = new List<string>();
-}
-
-
+//[System.Serializable]
+//public class ConnectedComponentsWrapper
+//{
+//    //public List<string> connectedObjectWrapperList = new List<string>();
+//    public List<string> connectedObjectWrapperList = new List<string>();
+//}

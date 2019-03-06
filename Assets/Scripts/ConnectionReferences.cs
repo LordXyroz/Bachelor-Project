@@ -15,6 +15,7 @@ public class ConnectionReferences : MonoBehaviour
 
     [Header("Items needed for deleting references to the connecting line")]
     private SystemComponent systemComponent;
+    //private SelectedObject selectedObject;
 
 
     private void Start()
@@ -36,6 +37,7 @@ public class ConnectionReferences : MonoBehaviour
         systemComponent.connectedReferenceLines.Remove(this.gameObject);
         systemComponent = referenceToObject.GetComponent<SystemComponent>();
         systemComponent.connectedReferenceLines.Remove(this.gameObject);
+        FindObjectOfType<SelectedObject>().connectionReferencesList.Remove(this.gameObject);
         Destroy(this.gameObject);
     }
 }

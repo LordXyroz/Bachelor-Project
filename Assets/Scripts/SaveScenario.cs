@@ -6,22 +6,13 @@ public class SaveScenario : MonoBehaviour
 {
     private List<GameObject> systemComponentsToSave = new List<GameObject>();
     private List<GameObject> connectedComponents = new List<GameObject>();
+    private List<GameObject> referenceLines = new List<GameObject>();
     private DropZone dropZone;
+    private SelectedObject selectedObject;
+    private ConnectionReferences lineReference;
     private string fileName = "savefile";
     private string filePath;
     private Save save;
-
-
-    //private void Awake()
-    //{
-    //    if (save == null)
-    //    {
-    //        save = new Save();
-    //    }
-    //
-    //    filePath = Path.Combine(Application.dataPath + "/Savefiles", fileName + ".json");
-    //    Debug.Log("Filepath from save: " + filePath);
-    //}
 
 
     private Save CreateSaveScenarioObject()
@@ -31,6 +22,7 @@ public class SaveScenario : MonoBehaviour
 
         if (!systemComponentsToSave.Count.Equals(0))
         {
+            selectedObject = FindObjectOfType<SelectedObject>();
             filePath = Path.Combine(Application.dataPath + "/Savefiles", fileName + ".json");
             Debug.Log("Filepath from save: " + filePath);
 
@@ -40,7 +32,6 @@ public class SaveScenario : MonoBehaviour
                 //List<string> vulnerabilities = new List<string>();
 
                 VulnerabilityWrapper vulnerabilityWrapper = new VulnerabilityWrapper();
-                ConnectedComponentsWrapper connectedComponentWrapper = new ConnectedComponentsWrapper();
 
                 GameObject target = targetGameObject.gameObject;
                 SystemComponent targetComponent = target.GetComponent<SystemComponent>();
@@ -57,15 +48,6 @@ public class SaveScenario : MonoBehaviour
                     }
                     save.systemComponentVulnerabilyWrappersList.Add(vulnerabilityWrapper);
 
-                    connectedComponents = targetComponent.GetConnectedComponents();
-                    foreach (GameObject connectedObject in connectedComponents)
-                    {
-                        string name = connectedObject.name;
-                        connectedComponentWrapper.connectedObjectWrapperList.Add(name);
-                        //connectedComponentWrapper.connectedObjectWrapperList.Add(connectedObject);
-                    }
-                    save.systemComponentConnectedComponentsWrapperList.Add(connectedComponentWrapper);
-
                     /// Empty objects intended for later development cycles
                     save.OSList.Add(targetComponent.OS);
                     save.subnetList.Add(targetComponent.subnet);
@@ -77,6 +59,18 @@ public class SaveScenario : MonoBehaviour
                 }
 
             }
+            referenceLines = selectedObject.connectionReferencesList;
+            foreach (GameObject line in referenceLines)
+            {
+                save.connectionLinePosition.Add(line.transform.position);
+                lineReference = line.gameObject.GetComponent<ConnectionReferences>();
+
+                save.referenceFromObject.Add(lineReference.referenceFromObject);
+                save.referenceToObject.Add(lineReference.referenceToObject);
+                save.referenceFromObjectName.Add(lineReference.referenceFromObject.name);
+                save.referenceToObjectName.Add(lineReference.referenceToObject.name);
+                save.hasFirewall.Add(lineReference.hasFirewall);
+            }
             return save;
         }
         else
@@ -85,6 +79,7 @@ public class SaveScenario : MonoBehaviour
             return null;
         }
     }
+
 
     public void SaveCurrentScenario()
     {

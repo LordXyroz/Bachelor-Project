@@ -5,17 +5,24 @@ using UnityEngine;
 public class LoadScenario : MonoBehaviour
 {
     private List<GameObject> existingSystemComponents = new List<GameObject>();
+    private List<GameObject> existingConnectionLines = new List<GameObject>();
     private DropZone dropZone;
     private SelectedObject selectedObject;
+    private ConnectionReferences lineReference;
+
     private string fileName = "savefile";
     private string filePath;
     private string resourcePath;
     private string prefabType;
 
     GameObject target;
+    GameObject line;
     Vector2 pos = new Vector2(300, 650);
 
+
+    [Header("Prefabs for instantiation")]
     public GameObject APIPrefab;
+    public GameObject connectionLinePrefab;
 
     private int prefabNo = 0;
 
@@ -30,13 +37,18 @@ public class LoadScenario : MonoBehaviour
     public void LoadGame()
     {
         filePath = Path.Combine(Application.dataPath + "/Savefiles", fileName + ".json");
-        Debug.Log("Filepath from load: " + filePath);
+        //Debug.Log("Filepath from load: " + filePath);
 
         if (File.Exists(filePath))
         {
+            existingConnectionLines = selectedObject.connectionReferencesList;
             existingSystemComponents = dropZone.editableSystemComponents;
 
             /// Delete all existing components upon loading, before populating from the saved file
+            for (int i = existingConnectionLines.Count - 1; i >= 0; i--)
+            {
+                existingConnectionLines[i].GetComponent<ConnectionReferences>().RemoveConnectionComponent();
+            }
             for (int i = existingSystemComponents.Count - 1; i >= 0; i--)
             {
                 existingSystemComponents[i].GetComponent<SystemComponent>().DeleteSystemComponent();
@@ -64,10 +76,7 @@ public class LoadScenario : MonoBehaviour
                 {
                     targetComponent.componentVulnerabilities.Add(vulnerability);
                 }
-                //foreach (string vulnerability in targetComponent.componentVulnerabilities)
-                //{
-                //    vulnerabilityWrapper.vulnerabilityWrapperList.Add(vulnerability);
-                //}
+
                 /// Empty objects intended for later development cycles
                 targetComponent.OS = loadFromJSON.OSList[i];
                 targetComponent.subnet = loadFromJSON.subnetList[i];
@@ -80,30 +89,31 @@ public class LoadScenario : MonoBehaviour
                 dropZone.editableSystemComponents.Add(target);
             }
 
-            /// Must be run after the object instantiations, in order to connect them
-            for (int i = 0; i < loadFromJSON.systemComponentPositionsList.Count; i++)
+            /// Must be run after the object instantiations, in order to connect them correctly
+            for (int i = 0; i < loadFromJSON.hasFirewall.Count; i++)
             {
-                ConnectedComponentsWrapper connectedComponentWrapper = loadFromJSON.systemComponentConnectedComponentsWrapperList[i];
-                foreach (/*GameObject*/string connectedObject in connectedComponentWrapper.connectedObjectWrapperList)
-                {
-                    Debug.Log("Connected object in load: " + connectedObject);
-                    GameObject connected;
-                    connected = GameObject.Find(connectedObject);
-                    Debug.Log("Connected to gameobject: " + target.name + "  -  is: " + connected.name);
+                line = (GameObject)Instantiate(connectionLinePrefab,
+                                         loadFromJSON.connectionLinePosition[i],
+                                         Quaternion.identity,
+                                         dropZone.transform.Find("Connections").gameObject.transform);
+                selectedObject.connectionReferencesList.Add(line);
 
+                lineReference = line.gameObject.GetComponent<ConnectionReferences>();
 
-                    selectedObject.connectionStarted = true;
-                    selectedObject.ConnectObjects(target, connected);
-                }
-                //foreach (GameObject connectedObject in targetComponent.GetConnectedComponents())
-                //{
-                //    connectedComponentWrapper.connectedObjectWrapperList.Add(connectedObject.name);
-                //}
-                //save.systemComponentConnectedComponents.Add(connectedComponentWrapper);
-                //
+                //lineReference.referenceFromObject = loadFromJSON.referenceFromObject[i];
+                //lineReference.referenceToObject = loadFromJSON.referenceToObject[i];
+                lineReference.referenceFromObject = GameObject.Find(loadFromJSON.referenceFromObjectName[i]);
+                lineReference.referenceToObject = GameObject.Find(loadFromJSON.referenceToObjectName[i]);
 
-                //Debug.Log("Loaded component: " + target.name);
+                lineReference.referenceFromObject.GetComponent<SystemComponent>().connectedReferenceLines.Add(line);
+                lineReference.referenceToObject.GetComponent<SystemComponent>().connectedReferenceLines.Add(line);
 
+                lineReference.hasFirewall = loadFromJSON.hasFirewall[i];
+                //lineReference.referenceFromObject.GetComponent<SystemComponent>().MoveConnections();
+                //lineReference.referenceToObject.GetComponent<SystemComponent>().MoveConnections();
+                lineReference.referenceFromObject.GetComponent<SystemComponent>().SetConnectionLines(lineReference.referenceFromObject.gameObject.transform.position,
+                                                                                                     lineReference.referenceToObject.gameObject.transform.position,
+                                                                                                     line);
             }
             Debug.Log("Game Loaded: " + json);
         }
