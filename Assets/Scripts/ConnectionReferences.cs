@@ -7,7 +7,7 @@
 public class ConnectionReferences : MonoBehaviour
 {
     [Header("Attributes for this reference line")]
-    public bool hasFirewall;
+    public bool hasFirewall = false;
 
     [Header("The objects connected")]
     public GameObject referenceFromObject;
@@ -15,13 +15,6 @@ public class ConnectionReferences : MonoBehaviour
 
     [Header("Items needed for deleting references to the connecting line")]
     private SystemComponent systemComponent;
-    //private SelectedObject selectedObject;
-
-
-    private void Start()
-    {
-        hasFirewall = false;
-    }
 
 
     public void SetReferences(GameObject from, GameObject to)
@@ -33,6 +26,7 @@ public class ConnectionReferences : MonoBehaviour
 
     public void RemoveConnectionComponent()
     {
+
         systemComponent = referenceFromObject.GetComponent<SystemComponent>();
         systemComponent.connectedReferenceLines.Remove(this.gameObject);
         systemComponent = referenceToObject.GetComponent<SystemComponent>();

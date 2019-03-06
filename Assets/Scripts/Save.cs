@@ -10,7 +10,6 @@ public class Save
     public List<string> systemComponentTypesList = new List<string>();
     public List<int> systemComponentSecurityLevelsList = new List<int>();
     public List<VulnerabilityWrapper> systemComponentVulnerabilyWrappersList = new List<VulnerabilityWrapper>();
-    //public List<ConnectedComponentsWrapper> systemComponentConnectedComponentsWrapperList = new List<ConnectedComponentsWrapper>();
 
     [Header("Saved reference line data")]
     public List<Vector3> connectionLinePosition = new List<Vector3>();
@@ -38,11 +37,3 @@ public class VulnerabilityWrapper
 {
     public List<string> vulnerabilityWrapperList = new List<string>();
 }
-
-
-//[System.Serializable]
-//public class ConnectedComponentsWrapper
-//{
-//    //public List<string> connectedObjectWrapperList = new List<string>();
-//    public List<string> connectedObjectWrapperList = new List<string>();
-//}

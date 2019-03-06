@@ -2,19 +2,30 @@
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Script for loading an existing game file.
+/// Unknown error causes in-game load to loose reference line references upon second load. Make 1 load available at a time for the moment
+/// </summary>
 public class LoadScenario : MonoBehaviour
 {
+    [Header("List of active gameobjects, in order to delete old objects when loading a file")]
     private List<GameObject> existingSystemComponents = new List<GameObject>();
     private List<GameObject> existingConnectionLines = new List<GameObject>();
+
+    [Header("References to other scripts")]
     private DropZone dropZone;
     private SelectedObject selectedObject;
     private ConnectionReferences lineReference;
+    [SerializeField]
+    Save loadFromJSON;
 
     private string fileName = "savefile";
     private string filePath;
     private string resourcePath;
     private string prefabType;
+    private int prefabNo = 0;
 
+    [Header("The instantiated objects")]
     GameObject target;
     GameObject line;
     Vector2 pos = new Vector2(300, 650);
@@ -24,7 +35,6 @@ public class LoadScenario : MonoBehaviour
     public GameObject APIPrefab;
     public GameObject connectionLinePrefab;
 
-    private int prefabNo = 0;
 
 
     private void Start()
@@ -53,18 +63,17 @@ public class LoadScenario : MonoBehaviour
             {
                 existingSystemComponents[i].GetComponent<SystemComponent>().DeleteSystemComponent();
             }
+            prefabNo = 0;
+            Debug.Log("Components in delete should be 0, are: " + dropZone.editableSystemComponents.Count);
+            Debug.Log("Connections in delete should be 0, are: " + selectedObject.connectionReferencesList.Count);
 
             string json = File.ReadAllText(filePath);
-            Save loadFromJSON = JsonUtility.FromJson<Save>(json);
+            loadFromJSON = JsonUtility.FromJson<Save>(json);
 
             for (int i = 0; i < loadFromJSON.systemComponentPositionsList.Count; i++)
             {
                 VulnerabilityWrapper vulnerabilityWrapper = loadFromJSON.systemComponentVulnerabilyWrappersList[i];
 
-                //target = (GameObject)Instantiate(/*Resources.Load*/(APIPrefab),
-                //                                                   loadFromJSON.systemComponentPositionsList[i],
-                //                                                    Quaternion.identity,
-                //                                                    dropZone.transform);
                 pos = loadFromJSON.systemComponentPositionsList[i];
                 InstantiateObject();
                 SystemComponent targetComponent = target.GetComponent<SystemComponent>();
@@ -85,8 +94,6 @@ public class LoadScenario : MonoBehaviour
                 targetComponent.floatingIP = loadFromJSON.floatingIPList[i];
                 targetComponent.user = loadFromJSON.usersList[i];
                 /////////////////////////////////////////////////////
-
-                dropZone.editableSystemComponents.Add(target);
             }
 
             /// Must be run after the object instantiations, in order to connect them correctly
@@ -96,8 +103,8 @@ public class LoadScenario : MonoBehaviour
                                          loadFromJSON.connectionLinePosition[i],
                                          Quaternion.identity,
                                          dropZone.transform.Find("Connections").gameObject.transform);
-                selectedObject.connectionReferencesList.Add(line);
 
+                selectedObject.connectionReferencesList.Add(line);
                 lineReference = line.gameObject.GetComponent<ConnectionReferences>();
 
                 //lineReference.referenceFromObject = loadFromJSON.referenceFromObject[i];
@@ -109,8 +116,6 @@ public class LoadScenario : MonoBehaviour
                 lineReference.referenceToObject.GetComponent<SystemComponent>().connectedReferenceLines.Add(line);
 
                 lineReference.hasFirewall = loadFromJSON.hasFirewall[i];
-                //lineReference.referenceFromObject.GetComponent<SystemComponent>().MoveConnections();
-                //lineReference.referenceToObject.GetComponent<SystemComponent>().MoveConnections();
                 lineReference.referenceFromObject.GetComponent<SystemComponent>().SetConnectionLines(lineReference.referenceFromObject.gameObject.transform.position,
                                                                                                      lineReference.referenceToObject.gameObject.transform.position,
                                                                                                      line);
@@ -121,6 +126,12 @@ public class LoadScenario : MonoBehaviour
         {
             Debug.Log("File missing: " + filePath);
         }
+        //foreach (GameObject line in selectedObject.connectionReferencesList)  // TODO delete, for debugging only
+        //{
+        //    Debug.Log("References for object: " + line.name + " - is: " +
+        //        line.GetComponent<ConnectionReferences>().referenceFromObject + " and " +
+        //        line.GetComponent<ConnectionReferences>().referenceToObject);
+        //}
     }
 
     public void InstantiateObject()

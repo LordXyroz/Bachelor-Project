@@ -12,7 +12,10 @@ public class SaveScenario : MonoBehaviour
     private ConnectionReferences lineReference;
     private string fileName = "savefile";
     private string filePath;
+
+    [SerializeField]
     private Save save;
+
 
 
     private Save CreateSaveScenarioObject()
@@ -29,8 +32,6 @@ public class SaveScenario : MonoBehaviour
             save = new Save();
             foreach (GameObject targetGameObject in systemComponentsToSave)
             {
-                //List<string> vulnerabilities = new List<string>();
-
                 VulnerabilityWrapper vulnerabilityWrapper = new VulnerabilityWrapper();
 
                 GameObject target = targetGameObject.gameObject;
@@ -83,7 +84,7 @@ public class SaveScenario : MonoBehaviour
 
     public void SaveCurrentScenario()
     {
-        Save save = CreateSaveScenarioObject();
+        save = CreateSaveScenarioObject();
         //if (!File.Exists(filePath))
         //{
         if (File.Exists(filePath))

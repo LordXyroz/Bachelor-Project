@@ -19,8 +19,9 @@ using UnityEngine;
 ///     - Error if file exists, override method?
 /// Load scenario from file
 ///     - List up available json document names, select which to load
+///     - Error when loading several times
 /// 
-/// Functionality to delete specific vulnerabilities
+/// Functionality to delete specific vulnerabilities?
 
 
 public class SystemComponent : MonoBehaviour
@@ -40,6 +41,7 @@ public class SystemComponent : MonoBehaviour
 
     [Header("Items needed for deleting a system component")]
     private SystemComponent systemComponent;
+    private SelectedObject selectedObject;
     private DropZone dropZone;
 
     [Header("Empty objects intended for later development cycles")]
@@ -54,6 +56,7 @@ public class SystemComponent : MonoBehaviour
     private void Start()
     {
         dropZone = FindObjectOfType<DropZone>();
+        selectedObject = FindObjectOfType<SelectedObject>();
 
         /// TODO delete these, for testing purposes only
         componentVulnerabilities.Add("Test vulnerability 1");
@@ -176,6 +179,8 @@ public class SystemComponent : MonoBehaviour
 
             systemComponent = connectedSystemCommponent.GetComponent<SystemComponent>();
             systemComponent.connectedReferenceLines.Remove(line);
+            //line.GetComponent<ConnectionReferences>().RemoveConnectionComponent();
+            selectedObject.connectionReferencesList.Remove(line);
             Destroy(line);
         }
         dropZone.editableSystemComponents.Remove(this.gameObject);
