@@ -9,16 +9,26 @@ public class ObserverUI : BaseUI
     public GameObject infoPanelObject;
     public GameObject infoPanelArea;
     public GameObject infoPrefab;
-    public Scrollbar scrollbar;
+    public ScrollRect scrollrect;
     private int counter = 0;
 
+    /// <summary>
+    /// Adds a log entry into the info panel for the observer
+    /// </summary>
+    /// <param name="msg">String to be displayed</param>
     public void AddLog(string msg)
     {
         GameObject go = Instantiate(infoPrefab, infoPanelArea.transform);
         go.GetComponentInChildren<Text>().text = msg;
+
         counter++;
         if (counter > 12)
-            scrollbar.value = 0;
+        {
+            /// Force the cavnas to update in order for the scroll rect to update position values
+            Canvas.ForceUpdateCanvases();
+            /// Sets the scrollrect to the bottom of the list
+            scrollrect.verticalNormalizedPosition = 0;
+        }
     }
 
     public override void EnableActionPanel()

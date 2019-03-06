@@ -32,33 +32,39 @@ public class PlayerManager : MonoBehaviour
 
         if (playerType == PlayerType.Attacker)
         {
-            uiScript = FindObjectOfType<AttackerUI>();
+            attackerUI.SetActive(true);
             defenderUI.SetActive(false);
             observerUI.SetActive(false);
 
             attacker.SetActive(true);
             defender.SetActive(false);
             observer.SetActive(false);
+
+            uiScript = FindObjectOfType<AttackerUI>();
         }
         else if (playerType == PlayerType.Defender)
         {
-            uiScript = FindObjectOfType<DefenderUI>();
             attackerUI.SetActive(false);
+            defenderUI.SetActive(true);
             observerUI.SetActive(false);
 
             attacker.SetActive(false);
             defender.SetActive(true);
             observer.SetActive(false);
+
+            uiScript = FindObjectOfType<DefenderUI>();
         }
         else if (playerType == PlayerType.Observer)
         {
-            uiScript = FindObjectOfType<ObserverUI>();
             attackerUI.SetActive(false);
             defenderUI.SetActive(false);
+            observerUI.SetActive(true);
 
             attacker.SetActive(false);
             defender.SetActive(false);
             observer.SetActive(true);
+
+            uiScript = FindObjectOfType<ObserverUI>();
         }
     }
 
