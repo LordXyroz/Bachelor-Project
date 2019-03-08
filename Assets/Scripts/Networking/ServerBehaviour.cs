@@ -87,7 +87,6 @@ public class ServerBehaviour
                 if (ipHostInfo.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
                 {
                     localAddr = ipHostInfo.AddressList[i];
-                    //break;// Should I use this? TODO
                 }
             }
 
@@ -240,8 +239,11 @@ public class ServerBehaviour
     /// </summary>
     ~ServerBehaviour()
     {
+        cancellationTokenSource.Dispose();
 
         // All jobs must be completed before we can dispose the data they use
+        m_ServerDriver.ScheduleUpdate().Complete();
+        m_connections.Clear();
         m_updateHandle.Complete();
         m_ServerDriver.Dispose();
         m_connections.Dispose();
@@ -340,7 +342,7 @@ public class ServerBehaviour
                             m_ServerDriver.Send(m_connections[k], writer);
                         }
                     }
-                    else if (data.Contains("<SwapAccepted>")) ///TODO 3 things...
+                    else if (data.Contains("<SwapAccepted>"))
                     {
                         /// Is run when client got message about other client accepted and will send back that swap has been completed.
                         Debug.Log("Server - Swap accepted");
@@ -394,8 +396,7 @@ public class ServerBehaviour
                     else if (data.Contains("<SwapMessage>"))
                     {
                         Debug.Log("server - got message about a swap");
-
-                        /// TODO check if substring here gets correct value...
+                        
                         string nameTo = data.Substring(0, data.IndexOf("<Name>"));
                         string nameFrom = data.Substring(data.IndexOf("<Name>") + 6, data.IndexOf("<SwapMessage>"));
 
@@ -464,7 +465,7 @@ public class ServerBehaviour
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
                     /// Remove client that disconnected from list of people who ARE indeed connected.
-                    string name = connectionNames.Find(x => x.connectionNumber == i).name;  /// TODO check that they don't have the same name?
+                    string name = connectionNames.Find(x => x.connectionNumber == i).name;
                     connectionNames.Remove(connectionNames.Find(x => x.name == name));
                     GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindPlayerForRemoval(name);
 

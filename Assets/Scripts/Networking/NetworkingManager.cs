@@ -31,6 +31,7 @@ public class NetworkingManager : MonoBehaviour
 
     public GameObject joinButton;
     public GameObject stopJoinButton;
+    public GameObject startGameButton;
 
 
     /// <summary>
@@ -90,17 +91,19 @@ public class NetworkingManager : MonoBehaviour
             }
         }
 
-        connectionField = GameObject.Find("ConnectionField");
-        joinButton = connectionField.transform.Find("JoinButton").gameObject;
-        stopJoinButton = connectionField.transform.Find("StopJoinButton").gameObject;
-        stopJoinButton.SetActive(false);
-
         chatField = GameObject.Find("ChatField");
         chatField.SetActive(false);
 
         gameField = GameObject.Find("GameField");
         gameField.SetActive(false);
 
+
+        connectionField = GameObject.Find("ConnectionField");
+        joinButton = connectionField.transform.Find("JoinButton").gameObject;
+        stopJoinButton = connectionField.transform.Find("StopJoinButton").gameObject;
+        stopJoinButton.SetActive(false);
+        startGameButton = chatField.transform.Find("StartGame").gameObject;
+        
         GameObject.Find("UserNameInputField").GetComponent<InputField>().onValueChanged.AddListener(delegate { ValueChangeCheck(); });
     }
 
@@ -222,7 +225,7 @@ public class NetworkingManager : MonoBehaviour
 
                 /// Set username of host on top of screen for everyone to see.
                 Text T = GameObject.Find("HostText").GetComponent<Text>();
-                T.text = "Host: " + userName;
+                T.text = userName + "'s lobby";
                 
                 /// Set to false as host no client has joined a lobby before it starts.
                 for (int i = 0; i < attackerNames.Count; i++)
@@ -245,6 +248,7 @@ public class NetworkingManager : MonoBehaviour
                 /// Make players able to stop trying to connect.
                 stopJoinButton.SetActive(true);
                 joinButton.SetActive(false);
+                startGameButton.SetActive(false);
 
                 /// This is set as a temp value not default for player to be able to stop looking for host.
                 playerType = PlayerManager.PlayerType.Attacker;
@@ -267,7 +271,6 @@ public class NetworkingManager : MonoBehaviour
     
     /// <summary>
     /// This function is run through a button that shows ONLY when user is online(connected to server), so it will result in user disconnecting.
-    /// TODO stop connecting function before starting new coroutine.
     /// </summary>
     public void DisconnectFromServer()
     {
@@ -338,6 +341,9 @@ public class NetworkingManager : MonoBehaviour
             /// Change view to not be in a lobby:
             chatField.SetActive(false);
             connectionField.SetActive(true);
+
+            /// Make it possible for them to start game if they choose to be host:
+            startGameButton.SetActive(true);
         }
         else if (playerType == PlayerManager.PlayerType.Attacker || playerType == PlayerManager.PlayerType.Defender)
         {
@@ -358,8 +364,8 @@ public class NetworkingManager : MonoBehaviour
             cb.Disconnect(messageList);
 
             /// Disconnect client from host.
-            cb = null;
             yield return new WaitForSeconds(1);
+            cb = null;
         }
 
         playerType = default;
