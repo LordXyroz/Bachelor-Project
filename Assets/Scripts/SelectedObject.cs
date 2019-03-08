@@ -63,13 +63,16 @@ public class SelectedObject : MonoBehaviour
             /// Reset the selected properties of the previously selected object, if there is one
             if (selected != null)
             {
-                image.material = default;
+                if (systemComponent)
+                {
+                    image.material = default;
+                    imageBox.gameObject.SetActive(false);
+                }
                 foreach (Image img in images)
                 {
                     img.material = default;
                 }
 
-                imageBox.gameObject.SetActive(false);
             }
             images = GetComponentsInChildren<Image>();
 
@@ -146,12 +149,15 @@ public class SelectedObject : MonoBehaviour
     {
         if (selected != null)
         {
-            image.material = default;
+            if (image != null)
+            {
+                image.material = default;
+                imageBox.gameObject.SetActive(false);
+            }
             foreach (Image img in images)
             {
                 img.material = default;
             }
-            imageBox.gameObject.SetActive(false);
             oldSelected = selected;
             selected = null;
         }

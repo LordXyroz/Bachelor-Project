@@ -15,7 +15,7 @@ public class InformationColumn : MonoBehaviour
     void Start()
     {
         canvas = GetComponentInParent<Canvas>();
-        currentObjectName = canvas.transform.Find("InformationColumnRight").transform.Find("ComponentNameText").GetComponent<TMP_Text>();
+        currentObjectName = canvas.transform.Find("InformationColumnRight").transform.Find("ComponentTypeText").GetComponent<TMP_Text>();
         securityLevel = canvas.transform.Find("InformationColumnRight").transform.Find("SecurityLevelText").GetComponent<TMP_Text>();
         vulnerabilityHeader = canvas.transform.Find("InformationColumnRight").transform.Find("VulnerabilityListText").GetComponent<TMP_Text>();
         currentVulnerabilities = canvas.transform.Find("InformationColumnRight").transform.Find("VulnerabilitiesText").GetComponent<TMP_Text>();

@@ -161,7 +161,13 @@ public class LoadScenario : MonoBehaviour
                 ChosenPrefab = WebsitePrefab;
                 break;
 
+            case "System component":
+                ChosenPrefab = DefaultPrefab;
+                break;
+
             default:
+                Debug.Log("Failed recognizing component type: " + componentType +
+                    ". This is not in the list of recognized component types (LoadScenario.LoadObject(string componentType)");
                 ChosenPrefab = DefaultPrefab;
                 break;
         }
@@ -177,7 +183,6 @@ public class LoadScenario : MonoBehaviour
                                          Quaternion.identity,
                                          dropZone.transform);
         target.name = target.name + prefabNo++;
-
         dropZone.editableSystemComponents.Add(target);
 
 
@@ -209,6 +214,7 @@ public class LoadScenario : MonoBehaviour
         ChosenPrefab = SwitchPrefab;
         InstantiateObject();
     }
+
 
     public void InstantiateWebsiteButton()
     {

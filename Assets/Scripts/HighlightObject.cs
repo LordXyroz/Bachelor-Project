@@ -32,6 +32,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void Start()
     {
+        dropZone = FindObjectOfType<DropZone>();
         /// Need to differentiate between connections and components
         image = GetComponent<Image>();
         if (image != null)
@@ -143,19 +144,56 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                     }
                 }
 
+                //RectTransform dropZone = dropZone.GetComponent<RectTransform>();
+                float width = dropZone.GetComponent<RectTransform>().rect.width;
+                float height = dropZone.GetComponent<RectTransform>().rect.height;
+                float newX;
+                float newY;
+
                 if (image != null)
                 {
 
                     componentMenu.gameObject.SetActive(true);
-                    systemComponentMenu.UpdatePosition(new Vector2(eventData.position.x + componentMenu.rect.width / 2,
-                                                                eventData.position.y + componentMenu.rect.height / 2));
+                    if (eventData.position.x + componentMenu.rect.width > width)
+                    {
+                        newX = eventData.position.x - componentMenu.rect.width / 2;
+                    }
+                    else
+                    {
+                        newX = eventData.position.x + componentMenu.rect.width / 2;
+                    }
+                    if (eventData.position.y + componentMenu.rect.height / 2 > height)
+                    {
+                        newY = eventData.position.y - componentMenu.rect.height / 2;
+                    }
+                    else
+                    {
+                        newY = eventData.position.y + componentMenu.rect.height / 2;
+                    }
+                    systemComponentMenu.UpdatePosition(new Vector2(newX, newY));
                     systemComponentMenu.SetMenuInformation(systemComponent.componentType, systemComponent.securityLevel);
                 }
                 else
                 {
                     referenceLineMenu.gameObject.SetActive(true);
-                    referenceLineMenu.UpdatePosition(new Vector2(eventData.position.x + referenceLineMenu.GetComponent<RectTransform>().rect.width / 2,
-                                                                eventData.position.y + referenceLineMenu.GetComponent<RectTransform>().rect.height / 2));
+                    RectTransform ReferenceLineMenuRect = referenceLineMenu.gameObject.GetComponent<RectTransform>();
+                    if (eventData.position.x + ReferenceLineMenuRect.rect.width > width)
+                    {
+                        newX = eventData.position.x - ReferenceLineMenuRect.rect.width / 2;
+                    }
+                    else
+                    {
+                        newX = eventData.position.x + ReferenceLineMenuRect.rect.width / 2;
+                    }
+                    if (eventData.position.y + ReferenceLineMenuRect.rect.height / 2 > height)
+                    {
+                        newY = eventData.position.y - ReferenceLineMenuRect.rect.height / 2;
+                    }
+                    else
+                    {
+                        newY = eventData.position.y + ReferenceLineMenuRect.rect.height / 2;
+                    }
+                    referenceLineMenu.UpdatePosition(new Vector2(newX, newY));
                     referenceLineMenu.PopulateReferenceLineMenu(objectSelect.selected);
                 }
             }

@@ -11,11 +11,14 @@ using UnityEngine;
 /// 
 /// Load list of available vulnerabilities from file (list of enums)
 /// 
+/// Fix drop deletion range for when an object is dropped outside the dropzone
+/// 
+/// Fix the resolution to be 16:9 instead of standalone
 /// 
 /// Automatically generate name of system components upon initiation, where name = component + (no. of this component +1).
 /// Save the components in the system in a script, in order to have number as well as the objects saved?
 /// 
-/// Add buttons for instanciating the rest of the components
+/// Add buttons for instanciating the rest of the components (after list has been provided us)
 /// 
 /// Save scenario to file
 ///     - Text input field for filename
@@ -62,6 +65,10 @@ public class SystemComponent : MonoBehaviour
         dropZone = FindObjectOfType<DropZone>();
         selectedObject = FindObjectOfType<SelectedObject>();
         displayedName = this.gameObject.transform.Find("SystemComponentName").GetComponent<TMP_Text>();
+        if (securityLevel <= 0)
+        {
+            securityLevel = 1;
+        }
 
         if (componentName == null)
         {

@@ -45,7 +45,6 @@ public class RenameMenu : MonoBehaviour
         Debug.Log("Changed name is: " + systemComponent.name);
 
         systemComponent.UpdateComponentName();
-
-
+        this.gameObject.SetActive(false);
     }
 }
