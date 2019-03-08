@@ -27,15 +27,15 @@ RectTransform:
   m_GameObject: {fileID: 6421525998260924880}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_Children: []
   m_Father: {fileID: 6201401287291897867}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5072939734435418978
 CanvasRenderer:
@@ -167,8 +167,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 1409145902364234028}
   - component: {fileID: 6842138192445636597}
   m_Layer: 5
-  m_Name: SystemComponentPrefab 2
+  m_Name: SystemComponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -275,7 +275,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6864296987043369145
 CanvasRenderer:
@@ -338,6 +338,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c207e7bb0600e4c41b18d4ac9bd2778e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  APIPrefab: {fileID: 0}
+  spawnPosition: {x: 0, y: 0}
   parentToReturnTo: {fileID: 0}
 --- !u!114 &1409145902364234028
 MonoBehaviour:
@@ -367,6 +369,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff572229e91d17a49a149191e0b36051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  securityLevel: 0
+  componentVulnerabilities: []
   componentType: System component
-  Vulnerabilities: []
+  componentName: 
   connectedReferenceLines: []
+  OS: 
+  subnet: 
+  configPresent: {fileID: 0}
+  keypair: 
+  floatingIP: 0
+  user:
+    type: 
+    privilege: 
+    role: 

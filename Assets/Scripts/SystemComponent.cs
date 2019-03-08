@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -13,6 +14,8 @@ using UnityEngine;
 /// 
 /// Automatically generate name of system components upon initiation, where name = component + (no. of this component +1).
 /// Save the components in the system in a script, in order to have number as well as the objects saved?
+/// 
+/// Add buttons for instanciating the rest of the components
 /// 
 /// Save scenario to file
 ///     - Text input field for filename
@@ -31,6 +34,7 @@ public class SystemComponent : MonoBehaviour
     public List<string> componentVulnerabilities = new List<string>();
     public string componentType;   // Must match the prefab name
     public string componentName;
+    private TMP_Text displayedName;
 
     [Header("Reference line components")]
     public List<GameObject> connectedReferenceLines = new List<GameObject>();
@@ -57,6 +61,12 @@ public class SystemComponent : MonoBehaviour
     {
         dropZone = FindObjectOfType<DropZone>();
         selectedObject = FindObjectOfType<SelectedObject>();
+        displayedName = this.gameObject.transform.Find("SystemComponentName").GetComponent<TMP_Text>();
+
+        if (componentName == null)
+        {
+            componentName = componentType;
+        }
 
         /// TODO delete these, for testing purposes only
         componentVulnerabilities.Add("Test vulnerability 1");
@@ -211,6 +221,12 @@ public class SystemComponent : MonoBehaviour
     {
         securityLevel = security;
         componentVulnerabilities = vulnerabilities;
+    }
+
+    public void UpdateComponentName()
+    {
+
+        displayedName.text = componentName;
     }
 }
 

@@ -32,8 +32,13 @@ public class LoadScenario : MonoBehaviour
 
 
     [Header("Prefabs for instantiation")]
+    public GameObject ChosenPrefab;
+    public GameObject DefaultPrefab;
     public GameObject APIPrefab;
     public GameObject connectionLinePrefab;
+    public GameObject InternetPrefab;
+    public GameObject SwitchPrefab;
+    public GameObject WebsitePrefab;
 
 
 
@@ -75,8 +80,9 @@ public class LoadScenario : MonoBehaviour
                 VulnerabilityWrapper vulnerabilityWrapper = loadFromJSON.systemComponentVulnerabilyWrappersList[i];
 
                 pos = loadFromJSON.systemComponentPositionsList[i];
-                InstantiateObject();
+                LoadObject(loadFromJSON.systemComponentTypesList[i]);
                 SystemComponent targetComponent = target.GetComponent<SystemComponent>();
+                targetComponent.componentType = loadFromJSON.systemComponentTypesList[i];
 
                 targetComponent.securityLevel = loadFromJSON.systemComponentSecurityLevelsList[i];
                 targetComponent.componentName = loadFromJSON.systemComponentNamesList[i];
@@ -134,10 +140,39 @@ public class LoadScenario : MonoBehaviour
         //}
     }
 
+
+    public void LoadObject(string componentType)
+    {
+        switch (componentType)
+        {
+            case "API":
+                ChosenPrefab = APIPrefab;
+                break;
+
+            case "Internet":
+                ChosenPrefab = InternetPrefab;
+                break;
+
+            case "Switch":
+                ChosenPrefab = SwitchPrefab;
+                break;
+
+            case "Website":
+                ChosenPrefab = WebsitePrefab;
+                break;
+
+            default:
+                ChosenPrefab = DefaultPrefab;
+                break;
+        }
+        InstantiateObject();
+    }
+
+
     public void InstantiateObject()
     {
 
-        target = (GameObject)Instantiate(APIPrefab,
+        target = (GameObject)Instantiate(ChosenPrefab,
                                          pos,
                                          Quaternion.identity,
                                          dropZone.transform);
@@ -151,8 +186,34 @@ public class LoadScenario : MonoBehaviour
         //systemComponentClone.Imagecolor = originalColor;
     }
 
-    public void InstantiateButton()
+
+    public void InstantiateAPIButton()
     {
         pos = new Vector2(300, 650);
+        ChosenPrefab = APIPrefab;
+        InstantiateObject();
+    }
+
+
+    public void InstantiateInternetButton()
+    {
+        pos = new Vector2(300, 650);
+        ChosenPrefab = InternetPrefab;
+        InstantiateObject();
+    }
+
+
+    public void InstantiateSwitchButton()
+    {
+        pos = new Vector2(300, 650);
+        ChosenPrefab = SwitchPrefab;
+        InstantiateObject();
+    }
+
+    public void InstantiateWebsiteButton()
+    {
+        pos = new Vector2(300, 650);
+        ChosenPrefab = WebsitePrefab;
+        InstantiateObject();
     }
 }
