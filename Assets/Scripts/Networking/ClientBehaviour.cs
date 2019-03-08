@@ -461,7 +461,7 @@ public class ClientBehaviour
     {
         if (m_clientToServerConnection.IsCreated)
         {
-            Scenario obj = new Scenario
+            /*Scenario obj = new Scenario
             {
                 playerName = "Chris",
                 timeElapsed = 3.14f,
@@ -478,22 +478,10 @@ public class ClientBehaviour
             byte[] msg = Encoding.ASCII.GetBytes(classObj);
             classWriter.Write(msg);
             m_ClientDriver.Send(m_clientToServerConnection, classWriter);
-            classWriter.Dispose();
+            classWriter.Dispose();*/
         }
     }
-
-    /// <summary>
-    /// Test of sending scenario through the network, works fine. TODO delete later.
-    /// </summary>
-    public class Scenario
-    {
-        public int level;
-        public float timeElapsed;
-        public string playerName;
-        public Vector2 position;
-        public int[] values;
-    }
-
+    
     /// <summary>
     /// FixedUpdate is a function called ca. 50 times per second. Used to see for events through the network.
     /// If any messages is sent in, and will according to event happened send message through the network.

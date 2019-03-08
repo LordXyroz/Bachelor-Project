@@ -225,7 +225,7 @@ public class NetworkingManager : MonoBehaviour
 
                 /// Set username of host on top of screen for everyone to see.
                 Text T = GameObject.Find("HostText").GetComponent<Text>();
-                T.text = "Host: " + userName;
+                T.text = userName + "'s lobby";
                 
                 /// Set to false as host no client has joined a lobby before it starts.
                 for (int i = 0; i < attackerNames.Count; i++)
@@ -271,7 +271,6 @@ public class NetworkingManager : MonoBehaviour
     
     /// <summary>
     /// This function is run through a button that shows ONLY when user is online(connected to server), so it will result in user disconnecting.
-    /// TODO stop connecting function before starting new coroutine.
     /// </summary>
     public void DisconnectFromServer()
     {
@@ -365,8 +364,8 @@ public class NetworkingManager : MonoBehaviour
             cb.Disconnect(messageList);
 
             /// Disconnect client from host.
-            cb = null;
             yield return new WaitForSeconds(1);
+            cb = null;
         }
 
         playerType = default;
