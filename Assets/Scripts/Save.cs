@@ -26,6 +26,14 @@ public class Save
     public List<string> keypairList = new List<string>();
     public List<bool> floatingIPList = new List<bool>();
     public List<User> usersList = new List<User>();
+
+    [Header("The stats for attacker and defender")]
+    public int attackerAttackLevel;
+    public int attackerDiscoveryLevel;
+    public int attackerAnalysisLevel;
+
+    public int defenderDefenceLevel;
+    public int defenderDiscoveryLevel;
 }
 
 

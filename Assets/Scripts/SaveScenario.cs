@@ -10,11 +10,19 @@ public class SaveScenario : MonoBehaviour
     private DropZone dropZone;
     private SelectedObject selectedObject;
     private ConnectionReferences lineReference;
+    private SaveMenu saveMenu;
     private string fileName = "savefile";
     private string filePath;
 
     [SerializeField]
     private Save save;
+
+    [Header("The stats for attacker and defender")]
+    private int attackerAttackLevel;
+    private int attackerDiscoveryLevel;
+    private int attackerAnalysisLevel;
+    private int defenderDefenceLevel;
+    private int defenderDiscoveryLevel;
 
 
 
@@ -22,14 +30,26 @@ public class SaveScenario : MonoBehaviour
     {
         dropZone = FindObjectOfType<DropZone>();
         systemComponentsToSave = dropZone.editableSystemComponents;
+        saveMenu = FindObjectOfType<SaveMenu>();
+
 
         if (!systemComponentsToSave.Count.Equals(0))
         {
+            save = new Save();
+            if (saveMenu.filename != null)
+            {
+                fileName = saveMenu.filename;
+            }
             selectedObject = FindObjectOfType<SelectedObject>();
             filePath = Path.Combine(Application.dataPath + "/Savefiles", fileName + ".json");
             Debug.Log("Filepath from save: " + filePath);
 
-            save = new Save();
+            save.attackerAttackLevel = saveMenu.attackerAttackLevel;
+            save.attackerAnalysisLevel = saveMenu.attackerAnalysisLevel;
+            save.attackerDiscoveryLevel = saveMenu.attackerDiscoveryLevel;
+            save.defenderDefenceLevel = saveMenu.defenderDefenseLevel;
+            save.defenderDiscoveryLevel = saveMenu.defenderDiscoveryLevel;
+
             foreach (GameObject targetGameObject in systemComponentsToSave)
             {
                 VulnerabilityWrapper vulnerabilityWrapper = new VulnerabilityWrapper();

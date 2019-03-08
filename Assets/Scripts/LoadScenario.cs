@@ -16,10 +16,12 @@ public class LoadScenario : MonoBehaviour
     private DropZone dropZone;
     private SelectedObject selectedObject;
     private ConnectionReferences lineReference;
+    private SaveMenu saveMenu;
+    private Canvas canvas;
     [SerializeField]
     Save loadFromJSON;
 
-    private string fileName = "savefile";
+    private string fileName = "test2save";
     private string filePath;
     private string resourcePath;
     private string prefabType;
@@ -44,6 +46,8 @@ public class LoadScenario : MonoBehaviour
 
     private void Start()
     {
+        canvas = FindObjectOfType<Canvas>();
+        saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);//   FindObjectOfType<SaveMenu>();
         selectedObject = FindObjectOfType<SelectedObject>();
         dropZone = FindObjectOfType<DropZone>();
     }
@@ -71,9 +75,17 @@ public class LoadScenario : MonoBehaviour
             prefabNo = 0;
             Debug.Log("Components in delete should be 0, are: " + dropZone.editableSystemComponents.Count);
             Debug.Log("Connections in delete should be 0, are: " + selectedObject.connectionReferencesList.Count);
+            ///////////////////////////////////////////////////////////////////////////////////////////
 
             string json = File.ReadAllText(filePath);
             loadFromJSON = JsonUtility.FromJson<Save>(json);
+
+            saveMenu.filename = fileName;
+            saveMenu.attackerAttackLevel = loadFromJSON.attackerAttackLevel;
+            saveMenu.attackerAnalysisLevel = loadFromJSON.attackerAnalysisLevel;
+            saveMenu.attackerDiscoveryLevel = loadFromJSON.attackerDiscoveryLevel;
+            saveMenu.defenderDefenseLevel = loadFromJSON.defenderDefenceLevel;
+            saveMenu.defenderDiscoveryLevel = loadFromJSON.defenderDiscoveryLevel;
 
             for (int i = 0; i < loadFromJSON.systemComponentPositionsList.Count; i++)
             {
