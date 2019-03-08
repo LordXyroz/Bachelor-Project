@@ -7,6 +7,8 @@
 /// </summary>
 namespace MessageTypes
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Static class for logging event codes
     /// </summary>
@@ -52,5 +54,42 @@ namespace MessageTypes
         public const ushort AnalyzeResponse = offset + 8;
         public const ushort Probe = offset + 9;
         public const ushort ProbeResponse = offset + 10;
+    }
+
+    public static class TypeValues {
+        private static Dictionary<ushort, string> _KeyValues;
+
+        static TypeValues()
+        {
+            _KeyValues = new Dictionary<ushort, string>
+            {
+                { Logging.Log, "Log" },
+                { Logging.Debug, "Debug" },
+                { Logging.Warning, "Warning" },
+                { Logging.Error, "Error" },
+                { Logging.Targeting, "Targeting" },
+
+                // { Network }
+
+                { Game.Attack, "Attack" },
+                { Game.AttackResponse, "Attack Response" },
+                { Game.Defense, "Defense" },
+                { Game.DefenseResponse, "Defense Response" },
+                { Game.Discover, "Discover" },
+                { Game.DiscoverResponse, "Discover Response" },
+                { Game.Analyze, "Analyze" },
+                { Game.AnalyzeResponse, "Analyze Response" },
+                { Game.Probe, "Probe" },
+                { Game.ProbeResponse, "Probe Response" }
+            };
+        }
+
+        public static string GetValue(ushort type)
+        {
+            if (_KeyValues.ContainsKey(type))
+                return _KeyValues[type];
+            else
+                return "Not implemented";
+        }
     }
 }

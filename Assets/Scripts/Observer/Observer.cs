@@ -11,25 +11,6 @@ public class Observer : MonoBehaviour, ILogging, IError
 {
     public ObserverUI uiScript;
 
-    string path;
-    StreamWriter writer;
-    
-
-    void Start()
-    {
-        path = Application.persistentDataPath + "/Logs/";
-
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
-
-        writer = new StreamWriter(path + System.DateTime.Now + ".txt");
-    }
-
-    void OnDestroy()
-    {
-        writer.Close();
-    }
-
     /// <summary>
     /// From the IError interface.
     /// 
@@ -50,8 +31,15 @@ public class Observer : MonoBehaviour, ILogging, IError
     public void OnLog(LoggingMessage message)
     {
         string msg = System.DateTime.Now.ToLongTimeString() + ": " + message.senderName + " - " + message.message;
-        writer.WriteLine(msg);
         uiScript.AddLog(msg);
+
         Debug.Log(msg);
     }
+
+#if UNITY_EDITOR
+    private void OnDestroy()
+    {
+        LogSaving.Destructor(null, null);
+    }
+#endif
 }

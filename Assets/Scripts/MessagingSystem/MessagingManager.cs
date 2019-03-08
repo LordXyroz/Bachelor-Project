@@ -24,6 +24,9 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IUnderAttack>();
                     foreach (var o in objects)
                         o.UnderAttack((AttackMessage) message);
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save((AttackMessage) message);
                     break;
                 }
 
@@ -32,6 +35,9 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAttackResponse>();
                     foreach (var o in objects)
                         o.AttackResponse((SuccessMessage) message);
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save((SuccessMessage) message);
                     break;
                 }
 
@@ -40,6 +46,9 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAddDefense>();
                     foreach (var o in objects)
                         o.AddDefense((DefenseMessage) message);
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save((DefenseMessage) message);
                     break;
                 }
 
@@ -48,6 +57,10 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDefenseResponse>();
                     foreach (var o in objects)
                         o.DefenseResponse((SuccessMessage) message);
+
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save((SuccessMessage) message);
                     break;
                 }
 
@@ -56,6 +69,9 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDiscover>();
                     foreach (var o in objects)
                         o.OnDiscover((DiscoverMessage) message);
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save((DiscoverMessage) message);
                     break;
                 }
 
@@ -64,6 +80,9 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDiscoverResponse>();
                     foreach (var o in objects)
                         o.OnDiscoverResponse((DiscoverResponseMessage) message);
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save((DiscoverResponseMessage) message);
                     break;
                 }
 
@@ -72,6 +91,9 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAnalyze>();
                     foreach (var o in objects)
                         o.OnAnalyze((AnalyzeMessage) message);
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save((AnalyzeMessage) message);
                     break;
                 }
 
@@ -80,6 +102,9 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IAnalyzeResponse>();
                     foreach (var o in objects)
                         o.OnAnalyzeResponse((AnalyzeResponeMessage) message);
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save((AnalyzeResponeMessage) message);
                     break;
                 }
 
@@ -88,6 +113,9 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IProbe>();
                     foreach (var o in objects)
                         o.OnProbe(message);
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save(message);
                     break;
                 }
 
@@ -96,6 +124,9 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IProbeResponse>();
                     foreach (var o in objects)
                         o.OnProbeResponse((ProbeResponseMessage) message);
+
+                    if (Object.FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        LogSaving.Save((ProbeResponseMessage) message);
                     break;
                 }
 
