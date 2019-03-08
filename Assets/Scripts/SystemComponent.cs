@@ -76,9 +76,9 @@ public class SystemComponent : MonoBehaviour
         }
 
         /// TODO delete these, for testing purposes only
-        componentVulnerabilities.Add("Test vulnerability 1");
-        componentVulnerabilities.Add("Test vulnerability 2");
-        componentVulnerabilities.Add("Test vulnerability 3");
+        //componentVulnerabilities.Add("Test vulnerability 1");
+        //componentVulnerabilities.Add("Test vulnerability 2");
+        //componentVulnerabilities.Add("Test vulnerability 3");
         ///////////////////////////////////////////////
     }
 

@@ -60,87 +60,67 @@ public class SelectedObject : MonoBehaviour
     {
         if (newSelected != null)
         {
-            /// Reset the selected properties of the previously selected object, if there is one
-            if (selected != null)
+            DeselectObjects();
+
+            if (systemComponent)
             {
-                if (systemComponent)
+                /// Reset and set active to null if the selected object is clicked again (not dragged)
+                if (selected == newSelected && !dragged)
                 {
                     image.material = default;
                     imageBox.gameObject.SetActive(false);
+                    oldSelected = selected;
+                    selected = null;
+                    connectionStarted = false;
+                    return;
                 }
+
+                if (newSelected != selected && selected != null)
+                {
+                    oldSelected = selected;
+                }
+                selected = newSelected;
+
+                images = GetComponentsInChildren<Image>();
+                image = newSelected.GetComponent<Image>();
+                image.material = selectMat;
+                imageBox = newSelected.transform.Find("selectionBox").GetComponent<Image>();
+                imageBox.gameObject.SetActive(true);
+
+                /// If button pressed for starting a connection
+                if (oldSelected != null && connectionStarted)
+                {
+                    ConnectObjects(oldSelected, newSelected);
+                }
+            }
+            else if (!systemComponent)
+            {
+                images = newSelected.GetComponentsInChildren<Image>();
+
+                /// Reset and set active to null if the selected object is clicked again (not dragged)
+                if (selected == newSelected && !dragged)
+                {
+                    foreach (Image img in images)   // Connection line
+                    {
+                        img.material = default;
+                    }
+                    oldSelected = selected;
+                    selected = null;
+                    connectionStarted = false;
+                    return;
+                }
+
+                if (newSelected != selected && selected != null)
+                {
+                    oldSelected = selected;
+                }
+                selected = newSelected;
+
                 foreach (Image img in images)
                 {
-                    img.material = default;
-                }
-
-            }
-            images = GetComponentsInChildren<Image>();
-
-            if (newSelected != null)
-            {
-                if (systemComponent)
-                {
-                    /// Reset and set active to null if the selected object is clicked again (not dragged)
-                    if (selected == newSelected && !dragged)
-                    {
-                        image.material = default;
-                        imageBox.gameObject.SetActive(false);
-                        oldSelected = selected;
-                        selected = null;
-                        connectionStarted = false;
-                        return;
-                    }
-
-                    if (newSelected != selected && selected != null)
-                    {
-                        oldSelected = selected;
-                    }
-                    selected = newSelected;
-
-                    image = newSelected.GetComponent<Image>();
-                    image.material = selectMat;
-                    imageBox = newSelected.transform.Find("selectionBox").GetComponent<Image>();
-                    imageBox.gameObject.SetActive(true);
-
-                    /// If button pressed for starting a connection
-                    if (oldSelected != null && connectionStarted)
-                    {
-                        ConnectObjects(oldSelected, newSelected);
-                    }
-                }
-                else if (!systemComponent)
-                {
-                    images = newSelected.GetComponentsInChildren<Image>();
-
-                    /// Reset and set active to null if the selected object is clicked again (not dragged)
-                    if (selected == newSelected && !dragged)
-                    {
-                        foreach (Image img in images)   // Connection line
-                        {
-                            img.material = default;
-                        }
-                        oldSelected = selected;
-                        selected = null;
-                        connectionStarted = false;
-                        return;
-                    }
-
-                    if (newSelected != selected && selected != null)
-                    {
-                        oldSelected = selected;
-                    }
-                    selected = newSelected;
-
-                    foreach (Image img in images)
-                    {
-                        img.material = selectMat;
-                    }
+                    img.material = selectMat;
                 }
             }
-        }
-        else
-        {
-            Debug.Log("Selected connection line:  " + newSelected.name);
         }
     }
 
@@ -191,27 +171,28 @@ public class SelectedObject : MonoBehaviour
     public void ConnectObjects(GameObject fromOld, GameObject toNew)    /// TODO move to SystemComponents script?
     {
         /// Make sure both selected are system components
-        /*if (toNew.GetComponent<SystemComponent>() != null
+        if (toNew.GetComponent<SystemComponent>() != null
             && fromOld.GetComponent<SystemComponent>() != null)
-        {*/
-        GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
-        connectionLineClone.transform.position = fromOld.transform.position;
-        connectionLineClone.transform.SetParent(GameObject.Find("Connections").transform);
-        connectionLineClone.transform.SetAsFirstSibling();
+        {
+            GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
+            connectionLineClone.transform.position = fromOld.transform.position;
+            connectionLineClone.transform.SetParent(GameObject.Find("Connections").transform);
+            connectionLineClone.transform.SetAsFirstSibling();
 
-        connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
-        connectionReferences.SetReferences(fromOld, toNew);
+            connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
+            connectionReferences.SetReferences(fromOld, toNew);
 
-        systemComponentOfSelected = toNew.GetComponent<SystemComponent>();
-        systemComponentOfOldSelected = fromOld.GetComponent<SystemComponent>();
-        systemComponentOfSelected.AddReference(connectionLineClone);
-        systemComponentOfOldSelected.AddReference(connectionLineClone);
+            systemComponentOfSelected = toNew.GetComponent<SystemComponent>();
+            systemComponentOfOldSelected = fromOld.GetComponent<SystemComponent>();
+            systemComponentOfSelected.AddReference(connectionLineClone);
+            systemComponentOfOldSelected.AddReference(connectionLineClone);
 
-        systemComponentOfOldSelected.SetConnectionLines(fromOld.transform.position, toNew.transform.position, connectionLineClone);
-        connectionReferencesList.Add(connectionLineClone);
-        connectionStarted = false;
-        //}
+            systemComponentOfOldSelected.SetConnectionLines(fromOld.transform.position, toNew.transform.position, connectionLineClone);
+            connectionReferencesList.Add(connectionLineClone);
+            connectionStarted = false;
+        }
     }
+
 
 
     /// <summary>
