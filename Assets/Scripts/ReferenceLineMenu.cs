@@ -18,11 +18,14 @@ public class ReferenceLineMenu : MonoBehaviour
         canvas = GetComponentInParent<Canvas>();
         selectedObject = canvas.transform.Find("Scripts").GetComponent<SelectedObject>();
 
-        firewallToggle = GetComponentInChildren<Toggle>(true);
-        firewallToggle.onValueChanged.AddListener(delegate
+        firewallToggle = canvas.GetComponentInChildren<ReferenceLineMenu>().GetComponentInChildren<Toggle>(true);
+        if (firewallToggle != null)
         {
-            ToggleValueChanged(firewallToggle);
-        });
+            firewallToggle.onValueChanged.AddListener(delegate
+            {
+                ToggleValueChanged(firewallToggle);
+            });
+        }
     }
 
 

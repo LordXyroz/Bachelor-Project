@@ -8,11 +8,17 @@ public class SaveScenario : MonoBehaviour
     private List<GameObject> connectedComponents = new List<GameObject>();
     private List<GameObject> referenceLines = new List<GameObject>();
     private DropZone dropZone;
+    private Canvas canvas;
     private SelectedObject selectedObject;
     private ConnectionReferences lineReference;
-    private SaveMenu saveMenu;
-    private string fileName = "savefile";
+
+    [Header("Save file attributes")]
+    public bool overrideFile = false;
+    public string fileName = "savefile";
+    private string directoryPath;
     private string filePath;
+    private SaveMenu saveMenu;
+    private SavefileExistsPopup fileExistsPopup;
 
     [SerializeField]
     private Save save;
@@ -24,24 +30,31 @@ public class SaveScenario : MonoBehaviour
     private int defenderDefenceLevel;
     private int defenderDiscoveryLevel;
 
+    private void Start()
+    {
+        directoryPath = Application.dataPath + "/Savefiles";
 
+        canvas = GetComponentInParent<Canvas>();
+        fileExistsPopup = canvas.transform.GetComponentInChildren<SavefileExistsPopup>(true);
+    }
 
     private Save CreateSaveScenarioObject()
     {
         dropZone = FindObjectOfType<DropZone>();
         systemComponentsToSave = dropZone.editableSystemComponents;
-        saveMenu = FindObjectOfType<SaveMenu>();
 
 
         if (!systemComponentsToSave.Count.Equals(0))
         {
+
             save = new Save();
+            saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
             if (saveMenu.filename != null)
             {
                 fileName = saveMenu.filename;
             }
             selectedObject = FindObjectOfType<SelectedObject>();
-            filePath = Path.Combine(Application.dataPath + "/Savefiles", fileName + ".json");
+            filePath = Path.Combine(directoryPath, fileName + ".json");
             Debug.Log("Filepath from save: " + filePath);
 
             save.attackerAttackLevel = saveMenu.attackerAttackLevel;
@@ -105,25 +118,32 @@ public class SaveScenario : MonoBehaviour
     public void SaveCurrentScenario()
     {
         save = CreateSaveScenarioObject();
-        //if (!File.Exists(filePath))
-        //{
-        if (File.Exists(filePath))
-        {
-            File.Delete(filePath);
-            //Debug.Log("Deleted file: " + filePath);
-        }
+
         if (save != null)
         {
-            File.Create(filePath).Dispose();
             string json = JsonUtility.ToJson(save);
-
             Debug.Log("Saving as JSON: " + json);
-            File.WriteAllText(filePath, json);
+            if (!File.Exists(filePath))
+            {
+                File.Create(filePath).Dispose();
+                File.WriteAllText(filePath, json);
+            }
+            else
+            {
+                Debug.Log("There already exist a file: " + filePath);
+                if (overrideFile)
+                {
+                    overrideFile = false;
+                    File.Delete(filePath);
+                    File.Create(filePath).Dispose();
+                    File.WriteAllText(filePath, json);
+
+                }
+                else
+                {
+                    fileExistsPopup.gameObject.SetActive(true);
+                }
+            }
         }
-        //}
-        //else
-        //{
-        //    Debug.Log("There already exist a file: " + filePath);
-        //}
     }
 }
