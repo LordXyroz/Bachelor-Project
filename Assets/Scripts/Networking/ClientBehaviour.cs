@@ -17,11 +17,13 @@ using System.Collections.Generic;
 
 public class ClientBehaviour
 {
+    private NetworkingManager nm;
 
     ///  results contain the ipaddresses possible to connect to.
     readonly List<string[]> results = new List<string[]>();
-    
+
     public static NetworkEndPoint ServerEndPoint { get; private set; }
+    public string ServerName;
     private bool connect;
 
     public UdpCNetworkDriver m_ClientDriver;
@@ -47,7 +49,9 @@ public class ClientBehaviour
     /// <param name="myMonoBehaviour"></param>
     public ClientBehaviour()
     {
+        nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
         setupHostIp = null;
+        ServerName = "";
 
         swapInfo = SwapInfo.Null;
         /// Set values to default.
@@ -136,6 +140,8 @@ public class ClientBehaviour
             // Read the first batch of the TcpServer response bytes.
             Int32 bytes = stream.Read(data, 0, data.Length);
             responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            ServerName = responseData;
+            Debug.Log("setting servername value: " + ServerName);
 
             // Close everything.
             stream.Close();
@@ -209,7 +215,7 @@ public class ClientBehaviour
     /// Function run from NetworkingManager when player wants to find and connect to a host/server.
     /// </summary>
     /// <param name="myMonoBehaviour"></param>
-    public void Connect(MonoBehaviour myMonoBehaviour)
+    public void FindHosts(MonoBehaviour myMonoBehaviour)
     {
         if (m_clientWantsConnection != true)
         {
@@ -284,7 +290,6 @@ public class ClientBehaviour
             if (i%4 == 0)
             {
                 connectionText.text = "Connecting";
-                //yield return new WaitForSeconds(0.1f);
             }
             connectionText.text = connectionText.text + ".";
             
@@ -294,10 +299,9 @@ public class ClientBehaviour
 
             /// Get IP of host that wants to serve a match
             setupHostIp.ContinueWith((t) => FindHost(ips[i]), cancellationToken);
-            //setupHostIp = Task.Run(() => FindHost(ips[i]));
-
-
+            //setupHostIp.Wait();
             yield return new WaitForSeconds(0.25f);
+
             if (ServerEndPoint.IsValid)
             {
                 /// Cancel task.
@@ -305,26 +309,43 @@ public class ClientBehaviour
                 {
                     cancellationTokenSource.Cancel();
                 }
+                GameObject lobby = MonoBehaviour.Instantiate(nm.lobbyButton, nm.lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform);
+                Debug.Log("setting servername in lobby name:" + ServerName);
+                lobby.GetComponent<Button>().transform.Find("Text").GetComponent<Text>().text = ServerName;
+                lobby.name = ServerEndPoint.GetIp();
+
+                lobby.GetComponent<Button>().onClick.AddListener(() => Connect(lobby.name));
 
                 break;
             }
         }
         if (!ServerEndPoint.IsValid)
         {
-            GameObject.Find("GameManager").GetComponent<NetworkingManager>().StopConnecting();
-
+            nm.StopConnecting();
             Debug.Log("Could not find a valid host");
         }
 
-        GameObject.Find("GameManager").GetComponent<NetworkingManager>().joinButton.SetActive(true);
-        GameObject.Find("GameManager").GetComponent<NetworkingManager>().stopJoinButton.SetActive(false);
+        nm.joinButton.SetActive(true);
+        nm.stopJoinButton.SetActive(false);
+        
+        //TODO put thing below in function run to connect to specific host.
+
+        
+    }
+
+    public void Connect(string name)
+    {
+        Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
+        GameObject lobby = nm.lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").Find(name).gameObject;
+
+        ServerName = lobby.GetComponent<Button>().transform.Find("Text").GetComponent<Text>().text;
+        ServerEndPoint = new IPEndPoint(IPAddress.Parse(lobby.name), 9000);
 
         try
         {
             /// Connect to host if one is found and connection isn't already made.
             if (!m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid)
             {
-                
                 /// Try to connect to the ServerEndPoint.
                 m_clientToServerConnection = m_ClientDriver.Connect(ServerEndPoint);
 
@@ -336,14 +357,17 @@ public class ClientBehaviour
                 GameObject gm = GameObject.Find("GameManager");
                 gm.GetComponent<NetworkingManager>().chatField.SetActive(true);
                 gm.GetComponent<NetworkingManager>().connectionField.SetActive(false);
+                Debug.Log("Setting servername on top of screen: " + ServerName);
+                GameObject.Find("HostText").GetComponent<Text>().text = ServerName;
 
                 /// Client has found a connection, so won't need to look for a new one:
                 m_clientWantsConnection = false;
 
                 /// Remove task:
                 setupHostIp.Dispose();
-                /// Finish this instance of coroutines:
-                yield break;
+
+                /// Remove the list of lobbies to join as you have joined one.
+                nm.RemoveLobbies();
             }
         }
         catch
@@ -357,7 +381,6 @@ public class ClientBehaviour
             connectionText.text = "Offline";
         }
     }
-
 
     /// <summary>
     /// Client sends message to other client about accepting swap.
@@ -496,7 +519,7 @@ public class ClientBehaviour
         m_ClientDriver.ScheduleUpdate().Complete(); 
 
         /// Update clients connecion to the server:
-        if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid && m_clientWantsConnection == false)
+        if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid && m_clientWantsConnection == false && m_ClientDriver.IsCreated)
         {
             var updateWriter = new DataStreamWriter(32, Allocator.Temp);
             // Setting prefix for server to easily know what kind of msg is being written.
@@ -515,7 +538,7 @@ public class ClientBehaviour
             {
                 // Create a 4 byte data stream which we can store our ping sequence number in
                 var connectionWriter = new DataStreamWriter(100, Allocator.Temp);
-                string name = GameObject.Find("GameManager").GetComponent<NetworkingManager>().userName;
+                string name = nm.userName;
                 byte[] msg = Encoding.ASCII.GetBytes(name + "<Connecting>");
                 connectionWriter.Write(msg);
                 m_clientToServerConnection.Send(m_ClientDriver, connectionWriter);
@@ -533,11 +556,10 @@ public class ClientBehaviour
                 if (data.Contains("<Connected>"))
                 {
                     /// A client just connected.
-                    
-                    NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
 
                     /// Receives hostname:
-                    nm.hostText.GetComponent<Text>().text = "Host: " + data.Substring(0, data.IndexOf("<HostName>"));
+                    nm.hostText.GetComponent<Text>().text = ServerName;
+                    //nm.hostText.GetComponent<Text>().text = "Host: " + data.Substring(0, data.IndexOf("<HostName>"));
                     data = data.Substring(data.IndexOf("<HostName>") + 10, data.Length - (data.IndexOf("<HostName>") + 10));
                     
 
@@ -581,18 +603,18 @@ public class ClientBehaviour
                     dynamic msg = JsonUtility.FromJson(data, typed);
                     
                     /// Send message to the chat field.
-                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetMessage((Message)msg);
+                    nm.GetMessage((Message)msg);
                 }
                 else if (data.Contains("<MessageReply>"))
                 {
                     data = data.Substring(0, data.Length - 14);
 
                     /// Send message to the chat field.
-                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetChatMessage(data);
+                    nm.GetChatMessage(data);
                 }
                 else if (data.Contains("<DeclineSwap>"))
                 {
-                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().DestroySwap();
+                    nm.DestroySwap();
                     swapInfo = SwapInfo.Null;
                 }
                 else if (data.Contains("<AcceptSwap>"))
@@ -612,10 +634,10 @@ public class ClientBehaviour
 
                         swapInfo = SwapInfo.Null;
                         /// Swap the two clients on client nr.1's screen.
-                        string toName = GameObject.Find("GameManager").GetComponent<NetworkingManager>().userName;
-                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindSwapNames(fromName, toName);
+                        string toName = nm.userName;
+                        nm.FindSwapNames(fromName, toName);
 
-                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().DestroySwap();
+                        nm.DestroySwap();
                     }
                     else
                     {
@@ -642,17 +664,16 @@ public class ClientBehaviour
                         swapInfo = SwapInfo.Null;
                         /// Swap the two clients on client nr.2's screen.
                         string fromName = data.Substring(0, data.IndexOf("<SwapAccepted>"));
-                        string toName = GameObject.Find("GameManager").GetComponent<NetworkingManager>().userName;
-                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindSwapNames(fromName, toName);
+                        string toName = nm.userName;
+                        nm.FindSwapNames(fromName, toName);
 
                         /// Finish up the swap:
-                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().DestroySwap();
+                        nm.DestroySwap();
                         swapInfo = SwapInfo.Null;
                     }
                 }
                 else if (data.Contains("<SwapMessage>"))
                 {
-                    NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                     /// Start swap loading screen for client with name given from client that wants to swap.
                     string name = data.Substring(0, data.IndexOf("<SwapMessage>"));
                     monoBehaviour.StartCoroutine(nm.StartSwapLoadBar(name, false));
@@ -664,7 +685,6 @@ public class ClientBehaviour
                 }
                 else if (data.Contains("<ClientConnect>"))///don't need this anymore? TODO
                 {
-                    NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
                     /// Add new client connected to list of players in lobby:
                     nm.AddPlayerName(data.Substring(0, data.IndexOf("<ClientConnect>")));
                 }
@@ -673,7 +693,7 @@ public class ClientBehaviour
                     string name = data.Substring(0, data.IndexOf("<ClientDisconnect>"));
                     /// Remove client that disconnected from list of people who ARE indeed connected.
                     Debug.Log("Client - removing other client");
-                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindPlayerForRemoval(name);
+                    nm.FindPlayerForRemoval(name);
                 }
                 else if (data.Contains("<Disconnect>"))
                 {

@@ -19,6 +19,7 @@ using UnityEngine.SceneManagement;
 /// controls the UI of the lobby.
 /// Makes sure that the connection/disconnection is done.
 /// </summary>
+[System.Serializable]
 public class NetworkingManager : MonoBehaviour
 {
     public string userName;
@@ -26,6 +27,10 @@ public class NetworkingManager : MonoBehaviour
     public GameObject chatField;
     public GameObject connectionField;
     public GameObject gameField;
+
+    public GameObject lobbyScrollField;
+    public GameObject lobbyButton;
+
     public GameObject hostText;
     public GameObject SwapLoadingScreen;
 
@@ -97,12 +102,15 @@ public class NetworkingManager : MonoBehaviour
         gameField = GameObject.Find("GameField");
         gameField.SetActive(false);
 
+        lobbyScrollField = GameObject.Find("LobbyScrollField");
+        lobbyButton = (GameObject)Resources.Load("Prefabs/LobbyButton", typeof(GameObject));
 
         connectionField = GameObject.Find("ConnectionField");
         joinButton = connectionField.transform.Find("JoinButton").gameObject;
         stopJoinButton = connectionField.transform.Find("StopJoinButton").gameObject;
         stopJoinButton.SetActive(false);
         startGameButton = chatField.transform.Find("StartGame").gameObject;
+        
         
         GameObject.Find("UserNameInputField").GetComponent<InputField>().onValueChanged.AddListener(delegate { ValueChangeCheck(); });
     }
@@ -200,7 +208,6 @@ public class NetworkingManager : MonoBehaviour
         /// Can try to join lobby/start game when player actually has a name.
         if (userName != null && userName != "")
         {
-            GameObject gm = GameObject.Find("GameManager");
             if (isHost)
             {
                 if (cb != null)
@@ -215,7 +222,7 @@ public class NetworkingManager : MonoBehaviour
                     sb = new ServerBehaviour();
                     playerType = PlayerManager.PlayerType.Observer;
                 }
-                
+                lobbyScrollField.SetActive(false);
 
                 /// Changing view:
                 chatField.SetActive(true);
@@ -245,10 +252,13 @@ public class NetworkingManager : MonoBehaviour
                     cb = new ClientBehaviour();
                 }
 
+                lobbyScrollField.SetActive(true);
+
                 /// Make players able to stop trying to connect.
                 stopJoinButton.SetActive(true);
                 joinButton.SetActive(false);
                 startGameButton.SetActive(false);
+                
 
                 /// This is set as a temp value not default for player to be able to stop looking for host.
                 playerType = PlayerManager.PlayerType.Attacker;
@@ -264,7 +274,7 @@ public class NetworkingManager : MonoBehaviour
                 }
 
                 /// Make client connect to host or disconnect.
-                cb.Connect(this);
+                cb.FindHosts(this);
             }
         }
     }
@@ -352,8 +362,10 @@ public class NetworkingManager : MonoBehaviour
                 /// Already no connection:
                 yield return null;
             }
+            lobbyScrollField.SetActive(true);
 
             Debug.Log("client disconnect");
+
             /// Delete past chat:
             for (int i = 1; i < messageList.Count; i++)
             {
@@ -747,5 +759,16 @@ public class NetworkingManager : MonoBehaviour
             }
             messageList[i].GetComponent<Text>().text = messageList[i + 1].GetComponent<Text>().text;
         }
+    }
+
+    public void RemoveLobbies()
+    {
+        foreach (Transform child in lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform)
+        {
+            Debug.Log("name: " + child.name);
+            Destroy(child.gameObject);
+        }
+
+        lobbyScrollField.SetActive(false);
     }
 }

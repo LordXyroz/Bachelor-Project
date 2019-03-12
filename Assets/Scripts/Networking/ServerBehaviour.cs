@@ -138,9 +138,10 @@ public class ServerBehaviour
                 {
                     /// Translate data bytes to a ASCII string.
                     data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-                    
 
-                    byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
+                    NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
+                    string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
+                    byte[] msg = System.Text.Encoding.ASCII.GetBytes(serverName);
 
                     /// Send back a response.
                     stream.Write(msg, 0, msg.Length);
