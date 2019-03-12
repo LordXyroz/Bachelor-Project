@@ -21,7 +21,8 @@ public class LoadScenario : MonoBehaviour
     [SerializeField]
     Save loadFromJSON;
 
-    private string fileName = "test2save";
+    public string directoryPath;
+    private string fileName;
     private string filePath;
     private string resourcePath;
     private string prefabType;
@@ -50,12 +51,16 @@ public class LoadScenario : MonoBehaviour
         saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);//   FindObjectOfType<SaveMenu>();
         selectedObject = FindObjectOfType<SelectedObject>();
         dropZone = FindObjectOfType<DropZone>();
+
+        fileName = "savefile";
+        directoryPath = Application.dataPath + "/Savefiles";
+        filePath = Path.Combine(directoryPath, fileName + ".json");
     }
 
 
-    public void LoadGame()
+    public void LoadGame(string chosenFilepath)
     {
-        filePath = Path.Combine(Application.dataPath + "/Savefiles", fileName + ".json");
+        filePath = chosenFilepath;// Path.Combine(directoryPath, fileName + ".json");
         //Debug.Log("Filepath from load: " + filePath);
 
         if (File.Exists(filePath))

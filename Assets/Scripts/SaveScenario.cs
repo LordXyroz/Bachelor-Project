@@ -2,6 +2,9 @@
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Script for the functionality behind saving relevant scenario data to JSON
+/// </summary>
 public class SaveScenario : MonoBehaviour
 {
     private List<GameObject> systemComponentsToSave = new List<GameObject>();
@@ -29,6 +32,9 @@ public class SaveScenario : MonoBehaviour
     private int attackerAnalysisLevel;
     private int defenderDefenceLevel;
     private int defenderDiscoveryLevel;
+
+    private int attackerResources;
+    private int defenderResources;
 
     private void Start()
     {
