@@ -141,7 +141,6 @@ public class ClientBehaviour
             Int32 bytes = stream.Read(data, 0, data.Length);
             responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
             ServerName = responseData;
-            Debug.Log("setting servername value: " + ServerName);
 
             // Close everything.
             stream.Close();
@@ -188,7 +187,7 @@ public class ClientBehaviour
     /// Disconnect is run when client wants to disconnect, the view will be changed to prelobby-view; Values will be reset.
     /// </summary>
     /// <param name="messageTexts"></param>
-    public void Disconnect(List<GameObject> messageTexts)
+    public void Disconnect()
     {
 
         Debug.Log("Disconnecting");
@@ -310,7 +309,6 @@ public class ClientBehaviour
                     cancellationTokenSource.Cancel();
                 }
                 GameObject lobby = MonoBehaviour.Instantiate(nm.lobbyButton, nm.lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform);
-                Debug.Log("setting servername in lobby name:" + ServerName);
                 lobby.GetComponent<Button>().transform.Find("Text").GetComponent<Text>().text = ServerName;
                 lobby.name = ServerEndPoint.GetIp();
 
@@ -357,7 +355,6 @@ public class ClientBehaviour
                 GameObject gm = GameObject.Find("GameManager");
                 gm.GetComponent<NetworkingManager>().chatField.SetActive(true);
                 gm.GetComponent<NetworkingManager>().connectionField.SetActive(false);
-                Debug.Log("Setting servername on top of screen: " + ServerName);
                 GameObject.Find("HostText").GetComponent<Text>().text = ServerName;
 
                 /// Client has found a connection, so won't need to look for a new one:
@@ -698,20 +695,10 @@ public class ClientBehaviour
                 else if (data.Contains("<Disconnect>"))
                 {
                     Debug.Log("Client - host wants me to disconnect!");
-
-                    /// Get reference to chatfield for client to disconnect.
-                    List<GameObject> messageTexts = new List<GameObject>();
-                    Transform trans = GameObject.Find("MessageField").transform;
-                    foreach (Transform child in trans)
-                    {
-                        if (child != trans)
-                        {
-                            messageTexts.Add(child.gameObject);
-                        }
-                    }
-                    Disconnect(messageTexts);
-
-
+                    
+                    //Disconnect();
+                    nm.DisconnectFromServer();
+                    
                     /// If the server disconnected us we clear out connection
                     m_clientToServerConnection = default(NetworkConnection);
                 }
@@ -724,20 +711,8 @@ public class ClientBehaviour
             {
                 Debug.Log("Client - Disconnecting");
 
+                Disconnect();
                 
-                /// Get reference to chatfield for client to disconnect.
-                List<GameObject> messageTexts = new List<GameObject>();
-                Transform trans = GameObject.Find("MessageField").transform;
-                foreach (Transform child in trans)
-                {
-                    if (child != trans)
-                    {
-                        messageTexts.Add(child.gameObject);
-                    }
-                }
-                Disconnect(messageTexts);
-                
-
                 /// If the server disconnected us we clear out connection
                 m_clientToServerConnection = default(NetworkConnection);
             }

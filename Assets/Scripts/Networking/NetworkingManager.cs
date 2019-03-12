@@ -373,7 +373,7 @@ public class NetworkingManager : MonoBehaviour
             }
 
             /// Delete chat text as client is disconnecting from lobby.
-            cb.Disconnect(messageList);
+            cb.Disconnect();
 
             /// Disconnect client from host.
             yield return new WaitForSeconds(1);
