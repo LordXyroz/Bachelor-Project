@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    /// <summary>
+    /// Enum for all playertypes possible in the game
+    /// </summary>
     public enum PlayerType
     {
         Observer,
@@ -25,7 +28,9 @@ public class PlayerManager : MonoBehaviour
     public GameObject defender;
     public GameObject observer;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Initializes values and enables gameobjects based on playertype
+    /// </summary>
     void Awake()
     {
         playerType = FindObjectOfType<NetworkingManager>().playerType;
@@ -68,16 +73,19 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets which uiscript is active for the player
+    /// </summary>
+    /// <returns>UI script which is active</returns>
     public BaseUI GetUIScript()
     {
         return uiScript;
     }
-
-    public bool IsAttacker()
-    {
-        return playerType == PlayerType.Attacker;
-    }
-
+    
+    /// <summary>
+    /// Gets the player type currently playing.
+    /// </summary>
+    /// <returns>Playertpe currently playing</returns>
     public PlayerType GetPlayerType()
     {
         return playerType;

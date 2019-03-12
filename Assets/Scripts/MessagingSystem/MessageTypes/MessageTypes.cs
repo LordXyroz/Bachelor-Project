@@ -56,9 +56,15 @@ namespace MessageTypes
         public const ushort ProbeResponse = offset + 10;
     }
 
+    /// <summary>
+    /// Static class for containing the names of each messagetype.
+    /// </summary>
     public static class TypeValues {
         private static Dictionary<ushort, string> _KeyValues;
 
+        /// <summary>
+        /// Constructor for initializing dictionary
+        /// </summary>
         static TypeValues()
         {
             _KeyValues = new Dictionary<ushort, string>
@@ -84,6 +90,11 @@ namespace MessageTypes
             };
         }
 
+        /// <summary>
+        /// Gets the string paired with the messagetype
+        /// </summary>
+        /// <param name="type">Messagetype</param>
+        /// <returns>String paired with messagetype, or "Not implemented" if none are found</returns>
         public static string GetValue(ushort type)
         {
             if (_KeyValues.ContainsKey(type))

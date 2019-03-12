@@ -6,6 +6,7 @@ TagManager:
   tags:
   - VarText
   - VulnBox
+  - Node
   layers:
   - Default
   - TransparentFX

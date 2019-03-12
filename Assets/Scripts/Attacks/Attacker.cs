@@ -70,6 +70,9 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private bool workInProgress = false;
     private NetworkingManager networking;
 
+    /// <summary>
+    /// Finds the networking manager.
+    /// </summary>
     void Start()
     {
         networking = FindObjectOfType<NetworkingManager>();

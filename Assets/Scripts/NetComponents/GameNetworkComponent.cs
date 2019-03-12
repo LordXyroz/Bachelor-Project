@@ -47,17 +47,24 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
 
         RectTransform rectTransform = GetComponent<RectTransform>();
         Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
-        uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
 
         if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Attacker)
+        {
+            uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
             uiButton.onClick.AddListener(() => FindObjectOfType<Attacker>().SetTarget(gameObject));
-        else if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Defender)
-            uiButton.onClick.AddListener(() => FindObjectOfType<Defender>().SetTarget(gameObject));
-
-        uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
-
-        if (FindObjectOfType<PlayerManager>().IsAttacker())
+            uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
             uiElement.SetActive(false);
+        }
+        else if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Defender)
+        {
+            uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
+            uiButton.onClick.AddListener(() => FindObjectOfType<Defender>().SetTarget(gameObject));
+            uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
+        }
+        else if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+        {
+            uiButton.onClick.AddListener(() => FindObjectOfType<Observer>().UpdateNode(gameObject));
+        }
 
         networking = FindObjectOfType<NetworkingManager>();
     }
@@ -252,6 +259,11 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         }
     }
 
+    /// <summary>
+    /// Observer only feature.
+    /// Colors the button based on who targets it.
+    /// </summary>
+    /// <param name="message"></param>
     public void OnTargeting(Message message)
     {
         if (FindObjectOfType<PlayerManager>().GetPlayerType() != PlayerManager.PlayerType.Observer)

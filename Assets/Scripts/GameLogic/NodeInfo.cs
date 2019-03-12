@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Class containing relevant info for the attacker about a network node that is discovered.
-/// 
+/// Class containing relevant info for the players about a network node.
 /// </summary>
 [System.Serializable]
 public class NodeInfo

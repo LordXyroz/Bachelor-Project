@@ -91,6 +91,11 @@ public abstract class BaseUI : MonoBehaviour
             tooltipFrameTransform.pivot = new Vector2(0f, 0.5f);
         }
 
+        if (pos.y <= Screen.height / 2f)
+        {
+            yOffset = (yOffset * -1);
+        }
+
         Vector2 newPos = new Vector2(pos.x + xOffset, pos.y - yOffset);
 
         tooltipObject.GetComponent<RectTransform>().position = newPos;
