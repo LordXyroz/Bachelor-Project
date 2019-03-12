@@ -9,12 +9,16 @@ using UnityEngine;
 public class LoadScenarioMenu : MonoBehaviour
 {
     private LoadScenario loadScenario;
+    private Canvas canvas;
+    private SaveMenu saveMenu;
     private TMP_Dropdown scenarioDropdown;
-    private string file = "savefile.json";
+    private string file;
 
 
     void Start()
     {
+        canvas = FindObjectOfType<Canvas>();
+        saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
         loadScenario = FindObjectOfType<LoadScenario>();
         scenarioDropdown = GetComponentInChildren<TMP_Dropdown>(true);
         PopulatescenarioDropdown(scenarioDropdown);
@@ -53,7 +57,8 @@ public class LoadScenarioMenu : MonoBehaviour
     {
         file = scenarioDropdown.options[scenarioDropdown.value].text;
         string filepath = Path.Combine(loadScenario.directoryPath, file);
-        Debug.Log("Loading data from file: " + file);
+        loadScenario.fileName = file;
+        saveMenu.filename = file;
         loadScenario.LoadGame(filepath);
     }
 }

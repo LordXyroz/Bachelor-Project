@@ -14,17 +14,6 @@ using UnityEngine;
 /// 
 /// Fix the resolution to be 16:9 instead of standalone
 /// 
-/// Automatically generate name of system components upon initiation, where name = component + (no. of this component +1).
-/// Save the components in the system in a script, in order to have number as well as the objects saved?
-/// 
-/// Make new script holding the attacker and defender stats, this is also to be saved
-/// 
-/// Save scenario to file
-///     - Error if file exists, override method?
-///     - Pop-up menu when saving, name of save file, data/stats for attacker and defender
-/// Load scenario from file
-///     - List up available json document names, select which to load
-///     - Error when loading several times
 
 
 public class SystemComponent : MonoBehaviour
@@ -71,12 +60,6 @@ public class SystemComponent : MonoBehaviour
         {
             componentName = componentType;
         }
-
-        /// TODO delete these, for testing purposes only
-        //componentVulnerabilities.Add("Test vulnerability 1");
-        //componentVulnerabilities.Add("Test vulnerability 2");
-        //componentVulnerabilities.Add("Test vulnerability 3");
-        ///////////////////////////////////////////////
     }
 
 
@@ -193,7 +176,6 @@ public class SystemComponent : MonoBehaviour
 
             systemComponent = connectedSystemCommponent.GetComponent<SystemComponent>();
             systemComponent.connectedReferenceLines.Remove(line);
-            //line.GetComponent<ConnectionReferences>().RemoveConnectionComponent();
             selectedObject.connectionReferencesList.Remove(line);
             Destroy(line);
         }

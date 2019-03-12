@@ -31,9 +31,11 @@ public class Save
     public int attackerAttackLevel;
     public int attackerDiscoveryLevel;
     public int attackerAnalysisLevel;
+    public int attackerResources;
 
     public int defenderDefenceLevel;
     public int defenderDiscoveryLevel;
+    public int defenderResources;
 }
 
 

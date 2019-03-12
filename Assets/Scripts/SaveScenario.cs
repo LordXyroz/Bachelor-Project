@@ -17,7 +17,7 @@ public class SaveScenario : MonoBehaviour
 
     [Header("Save file attributes")]
     public bool overrideFile = false;
-    public string fileName = "savefile";
+    public string fileName;
     private string directoryPath;
     private string filePath;
     private SaveMenu saveMenu;
@@ -55,19 +55,25 @@ public class SaveScenario : MonoBehaviour
 
             save = new Save();
             saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
+            selectedObject = FindObjectOfType<SelectedObject>();
+
             if (saveMenu.filename != null)
             {
                 fileName = saveMenu.filename;
             }
-            selectedObject = FindObjectOfType<SelectedObject>();
-            filePath = Path.Combine(directoryPath, fileName + ".json");
-            Debug.Log("Filepath from save: " + filePath);
-
+            filePath = Path.Combine(directoryPath, saveMenu.filename);
+            if (!filePath.EndsWith(".json"))
+            {
+                filePath += ".json";
+            }
             save.attackerAttackLevel = saveMenu.attackerAttackLevel;
             save.attackerAnalysisLevel = saveMenu.attackerAnalysisLevel;
             save.attackerDiscoveryLevel = saveMenu.attackerDiscoveryLevel;
+            save.attackerResources = saveMenu.attackerResources;
+
             save.defenderDefenceLevel = saveMenu.defenderDefenseLevel;
             save.defenderDiscoveryLevel = saveMenu.defenderDiscoveryLevel;
+            save.defenderResources = saveMenu.defenderResources;
 
             foreach (GameObject targetGameObject in systemComponentsToSave)
             {
@@ -136,7 +142,7 @@ public class SaveScenario : MonoBehaviour
             }
             else
             {
-                Debug.Log("There already exist a file: " + filePath);
+                //Debug.Log("There already exist a file: " + filePath);
                 if (overrideFile)
                 {
                     overrideFile = false;

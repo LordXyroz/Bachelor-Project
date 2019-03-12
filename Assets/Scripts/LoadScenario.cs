@@ -22,7 +22,7 @@ public class LoadScenario : MonoBehaviour
     Save loadFromJSON;
 
     public string directoryPath;
-    private string fileName;
+    public string fileName;
     private string filePath;
     private string resourcePath;
     private string prefabType;
@@ -48,20 +48,18 @@ public class LoadScenario : MonoBehaviour
     private void Start()
     {
         canvas = FindObjectOfType<Canvas>();
-        saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);//   FindObjectOfType<SaveMenu>();
+        saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
         selectedObject = FindObjectOfType<SelectedObject>();
         dropZone = FindObjectOfType<DropZone>();
 
-        fileName = "savefile";
         directoryPath = Application.dataPath + "/Savefiles";
-        filePath = Path.Combine(directoryPath, fileName + ".json");
+        filePath = Path.Combine(directoryPath, saveMenu.filename + ".json");
     }
 
 
     public void LoadGame(string chosenFilepath)
     {
-        filePath = chosenFilepath;// Path.Combine(directoryPath, fileName + ".json");
-        //Debug.Log("Filepath from load: " + filePath);
+        filePath = chosenFilepath;
 
         if (File.Exists(filePath))
         {
@@ -89,8 +87,11 @@ public class LoadScenario : MonoBehaviour
             saveMenu.attackerAttackLevel = loadFromJSON.attackerAttackLevel;
             saveMenu.attackerAnalysisLevel = loadFromJSON.attackerAnalysisLevel;
             saveMenu.attackerDiscoveryLevel = loadFromJSON.attackerDiscoveryLevel;
+            saveMenu.attackerResources = loadFromJSON.attackerResources;
+
             saveMenu.defenderDefenseLevel = loadFromJSON.defenderDefenceLevel;
             saveMenu.defenderDiscoveryLevel = loadFromJSON.defenderDiscoveryLevel;
+            saveMenu.defenderResources = loadFromJSON.defenderResources;
 
             for (int i = 0; i < loadFromJSON.systemComponentPositionsList.Count; i++)
             {
@@ -130,8 +131,6 @@ public class LoadScenario : MonoBehaviour
                 selectedObject.connectionReferencesList.Add(line);
                 lineReference = line.gameObject.GetComponent<ConnectionReferences>();
 
-                //lineReference.referenceFromObject = loadFromJSON.referenceFromObject[i];
-                //lineReference.referenceToObject = loadFromJSON.referenceToObject[i];
                 lineReference.referenceFromObject = GameObject.Find(loadFromJSON.referenceFromObjectName[i]);
                 lineReference.referenceToObject = GameObject.Find(loadFromJSON.referenceToObjectName[i]);
 
@@ -149,12 +148,6 @@ public class LoadScenario : MonoBehaviour
         {
             Debug.Log("File missing: " + filePath);
         }
-        //foreach (GameObject line in selectedObject.connectionReferencesList)  // TODO delete, for debugging only
-        //{
-        //    Debug.Log("References for object: " + line.name + " - is: " +
-        //        line.GetComponent<ConnectionReferences>().referenceFromObject + " and " +
-        //        line.GetComponent<ConnectionReferences>().referenceToObject);
-        //}
     }
 
 
@@ -163,80 +156,81 @@ public class LoadScenario : MonoBehaviour
         switch (componentType)
         {
             case "API":
-                ChosenPrefab = APIPrefab;
+                InstantiateObject(APIPrefab);
                 break;
 
             case "Internet":
-                ChosenPrefab = InternetPrefab;
+                InstantiateObject(InternetPrefab);
                 break;
 
             case "Switch":
-                ChosenPrefab = SwitchPrefab;
+                InstantiateObject(SwitchPrefab);
                 break;
 
             case "Website":
-                ChosenPrefab = WebsitePrefab;
+                InstantiateObject(WebsitePrefab);
                 break;
 
             case "System component":
-                ChosenPrefab = DefaultPrefab;
+                InstantiateObject(DefaultPrefab);
                 break;
 
             default:
                 Debug.Log("Failed recognizing component type: " + componentType +
                     ". This is not in the list of recognized component types (LoadScenario.LoadObject(string componentType)");
-                ChosenPrefab = DefaultPrefab;
+                InstantiateObject(DefaultPrefab);
                 break;
         }
-        InstantiateObject();
     }
 
 
-    public void InstantiateObject()
+    public void InstantiateObject(GameObject prefab)
     {
-
-        target = (GameObject)Instantiate(ChosenPrefab,
+        target = (GameObject)Instantiate(prefab,
                                          pos,
                                          Quaternion.identity,
                                          dropZone.transform);
         target.name = target.name + prefabNo++;
         dropZone.editableSystemComponents.Add(target);
-
-
-        //Image systemComponentClone = (Image)Instantiate(systemComponentImage, parentToReturnTo);
-        //systemComponentClone.transform.position = (new Vector2(50, 600));
-        //systemComponentClone.Imagecolor = originalColor;
     }
 
 
+    /// <summary>
+    /// Need separate function for each prefab type in order to link the functions to separate buttons
+    /// </summary>
     public void InstantiateAPIButton()
     {
         pos = new Vector2(300, 650);
-        ChosenPrefab = APIPrefab;
-        InstantiateObject();
+        InstantiateObject(APIPrefab);
     }
 
 
+    /// <summary>
+    /// Need separate function for each prefab type in order to link the functions to separate buttons
+    /// </summary>
     public void InstantiateInternetButton()
     {
         pos = new Vector2(300, 650);
-        ChosenPrefab = InternetPrefab;
-        InstantiateObject();
+        InstantiateObject(InternetPrefab);
     }
 
 
+    /// <summary>
+    /// Need separate function for each prefab type in order to link the functions to separate buttons
+    /// </summary>
     public void InstantiateSwitchButton()
     {
         pos = new Vector2(300, 650);
-        ChosenPrefab = SwitchPrefab;
-        InstantiateObject();
+        InstantiateObject(SwitchPrefab);
     }
 
 
+    /// <summary>
+    /// Need separate function for each prefab type in order to link the functions to separate buttons
+    /// </summary>
     public void InstantiateWebsiteButton()
     {
         pos = new Vector2(300, 650);
-        ChosenPrefab = WebsitePrefab;
-        InstantiateObject();
+        InstantiateObject(WebsitePrefab);
     }
 }

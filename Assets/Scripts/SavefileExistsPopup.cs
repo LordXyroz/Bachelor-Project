@@ -9,14 +9,16 @@ public class SavefileExistsPopup : MonoBehaviour
     private TMP_Text overrideText;
     private Canvas canvas;
     private SaveScenario saveScenario;
+    private SaveMenu saveMenu;
 
 
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
+        saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
         saveScenario = canvas.transform.GetComponentInChildren<SaveScenario>(true);
         overrideText = this.gameObject.transform.Find("OverrideQuestionText").GetComponent<TMP_Text>();
-        overrideText.text = "Would you like to override file: \n" + saveScenario.fileName;
+        overrideText.text = "Would you like to override file: \n" + saveScenario.fileName;// saveMenu.filename;
     }
 
 
