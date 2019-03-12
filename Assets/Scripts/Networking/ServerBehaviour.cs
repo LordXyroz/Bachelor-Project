@@ -17,6 +17,8 @@ using System.Collections.Generic;
 
 public class ServerBehaviour
 {
+    NetworkingManager nm;
+
     public UdpCNetworkDriver m_ServerDriver;
     public NativeList<NetworkConnection> m_connections;
     private JobHandle m_updateHandle;
@@ -138,8 +140,7 @@ public class ServerBehaviour
                 {
                     /// Translate data bytes to a ASCII string.
                     data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-
-                    NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
+                    
                     string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
                     byte[] msg = System.Text.Encoding.ASCII.GetBytes(serverName);
 
@@ -176,6 +177,7 @@ public class ServerBehaviour
     /// </summary>
     public ServerBehaviour()
     {
+        nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
         /// Set token for connections.
         cancellationTokenSource = new CancellationTokenSource();
         cancellationToken = cancellationTokenSource.Token;
@@ -205,7 +207,6 @@ public class ServerBehaviour
     public void SendChatMessage(string message)
     {
         /// Put message in textbox for chat:
-        NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
         nm.GetChatMessage(message);
 
         /// If any client has joined the lobby, the host will send the message to them:
@@ -306,7 +307,6 @@ public class ServerBehaviour
                     }
                     else if (data.Contains("<Connecting>"))
                     {
-                        NetworkingManager nm = GameObject.Find("GameManager").GetComponent<NetworkingManager>();
 
                         /// Add new client to list of players in lobby:
                         string name = data.Substring(0, data.Length - 12);
@@ -362,7 +362,7 @@ public class ServerBehaviour
                         m_ServerDriver.Send(m_connections[connectionNr], writer);
 
                         /// Update UI for host aswell:
-                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindSwapNames(name, clientName);
+                        nm.FindSwapNames(name, clientName);
                     }
                     else if (data.Contains("<AcceptSwap>"))
                     {
@@ -444,7 +444,7 @@ public class ServerBehaviour
                         }
                         
                         /// Send message to the chat field.
-                        GameObject.Find("GameManager").GetComponent<NetworkingManager>().GetChatMessage(data);
+                        nm.GetChatMessage(data);
 
                         /// Give the message received to the host aswell:
                         Debug.Log("Host has data: " + data);
@@ -468,7 +468,7 @@ public class ServerBehaviour
                     /// Remove client that disconnected from list of people who ARE indeed connected.
                     string name = connectionNames.Find(x => x.connectionNumber == i).name;
                     connectionNames.Remove(connectionNames.Find(x => x.name == name));
-                    GameObject.Find("GameManager").GetComponent<NetworkingManager>().FindPlayerForRemoval(name);
+                    nm.FindPlayerForRemoval(name);
 
                     Debug.Log("Server - Disconnecting client named " + name);
 
