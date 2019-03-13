@@ -15,7 +15,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-public class ServerBehaviour
+using MessagingInterfaces;
+
+public class ServerBehaviour : IConnection
 {
     NetworkingManager nm;
 
@@ -300,10 +302,16 @@ public class ServerBehaviour
 
                     /// Create a temporary DataStreamWriter to write back a receival message to the client:
                     var writer = new DataStreamWriter(1024, Allocator.Temp);
-                    if (data.Contains("<UpdateConnection>"))
+                    if (data.Contains("|"))
                     {
-                        writer.Write(Encoding.ASCII.GetBytes("Connection updated<UpdateConnection>"));
-                        m_ServerDriver.Send(m_connections[i], writer);
+                        var str = data.Split('|');
+                        var type = Type.GetType(str[1]);
+                        dynamic msg = JsonUtility.FromJson(str[0], type);
+
+                        MessagingManager.BroadcastMessage(msg, i);
+
+                        //writer.Write(Encoding.ASCII.GetBytes("Connection updated<UpdateConnection>"));
+                        //m_ServerDriver.Send(m_connections[i], writer);
                     }
                     else if (data.Contains("<Connecting>"))
                     {
@@ -515,5 +523,27 @@ public class ServerBehaviour
         GameObject.Find("Canvas").SetActive(false);
 
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
+    }
+
+    public void OnConnection(Message message, int index)
+    {
+        switch (message.messageType)
+        {
+            case MessageTypes.Network.Ping:
+                var msg = new Message("client", nm.userName, MessageTypes.Network.PingAck);
+                var str = JsonUtility.ToJson(msg);
+
+                str = str + "|" + msg.GetType();
+
+                var writer = new DataStreamWriter(256, Allocator.Temp);
+                
+                writer.Write(Encoding.ASCII.GetBytes(str));
+                m_ServerDriver.Send(m_connections[index], writer);
+
+                writer.Dispose();
+                break;
+        }
+
+        //throw new NotImplementedException();
     }
 }

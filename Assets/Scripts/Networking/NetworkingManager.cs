@@ -50,8 +50,8 @@ public class NetworkingManager : MonoBehaviour
     /// <summary>
     /// There are two different behaviours a player can have, hosting a game or joining a game someone else is hosting:
     /// </summary>
-    private ClientBehaviour cb;
-    private ServerBehaviour sb;
+    public ClientBehaviour cb;
+    public ServerBehaviour sb;
 
     public PlayerManager.PlayerType playerType;
 

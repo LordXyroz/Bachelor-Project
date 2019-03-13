@@ -27,6 +27,6 @@ public class Message
         senderName = sender;
         messageType = type;
 
-        playerType = Object.FindObjectOfType<PlayerManager>().GetPlayerType();
+        playerType = Object.FindObjectOfType<NetworkingManager>().playerType;
     }
 }

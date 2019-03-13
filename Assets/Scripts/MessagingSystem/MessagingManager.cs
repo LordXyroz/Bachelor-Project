@@ -15,7 +15,7 @@ public static class MessagingManager
     /// Calls the interface function for each receiver.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
-    public static void BroadcastMessage(Message message)
+    public static void BroadcastMessage(Message message, int index = -1)
     {
         switch (message.messageType)
         {
@@ -151,6 +151,18 @@ public static class MessagingManager
                     var objects = GameObject.FindObjectsOfType<MonoBehaviour>().OfType<ITargeting>();
                     foreach (var o in objects)
                         o.OnTargeting(message);
+                    break;
+                }
+
+            case MessageTypes.Network.Ping:
+                {
+                    var netManager = GameObject.FindObjectOfType<NetworkingManager>();
+
+                    if (netManager.cb != null)
+                        netManager.cb.OnConnection(message, index);
+                    else if (netManager.sb != null)
+                        netManager.sb.OnConnection(message, index);
+
                     break;
                 }
 

@@ -15,7 +15,9 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ClientBehaviour
+using MessagingInterfaces;
+
+public class ClientBehaviour : IConnection
 {
     private NetworkingManager nm;
 
@@ -519,11 +521,22 @@ public class ClientBehaviour
         if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid && m_clientWantsConnection == false && m_ClientDriver.IsCreated)
         {
             try
-            {
+            {/*
                 var updateWriter = new DataStreamWriter(32, Allocator.Temp);
                 /// Setting prefix for server to easily know what kind of msg is being written.
                 string message = "<UpdateConnection>";
                 updateWriter.Write(Encoding.ASCII.GetBytes(message));
+                m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
+                updateWriter.Dispose();
+                */
+                
+                var msg = new Message("Server", nm.userName, MessageTypes.Network.Ping);
+                var str = JsonUtility.ToJson(msg);
+
+                str = str + "|" + msg.GetType();
+
+                var updateWriter = new DataStreamWriter(256, Allocator.Temp);
+                updateWriter.Write(Encoding.ASCII.GetBytes(str));
                 m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
                 updateWriter.Dispose();
             }
@@ -713,6 +726,14 @@ public class ClientBehaviour
                 {
                     StartGame();
                 }
+                else if (data.Contains("|"))
+                {
+                    var str = data.Split('|');
+                    var type = Type.GetType(str[1]);
+                    dynamic msg = JsonUtility.FromJson(str[0], type);
+
+                    MessagingManager.BroadcastMessage(msg);
+                }
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
@@ -742,5 +763,16 @@ public class ClientBehaviour
         GameObject.Find("Canvas").SetActive(false);
 
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
+    }
+
+    public void OnConnection(Message message, int index)
+    {
+        switch (message.messageType)
+        {
+            case MessageTypes.Network.PingAck:
+                Debug.Log("Ping ack!");
+                break;
+        }
+        //throw new NotImplementedException();
     }
 }

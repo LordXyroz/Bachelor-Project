@@ -20,6 +20,11 @@
         void AttackResponse(SuccessMessage message);
     }
 
+    public interface IConnection
+    {
+        void OnConnection(Message message, int index);
+    }
+
     public interface IDefenseResponse
     {
         void DefenseResponse(SuccessMessage message);

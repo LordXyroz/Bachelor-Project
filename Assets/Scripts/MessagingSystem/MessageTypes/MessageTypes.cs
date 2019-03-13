@@ -33,6 +33,10 @@ namespace MessageTypes
     {
         private const ushort offset = 0x0100;
 
+        public const ushort Connect = offset + 1;
+        public const ushort Disconnect = offset + 2;
+        public const ushort Ping = offset + 3;
+        public const ushort PingAck = offset + 4;
 
     }
 
