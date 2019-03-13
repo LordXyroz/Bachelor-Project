@@ -313,22 +313,22 @@ public class ClientBehaviour
                 lobby.name = ServerEndPoint.GetIp();
 
                 lobby.GetComponent<Button>().onClick.AddListener(() => Connect(lobby.name));
-
-                break;
+                
             }
         }
         if (!ServerEndPoint.IsValid)
         {
             nm.StopConnecting();
             Debug.Log("Could not find a valid host");
+            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Found no hosts";
+        }
+        else
+        {
+            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Found host(s)";
         }
 
         nm.joinButton.SetActive(true);
         nm.stopJoinButton.SetActive(false);
-        
-        //TODO put thing below in function run to connect to specific host.
-
-        
     }
 
     public void Connect(string name)
@@ -518,12 +518,19 @@ public class ClientBehaviour
         /// Update clients connecion to the server:
         if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid && m_clientWantsConnection == false && m_ClientDriver.IsCreated)
         {
-            var updateWriter = new DataStreamWriter(32, Allocator.Temp);
-            // Setting prefix for server to easily know what kind of msg is being written.
-            string message = "<UpdateConnection>";
-            updateWriter.Write(Encoding.ASCII.GetBytes(message));
-            m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
-            updateWriter.Dispose();
+            try
+            {
+                var updateWriter = new DataStreamWriter(32, Allocator.Temp);
+                /// Setting prefix for server to easily know what kind of msg is being written.
+                string message = "<UpdateConnection>";
+                updateWriter.Write(Encoding.ASCII.GetBytes(message));
+                m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
+                updateWriter.Dispose();
+            }
+            catch(InvalidOperationException e)
+            {
+                Debug.Log("Could not update connection when not set yet: " + e);
+            }
         }
            
 

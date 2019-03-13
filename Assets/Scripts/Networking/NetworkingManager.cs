@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
@@ -24,6 +21,9 @@ public class NetworkingManager : MonoBehaviour
 {
     public string userName;
     
+    /// <summary>
+    /// Many different UI elements that are worked on througout the gameflow
+    /// </summary>
     public GameObject chatField;
     public GameObject connectionField;
     public GameObject gameField;
@@ -297,6 +297,7 @@ public class NetworkingManager : MonoBehaviour
         /// When player disconnects/exits game, the player may start over with different playerType.(Observer, defender/attacker)
         
         yield return new WaitForSeconds(0.01f);
+        lobbyScrollField.SetActive(true);
 
         if (playerType == PlayerManager.PlayerType.Observer)
         {
@@ -362,7 +363,6 @@ public class NetworkingManager : MonoBehaviour
                 /// Already no connection:
                 yield return null;
             }
-            lobbyScrollField.SetActive(true);
 
             Debug.Log("client disconnect");
 
@@ -765,7 +765,6 @@ public class NetworkingManager : MonoBehaviour
     {
         foreach (Transform child in lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform)
         {
-            Debug.Log("name: " + child.name);
             Destroy(child.gameObject);
         }
 
