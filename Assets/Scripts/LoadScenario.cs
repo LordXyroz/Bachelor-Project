@@ -76,8 +76,6 @@ public class LoadScenario : MonoBehaviour
                 existingSystemComponents[i].GetComponent<SystemComponent>().DeleteSystemComponent();
             }
             prefabNo = 0;
-            Debug.Log("Components in delete should be 0, are: " + dropZone.editableSystemComponents.Count);
-            Debug.Log("Connections in delete should be 0, are: " + selectedObject.connectionReferencesList.Count);
             ///////////////////////////////////////////////////////////////////////////////////////////
 
             string json = File.ReadAllText(filePath);
