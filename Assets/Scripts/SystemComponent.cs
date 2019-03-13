@@ -23,6 +23,7 @@ public class SystemComponent : MonoBehaviour
     public List<string> componentVulnerabilities = new List<string>();
     public string componentType;   // Must match the prefab name
     public string componentName;
+    public bool isEntryPoint;
     private TMP_Text displayedName;
 
     [Header("Reference line components")]
@@ -61,7 +62,6 @@ public class SystemComponent : MonoBehaviour
             componentName = componentType;
         }
     }
-
 
 
     /// <summary>

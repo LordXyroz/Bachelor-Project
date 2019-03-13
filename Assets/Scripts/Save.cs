@@ -9,6 +9,7 @@ public class Save
     public List<Vector3> systemComponentPositionsList = new List<Vector3>();
     public List<string> systemComponentTypesList = new List<string>();
     public List<int> systemComponentSecurityLevelsList = new List<int>();
+    public List<bool> isEntryPointList = new List<bool>();
     public List<VulnerabilityWrapper> systemComponentVulnerabilyWrappersList = new List<VulnerabilityWrapper>();
 
     [Header("Saved reference line data")]

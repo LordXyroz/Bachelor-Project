@@ -16,6 +16,7 @@ public class SystemComponentMenu : MonoBehaviour
     private Dropdown componentSecurityLevelDropdown;
     private List<int> availableSecurityLevels;
     private SelectedObject selectedObject;
+    private Toggle isEntryPointToggle;
 
     [Header("Linking to the vulnerabilities menu")]
     private Canvas canvas;
@@ -41,6 +42,21 @@ public class SystemComponentMenu : MonoBehaviour
         {
             DropdownValueChanged(componentSecurityLevelDropdown);
         });
+
+        isEntryPointToggle = canvas.GetComponentInChildren<SystemComponentMenu>().GetComponentInChildren<Toggle>(true);
+        if (isEntryPointToggle != null)
+        {
+            isEntryPointToggle.onValueChanged.AddListener(delegate
+            {
+                ToggleValueChanged(isEntryPointToggle);
+            });
+        }
+    }
+
+
+    private void ToggleValueChanged(Toggle entryPoint)
+    {
+        selectedObject.selected.gameObject.GetComponent<SystemComponent>().isEntryPoint = entryPoint.isOn;
     }
 
 
@@ -57,6 +73,9 @@ public class SystemComponentMenu : MonoBehaviour
             dropdown.ClearOptions();
         }
         dropdown.AddOptions(displayedSecurityLevels);
+
+        isEntryPointToggle = GetComponentInChildren<Toggle>(true);
+        isEntryPointToggle.isOn = selectedObject.selected.gameObject.transform.GetComponent<SystemComponent>().isEntryPoint;
     }
 
 

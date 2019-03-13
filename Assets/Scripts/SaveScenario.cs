@@ -87,6 +87,7 @@ public class SaveScenario : MonoBehaviour
                     save.systemComponentPositionsList.Add(target.transform.position);
                     save.systemComponentTypesList.Add(targetComponent.componentType);
                     save.systemComponentSecurityLevelsList.Add(targetComponent.securityLevel);
+                    save.isEntryPointList.Add(targetComponent.isEntryPoint);
 
                     foreach (string vulnerability in targetComponent.componentVulnerabilities)
                     {

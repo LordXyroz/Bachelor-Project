@@ -18,9 +18,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private SystemComponentMenu systemComponentMenu;
     private ReferenceLineMenu referenceLineMenu;
 
-
-    public GameObject APIPrefab;
-
     [Header("Positioning objects")]
     public Vector2 spawnPosition;
     private Vector2 offset;
@@ -81,7 +78,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         {
             Image systemComponentClone = (Image)Instantiate(systemComponentImage, parentToReturnTo);
             systemComponentClone.color = originalColor;
-            //InstantiateObject();
         }
 
         offset = (Vector2)this.transform.position - eventData.position;
@@ -103,7 +99,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         this.transform.SetParent(parentToReturnTo);
 
-
         /// Setting up the area for the drop zone, deleting objects dropped outside of the drop zone
         GameObject dropZone = GameObject.Find("SystemSetupScreen");
         RectTransform setupScreen = dropZone.GetComponent<RectTransform>();
@@ -115,10 +110,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         float objectHeight = this.GetComponent<RectTransform>().rect.height;
 
         /// Delete the object if it is placed outside of the editing screen field
-        if (objectPosition.x < width * 0.5f - objectWidth * 0.33f
-            || objectPosition.x > width * 1.5f - objectWidth * 1.3f
-            || objectPosition.y < height * 0.32f - objectHeight
-            || objectPosition.y > height + 10)
+        if (!eventData.pointerCurrentRaycast.gameObject.name.Equals("DropzoneBackgroundButton"))
         {
             if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
             {
@@ -126,22 +118,14 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             }
             else
             {
-                Debug.Log("DraggableObject dropped outside delete field: " + this.gameObject.name);
+                Debug.Log("DraggableObject dropped outside edit field: " + this.gameObject.name);
                 objectSelect.DeleteSelectedObject();
             }
         }
     }
 
-    //public void InstantiateObject()
-    //{
-    //    GameObject systemComponentClone = (GameObject)Instantiate(APIPrefab,
-    //                                                                spawnPosition,
-    //                                                                Quaternion.identity,
-    //                                                                dropZone.transform);
-    //
-    //
-    //    //Image systemComponentClone = (Image)Instantiate(systemComponentImage, parentToReturnTo);
-    //    //systemComponentClone.transform.position = (new Vector2(50, 600));
-    //    //systemComponentClone.Imagecolor = originalColor;
-    //}
+    void OnBecameInvisible()
+    {
+        objectSelect.DeleteSelectedObject();
+    }
 }

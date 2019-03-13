@@ -101,6 +101,7 @@ public class LoadScenario : MonoBehaviour
                 LoadObject(loadFromJSON.systemComponentTypesList[i]);
                 SystemComponent targetComponent = target.GetComponent<SystemComponent>();
                 targetComponent.componentType = loadFromJSON.systemComponentTypesList[i];
+                targetComponent.isEntryPoint = loadFromJSON.isEntryPointList[i];
 
                 targetComponent.securityLevel = loadFromJSON.systemComponentSecurityLevelsList[i];
                 targetComponent.componentName = loadFromJSON.systemComponentNamesList[i];
@@ -232,5 +233,15 @@ public class LoadScenario : MonoBehaviour
     {
         pos = new Vector2(300, 650);
         InstantiateObject(WebsitePrefab);
+    }
+
+
+    /// <summary>
+    /// Need separate function for each prefab type in order to link the functions to separate buttons
+    /// </summary>
+    public void InstantiateDefaultButton()
+    {
+        pos = new Vector2(300, 650);
+        InstantiateObject(DefaultPrefab);
     }
 }

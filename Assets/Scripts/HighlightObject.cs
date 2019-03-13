@@ -65,7 +65,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             image.color = Color.red;
             systemComponent = this.gameObject.GetComponent<SystemComponent>();
-            informationColumn.PopulateInformationColumn(systemComponent.componentType, systemComponent.componentVulnerabilities, systemComponent.securityLevel);
+            informationColumn.PopulateInformationColumn(systemComponent.componentType, systemComponent.componentVulnerabilities, systemComponent.securityLevel, systemComponent.isEntryPoint);
         }
         else
         {
