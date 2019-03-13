@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ClientBehaviour : IConnection
+public class ClientBehaviour : IPing, IConnection
 {
     private NetworkingManager nm;
 
@@ -100,6 +100,7 @@ public class ClientBehaviour : IConnection
         {
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
+                Debug.Log("My ip: " + ip.ToString());
                 return ip.ToString();
             }
         }
@@ -111,9 +112,11 @@ public class ClientBehaviour : IConnection
     /// Tries to connect to a computer with the ip given as parameter. If possible, global variable 'ServerEndPoint' will be set.
     /// </summary>
     /// <param name="ip"></param>
-    public void FindHost(string ip)
+    public void FindHost(string ip, out string serverName)
     {
         string message = "Connecting";
+        serverName = "";
+
         try
         {
             if (cancellationToken.IsCancellationRequested)
@@ -140,14 +143,28 @@ public class ClientBehaviour : IConnection
             String responseData = String.Empty;
 
             // Read the first batch of the TcpServer response bytes.
-            Int32 bytes = stream.Read(data, 0, data.Length);
-            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-            ServerName = responseData;
+            while (true)
+            {
+                if (client.Available > 0)
+                {
 
+                    Int32 bytes = stream.Read(data, 0, data.Length);
+                    responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+                    responseData = responseData.Trim();
+                    if (responseData != "")
+                        break;
+                }
+            }
+
+            Debug.Log("Response data: " + responseData);
+
+            ServerName = responseData;
+            serverName = responseData;
+
+            ServerEndPoint = new IPEndPoint(IPAddress.Parse(ip), 9000);
             // Close everything.
             stream.Close();
             client.Close();
-            ServerEndPoint = new IPEndPoint(IPAddress.Parse(ip), 9000);
         }
         catch (ArgumentNullException e)
         {
@@ -156,7 +173,7 @@ public class ClientBehaviour : IConnection
         catch (SocketException e)
         {
             /// Client will get socket exception when trying to ask other computers if they are hosting or not, and they don't answer yes.
-            /// Debug.Log("SocketException:" + e);
+            Debug.Log("\nSocketException for ip: " + ip + "\n\nException msg: " + e);
         }
         catch (OperationCanceledException e)
         {
@@ -276,11 +293,15 @@ public class ClientBehaviour : IConnection
 
         /// Setup ips for connections.
         List<string> ips = FindIPs();
-        setupHostIp = Task.Factory.StartNew(() => FindHost(ips[0]), cancellationToken);
+        var serverName = "";
+
+        //setupHostIp = Task.Factory.StartNew(() => FindHost(ips[0], out serverName), cancellationToken);
 
         /// Go through possible ips.
         for (int i = 0; i < ips.Count; i++)
         {
+            Debug.Log("Checking ip: " + ips[i]);
+
             /// Stop connecting if user wants to.
             if (cancellationToken.IsCancellationRequested || cancellationTokenSource.IsCancellationRequested || cancellationTokenSource == null)
             {
@@ -299,25 +320,31 @@ public class ClientBehaviour : IConnection
             cancellationToken = cancellationTokenSource.Token;
 
             /// Get IP of host that wants to serve a match
-            setupHostIp.ContinueWith((t) => FindHost(ips[i]), cancellationToken);
+            //setupHostIp.ContinueWith((t) => FindHost(ips[i], out serverName), cancellationToken);
+
+            setupHostIp = Task.Factory.StartNew(() => FindHost(ips[i], out serverName), cancellationToken);
+
             //setupHostIp.Wait();
             yield return new WaitForSeconds(0.25f);
 
             if (ServerEndPoint.IsValid)
             {
+                GameObject lobby = MonoBehaviour.Instantiate(nm.lobbyButton, nm.lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform);
+                lobby.GetComponent<Button>().transform.Find("Text").GetComponent<Text>().text = serverName;
+                lobby.name = ServerEndPoint.GetIp();
+
+                lobby.GetComponent<Button>().onClick.AddListener(() => Connect(lobby.name));
+                
                 /// Cancel task.
                 if (!setupHostIp.IsCompleted && !setupHostIp.IsCanceled)
                 {
                     cancellationTokenSource.Cancel();
                 }
-                GameObject lobby = MonoBehaviour.Instantiate(nm.lobbyButton, nm.lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform);
-                lobby.GetComponent<Button>().transform.Find("Text").GetComponent<Text>().text = ServerName;
-                lobby.name = ServerEndPoint.GetIp();
-
-                lobby.GetComponent<Button>().onClick.AddListener(() => Connect(lobby.name));
-                
             }
         }
+
+        yield return new WaitForSeconds(0.5f);
+
         if (!ServerEndPoint.IsValid)
         {
             nm.StopConnecting();
@@ -552,7 +579,7 @@ public class ClientBehaviour : IConnection
         while ((cmd = m_clientToServerConnection.PopEvent(m_ClientDriver, out DataStreamReader strm)) != NetworkEvent.Type.Empty)
         {
             if (cmd == NetworkEvent.Type.Connect)
-            {
+            {/*
                 // Create a 4 byte data stream which we can store our ping sequence number in
                 var connectionWriter = new DataStreamWriter(100, Allocator.Temp);
                 string name = nm.userName;
@@ -560,7 +587,17 @@ public class ClientBehaviour : IConnection
                 connectionWriter.Write(msg);
                 m_clientToServerConnection.Send(m_ClientDriver, connectionWriter);
 
-                connectionWriter.Dispose();
+                connectionWriter.Dispose();*/
+
+                var msg = new ConnectMessage("Server", nm.userName, MessageTypes.Network.Connect, "", "", "");
+                var str = JsonUtility.ToJson(msg);
+                str = str + "|" + msg.GetType();
+
+                var writer = new DataStreamWriter(256, Allocator.Temp);
+                writer.Write(Encoding.ASCII.GetBytes(str));
+                m_clientToServerConnection.Send(m_ClientDriver, writer);
+                writer.Dispose();
+
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
@@ -765,7 +802,7 @@ public class ClientBehaviour : IConnection
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 
-    public void OnConnection(Message message, int index)
+    public void OnPing(Message message, int index)
     {
         switch (message.messageType)
         {
@@ -773,6 +810,28 @@ public class ClientBehaviour : IConnection
                 Debug.Log("Ping ack!");
                 break;
         }
+        //throw new NotImplementedException();
+    }
+
+    public void OnConnection(ConnectMessage message, int index)
+    {
+        nm.hostText.GetComponent<Text>().text = message.senderName;
+
+        if (message.attackerName != "")
+        {
+            nm.attackerNames[0].SetActive(true);
+            nm.attackerNames[0].transform.Find("Text").GetComponent<Text>().text = message.attackerName;
+        }
+        
+        if (message.defenderName != "")
+        {
+            nm.defenderNames[0].SetActive(true);
+            nm.defenderNames[0].transform.Find("Text").GetComponent<Text>().text = message.defenderName;
+        }
+
+        nm.playerType = nm.FindPlayerType();
+        Debug.Log("OnConnection - You are connected to server!");
+
         //throw new NotImplementedException();
     }
 }

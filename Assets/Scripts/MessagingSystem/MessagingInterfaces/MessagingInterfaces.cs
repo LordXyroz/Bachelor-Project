@@ -22,7 +22,7 @@
 
     public interface IConnection
     {
-        void OnConnection(Message message, int index);
+        void OnConnection(ConnectMessage message, int index);
     }
 
     public interface IDefenseResponse
@@ -48,6 +48,11 @@
     public interface ILogging
     {
         void OnLog(LoggingMessage message);
+    }
+
+    public interface IPing
+    {
+        void OnPing(Message message, int index);
     }
 
     public interface IProbe

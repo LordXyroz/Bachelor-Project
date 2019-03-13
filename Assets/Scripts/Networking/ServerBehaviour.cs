@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ServerBehaviour : IConnection
+public class ServerBehaviour : IPing, IConnection
 {
     NetworkingManager nm;
 
@@ -93,7 +93,7 @@ public class ServerBehaviour : IConnection
                     localAddr = ipHostInfo.AddressList[i];
                 }
             }
-
+            
             /// TcpListener server = new TcpListener(port);
             server = new TcpListener(localAddr, port);
 
@@ -140,17 +140,14 @@ public class ServerBehaviour : IConnection
                 /// Loop to receive all the data sent by the client.
                 while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
-                    /// Translate data bytes to a ASCII string.
-                    data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-                    
                     string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
-                    byte[] msg = System.Text.Encoding.ASCII.GetBytes(serverName);
+                    Debug.Log(serverName);
+                    byte[] msg = Encoding.ASCII.GetBytes(serverName);
 
                     /// Send back a response.
                     stream.Write(msg, 0, msg.Length);
                 }
-               
-                Thread.Sleep(80);
+
                 /// Shutdown and end connection
                 client.Close();
             }
@@ -159,7 +156,7 @@ public class ServerBehaviour : IConnection
         catch (SocketException e)
         {
             /// When host wants to close connection there will be sent a block call to WSACancelBlockingCall causing an wanted exception. Debug for testing.
-            /// Debug.Log("SocketException: " + e);
+            Debug.Log("SocketException: " + e);
         }
         catch (OperationCanceledException e)
         {
@@ -525,7 +522,7 @@ public class ServerBehaviour : IConnection
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 
-    public void OnConnection(Message message, int index)
+    public void OnPing(Message message, int index)
     {
         switch (message.messageType)
         {
@@ -543,6 +540,33 @@ public class ServerBehaviour : IConnection
                 writer.Dispose();
                 break;
         }
+
+        //throw new NotImplementedException();
+    }
+
+    public void OnConnection(ConnectMessage message, int index)
+    {
+        string name = message.senderName;
+        nm.AddPlayerName(name);
+
+        connectionNames.Add((name, index));
+
+        Debug.Log("OnConnection - Connecting client with name: " + name + " , nr of clients: " + m_connections.Length);
+        Debug.Log("OnConnection - connectionnames lenght: " + connectionNames.Count);
+
+        var attackName = nm.attackerNames[0].transform.Find("Text").GetComponent<Text>().text;
+        var defendName = nm.defenderNames[0].transform.Find("Text").GetComponent<Text>().text;
+        var hostName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
+
+        var msg = new ConnectMessage(name, hostName, MessageTypes.Network.ConnectAck, nm.userName, attackName, defendName);
+        var str = JsonUtility.ToJson(msg);
+        str = str + "|" + msg.GetType();
+
+        var writer = new DataStreamWriter(512, Allocator.Temp);
+        writer.Write(Encoding.ASCII.GetBytes(str));
+
+        for (int i = 0; i < m_connections.Length; i++)
+            m_ServerDriver.Send(m_connections[i], writer);
 
         //throw new NotImplementedException();
     }

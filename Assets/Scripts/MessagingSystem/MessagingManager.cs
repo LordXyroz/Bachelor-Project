@@ -154,14 +154,38 @@ public static class MessagingManager
                     break;
                 }
 
+            case MessageTypes.Network.Connect:
+                {
+                    var netManager = GameObject.FindObjectOfType<NetworkingManager>();
+
+                    if (netManager.cb != null)
+                        netManager.cb.OnConnection((ConnectMessage) message, index);
+                    else if (netManager.sb != null)
+                        netManager.sb.OnConnection((ConnectMessage) message, index);
+
+                    break;
+                }
+
+            case MessageTypes.Network.ConnectAck:
+                {
+                    var netManager = GameObject.FindObjectOfType<NetworkingManager>();
+
+                    if (netManager.cb != null)
+                        netManager.cb.OnConnection((ConnectMessage)message, index);
+                    else if (netManager.sb != null)
+                        netManager.sb.OnConnection((ConnectMessage)message, index);
+
+                    break;
+                }
+
             case MessageTypes.Network.Ping:
                 {
                     var netManager = GameObject.FindObjectOfType<NetworkingManager>();
 
                     if (netManager.cb != null)
-                        netManager.cb.OnConnection(message, index);
+                        netManager.cb.OnPing(message, index);
                     else if (netManager.sb != null)
-                        netManager.sb.OnConnection(message, index);
+                        netManager.sb.OnPing(message, index);
 
                     break;
                 }
