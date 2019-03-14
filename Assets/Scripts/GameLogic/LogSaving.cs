@@ -169,11 +169,11 @@ public static class LogSaving
     {
         Save((Message) message);
 
-        if (message.targetName == "Attacker" || message.senderName == "Attacker")
+        if (message.messageType == MessageTypes.Game.AttackResponse)
         {
             attackerWriter.WriteLine("\tSuccess: " + message.success);
         }
-        else if (message.targetName == "Defender" || message.senderName == "Defender")
+        else if (message.messageType == MessageTypes.Game.DefenseResponse)
         {
             defenderWriter.WriteLine("\tSuccess: " + message.success);
         }

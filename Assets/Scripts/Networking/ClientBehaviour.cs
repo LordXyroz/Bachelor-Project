@@ -475,14 +475,15 @@ public class ClientBehaviour : IPing, IConnection
     {
         if (m_clientToServerConnection.IsCreated)
         {
-            string messageObj = JsonUtility.ToJson(msg) + "|" + msg.GetType();
-            Debug.Log("----LOG----: " + messageObj);
-            var classWriter = new DataStreamWriter(messageObj.Length + 2, Allocator.Temp);
-            
-            byte[] message = Encoding.ASCII.GetBytes(messageObj);
-            classWriter.Write(message);
-            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
-            classWriter.Dispose();
+            var str = JsonUtility.ToJson(msg);
+            str = str + "|" + msg.GetType();
+
+            Debug.Log("----LOG----: " + str);
+            var writer = new DataStreamWriter(1024, Allocator.Temp);
+
+            writer.Write(Encoding.ASCII.GetBytes(str));
+            m_ClientDriver.Send(m_clientToServerConnection, writer);
+            writer.Dispose();
         }
     }
     
