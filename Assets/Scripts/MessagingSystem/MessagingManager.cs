@@ -238,6 +238,16 @@ public static class MessagingManager
                     break;
                 }
 
+            case MessageTypes.Network.Swap:
+                {
+                    if (_NetworkingManager.cb != null)
+                        _NetworkingManager.cb.OnSwap((SwapMessage) message);
+                    else if (_NetworkingManager.sb != null)
+                        _NetworkingManager.sb.OnSwap((SwapMessage) message);
+                    
+                    break;
+                }
+
             default:
                 string msg = "Unimplemented event sent!";
                 BroadcastMessage(new LoggingMessage("", message.senderName, MessageTypes.Logging.Error, msg));

@@ -70,6 +70,11 @@
         void OnProbeResponse(ProbeResponseMessage message);
     }
 
+    public interface ISwap
+    {
+        void OnSwap(SwapMessage message);
+    }
+
     public interface ITargeting
     {
         void OnTargeting(Message message);

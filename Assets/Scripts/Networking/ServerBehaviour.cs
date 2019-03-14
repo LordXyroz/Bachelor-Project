@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ServerBehaviour : IPing, IConnection, IChatMessage
+public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
 {
     NetworkingManager nm;
 
@@ -198,36 +198,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage
     }
     
     /// <summary>
-    /// When in lobby view this function will put message wanted to be sent in messageField, and send it to all connected clients.
-    /// </summary>
-    /// <param name="message"></param>
-    public void SendChatMessage(string message)
-    {
-        /// Put message in textbox for chat:
-        nm.GetChatMessage(message);
-
-        /// If any client has joined the lobby, the host will send the message to them:
-        if (m_connections.IsCreated)
-        {
-            var msg = new ChatMessage("Server", nm.userName, MessageTypes.Network.Chat, message);
-
-            var str = JsonUtility.ToJson(msg);
-            str = str + "|" + msg.GetType();
-
-            var writer = new DataStreamWriter(512, Allocator.Temp);
-            writer.Write(Encoding.ASCII.GetBytes(str));
-
-            /// Go through all joined clients:
-            for (int i = 0; i < m_connections.Length; i++)
-            {
-                m_ServerDriver.Send(m_connections[i], writer);
-            }
-
-            writer.Dispose();
-        }
-    }
-
-    /// <summary>
     /// Moves every text in chatField one step up for the new message to be put at bottom.
     /// </summary>
     void MoveChatBox()
@@ -326,72 +296,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage
 
                         MessagingManager.BroadcastMessage((Message) msg, i);
                     }
-                    else if (data.Contains("<SwapAccepted>"))
-                    {
-                        /// Is run when client got message about other client accepted and will send back that swap has been completed.
-                        Debug.Log("Server - Swap accepted");
-
-                        /// Name of client sending to:
-                        string name = data.Substring(0, data.IndexOf("<SwapAccepted>"));
-
-                        /// Name of client message is from:
-                        string clientName = connectionNames.Where(x => x.connectionNumber == i).First().name;
-
-                        /// Send message to other client about accepting swap:
-                        writer.Write(Encoding.ASCII.GetBytes(clientName + "<SwapAccepted>"));
-
-                        /// Get connectionNr for sending message:
-                        int connectionNr = connectionNames.Where(x => x.name == name).First().connectionNumber;
-                        m_ServerDriver.Send(m_connections[connectionNr], writer);
-
-                        /// Update UI for host aswell:
-                        nm.FindSwapNames(name, clientName);
-                    }
-                    else if (data.Contains("<AcceptSwap>"))
-                    {
-                        /// Is run when one client accepts a swap.
-                        
-                        /// Name of client sending to:
-                        string name = data.Substring(0, data.IndexOf("<AcceptSwap>"));
-
-                        /// Name of client message is from:
-                        string clientName = connectionNames.Where(x => x.connectionNumber == i).First().name;
-
-                        /// Send message to other client about accepting swap:
-                        writer.Write(Encoding.ASCII.GetBytes(clientName + "<AcceptSwap>"));
-
-                        /// Get connectionNr for sending message:
-                        int connectionNr = connectionNames.Where(x => x.name == name).First().connectionNumber;
-                        m_ServerDriver.Send(m_connections[connectionNr], writer);
-                    }
-                    else if (data.Contains("<DeclineSwap>"))
-                    {
-                        /// Name of client to send message to:
-                        string name = data.Substring(0, data.IndexOf("<DeclineSwap>"));
-                        
-                        /// Send message to client about declining swap:
-                        writer.Write(Encoding.ASCII.GetBytes("<DeclineSwap>"));
-
-                        /// Get connectionNr for sending message:
-                        int connectionNr = connectionNames.Where(x => x.name == name).First().connectionNumber;
-                        m_ServerDriver.Send(m_connections[connectionNr], writer);
-
-                    }
-                    else if (data.Contains("<SwapMessage>"))
-                    {
-                        Debug.Log("server - got message about a swap");
-                        
-                        string nameTo = data.Substring(0, data.IndexOf("<Name>"));
-                        string nameFrom = data.Substring(data.IndexOf("<Name>") + 6, data.IndexOf("<SwapMessage>"));
-
-                        /// Send message to client about other client wanting to swap position.
-                        writer.Write(Encoding.ASCII.GetBytes(nameFrom + "<SwapMessage>"));
-
-                        /// Get connectionNr for sending message:
-                        int connectionNr = connectionNames.Where(x => x.name == nameTo).First().connectionNumber;
-                        m_ServerDriver.Send(m_connections[connectionNr], writer);
-                        
-                    }
                     else if (data.Contains("<Scenario>"))
                     {
                         /// Send scenario wanted by the host to all clients:
@@ -474,6 +378,19 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage
         writer.Dispose();
     }
 
+    public void BroadcastMessage(dynamic message, int index)
+    {
+        var str = JsonUtility.ToJson(message);
+        str = str + "|" + message.GetType();
+
+        var writer = new DataStreamWriter(1024, Allocator.Temp);
+        writer.Write(Encoding.ASCII.GetBytes(str));
+        
+        m_ServerDriver.Send(m_connections[index], writer);
+
+        writer.Dispose();
+    }
+
     public void OnPing(Message message, int index)
     {
         var msg = new Message("client", nm.userName, MessageTypes.Network.PingAck);
@@ -496,42 +413,29 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage
 
         connectionNames.Add((name, index));
 
-        Debug.Log("OnConnection - Connecting client with name: " + name + " , nr of clients: " + m_connections.Length);
-        Debug.Log("OnConnection - connectionnames lenght: " + connectionNames.Count);
-
         var attackName = nm.attackerNames[0].transform.Find("Text").GetComponent<Text>().text;
         var defendName = nm.defenderNames[0].transform.Find("Text").GetComponent<Text>().text;
         var hostName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
 
         var msg = new ConnectMessage(name, hostName, MessageTypes.Network.ConnectAck, nm.userName, attackName, defendName);
-        var str = JsonUtility.ToJson(msg);
-        str = str + "|" + msg.GetType();
-
-        var writer = new DataStreamWriter(512, Allocator.Temp);
-        writer.Write(Encoding.ASCII.GetBytes(str));
-
-        for (int i = 0; i < m_connections.Length; i++)
-            m_ServerDriver.Send(m_connections[i], writer);
-
-        writer.Dispose();
+        BroadcastMessage(msg);
     }
 
     public void OnChatMessage(ChatMessage message)
     {
         nm.GetChatMessage(message.message);
+        BroadcastMessage(message);
+    }
 
-        var str = JsonUtility.ToJson(message);
-        str = str + "|" + message.GetType();
+    public void OnSwap(SwapMessage message)
+    {
+        string target = message.targetName;
+        string sender = message.senderName;
 
-        var writer = new DataStreamWriter(512, Allocator.Temp);
-        writer.Write(Encoding.ASCII.GetBytes(str));
-        
-        /// Send a message received to all clients:
-        for (int j = 0; j < m_connections.Length; j++)
-        {
-            m_ServerDriver.Send(m_connections[j], writer);
-        }
+        int connectionNo = connectionNames.Where(x => x.name == target).First().connectionNumber;
+        BroadcastMessage(message, connectionNo);
 
-        writer.Dispose();
+        if (message.swapMsg == ClientBehaviour.SwapMsgType.Acknowledge)
+            nm.FindSwapNames(sender, target);
     }
 }

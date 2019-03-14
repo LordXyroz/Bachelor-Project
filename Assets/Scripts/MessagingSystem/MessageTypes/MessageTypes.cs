@@ -38,13 +38,14 @@ namespace MessageTypes
 
         public const ushort Disconnect = offset + 3;
         public const ushort DisconnectAck = offset + 4;
+        public const ushort ClientDisconnect = offset + 5;
 
-        public const ushort Ping = offset + 5;
-        public const ushort PingAck = offset + 6;
+        public const ushort Ping = offset + 6;
+        public const ushort PingAck = offset + 7;
 
-        public const ushort Chat = offset + 7;
+        public const ushort Chat = offset + 8;
 
-        public const ushort Swap = offset + 8;
+        public const ushort Swap = offset + 9;
 
     }
 

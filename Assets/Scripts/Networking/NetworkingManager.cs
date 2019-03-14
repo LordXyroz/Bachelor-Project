@@ -433,7 +433,7 @@ public class NetworkingManager : MonoBehaviour
         string clientName = EventSystem.current.currentSelectedGameObject.transform.Find("Text").GetComponent<Text>().text;
 
         /// Send message to other client about wanting to swap.
-        cb.SendSwapMessage((clientName + "<Name>" + userName));
+        cb.SendSwapMessage(clientName);
 
         /// Start the loading bar countdown.
         StartCoroutine(StartSwapLoadBar(clientName, true));
@@ -729,14 +729,15 @@ public class NetworkingManager : MonoBehaviour
         {
             if (cb != null)
             {
-                cb.SendChatMessage(msg);
+                cb.SendMessage(new ChatMessage("Server", userName, MessageTypes.Network.Chat, msg));
             }
         }
         else
         {
             if (sb != null)
             {
-                sb.SendChatMessage(msg);
+                GetChatMessage(msg);
+                sb.BroadcastMessage(new ChatMessage("Client", userName, MessageTypes.Network.Chat, msg));
             }
         }
     }

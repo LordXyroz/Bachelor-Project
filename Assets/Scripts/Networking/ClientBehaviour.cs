@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ClientBehaviour : IPing, IConnection, IChatMessage
+public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap
 {
     private NetworkingManager nm;
 
@@ -95,6 +95,14 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage
         Null,
         Waiting,
         Accepted
+    }
+
+    public enum SwapMsgType
+    {
+        Request,
+        Accept,
+        Decline,
+        Acknowledge
     }
 
     public SwapInfo GetSwapInfo()
@@ -218,10 +226,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage
     /// <param name="messageTexts"></param>
     public void Disconnect()
     {
-
         Debug.Log("Disconnecting");
-
-
+        
         // Disconnect client from host:
         m_clientToServerConnection.Disconnect(m_ClientDriver);
         ServerEndPoint = default;
@@ -415,17 +421,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage
     public void AcceptSwap(string name)
     {
         swapInfo = SwapInfo.Accepted;
-        if (m_clientToServerConnection.IsCreated)
-        {
-            string msg = name + "<AcceptSwap>";
-            var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
 
-            // Setting prefix for server to easily know what kind of msg is being written.
-            byte[] message = Encoding.ASCII.GetBytes(msg);
-            classWriter.Write(message);
-            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
-            classWriter.Dispose();
-        }
+        SendMessage(new SwapMessage(name, nm.userName, MessageTypes.Network.Swap, SwapMsgType.Accept));
     }
 
     /// <summary>
@@ -434,37 +431,18 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage
     public void DeclineSwap(string name)
     {
         swapInfo = SwapInfo.Null;
-        if (m_clientToServerConnection.IsCreated)
-        {
-            string msg = name + "<DeclineSwap>";
-            var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
 
-            // Setting prefix for server to easily know what kind of msg is being written.
-            byte[] message = Encoding.ASCII.GetBytes(msg);
-            classWriter.Write(message);
-            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
-            classWriter.Dispose();
-        }
+        SendMessage(new SwapMessage(name, nm.userName, MessageTypes.Network.Swap, SwapMsgType.Decline));
     }
     
     /// <summary>
     /// Sends message to client with to and from names within message.
     /// </summary>
-    public void SendSwapMessage(string msg)
+    public void SendSwapMessage(string target)
     {
         swapInfo = SwapInfo.Waiting;
-        Debug.Log("sending swap message");
-        if (m_clientToServerConnection.IsCreated)
-        {
-            // Setting prefix for server to easily know what kind of msg is being written.
-            msg += "<SwapMessage>";
-            var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
 
-            byte[] message = Encoding.ASCII.GetBytes(msg);
-            classWriter.Write(message);
-            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
-            classWriter.Dispose();
-        }
+        SendMessage(new SwapMessage(target, nm.userName, MessageTypes.Network.Swap, SwapMsgType.Request));
     }
 
     /// <summary>
@@ -482,28 +460,6 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage
 
             writer.Write(Encoding.ASCII.GetBytes(str));
             m_ClientDriver.Send(m_clientToServerConnection, writer);
-            writer.Dispose();
-        }
-    }
-    
-    /// <summary>
-    /// SendChatMessage is used to send chat messages through the network.
-    /// </summary>
-    /// <param name="message"></param>
-    public void SendChatMessage(string message)
-    {
-        if (m_clientToServerConnection.IsCreated)
-        {
-            var msg = new ChatMessage("Server", nm.userName, MessageTypes.Network.Chat, message);
-
-            var str = JsonUtility.ToJson(msg);
-            str = str + "|" + msg.GetType();
-
-            var writer = new DataStreamWriter(512, Allocator.Temp);
-            writer.Write(Encoding.ASCII.GetBytes(str));
-
-            m_ClientDriver.Send(m_clientToServerConnection, writer);
-
             writer.Dispose();
         }
     }
@@ -596,82 +552,11 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage
                 /// Read message sent from client and respond to that:
                 byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
                 string data = Encoding.ASCII.GetString(bytes);
-
-                if (data.Contains("<DeclineSwap>"))
-                {
-                    nm.DestroySwap();
-                    swapInfo = SwapInfo.Null;
-                }
-                else if (data.Contains("<AcceptSwap>"))
-                {
-                    /// If first client has not declined while second client accepted, start the swapping.
-                    if (swapInfo == SwapInfo.Waiting)
-                    {
-                        /// Send message to client nr.2 to do the swap.
-                        string fromName = data.Substring(0, data.IndexOf("<AcceptSwap>"));
-                        string msg = fromName + "<SwapAccepted>";
-                        var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
-
-                        byte[] message = Encoding.ASCII.GetBytes(msg);
-                        classWriter.Write(message);
-                        m_ClientDriver.Send(m_clientToServerConnection, classWriter);
-                        classWriter.Dispose();
-
-                        swapInfo = SwapInfo.Null;
-                        /// Swap the two clients on client nr.1's screen.
-                        string toName = nm.userName;
-                        nm.FindSwapNames(fromName, toName);
-
-                        nm.DestroySwap();
-                    }
-                    else
-                    {
-                        /// Just to be sure.
-                        swapInfo = SwapInfo.Null;
-
-                        /// Client has most likely declined, so send decline message back:
-                        string name = data.Substring(0, data.IndexOf("<AcceptSwap>"));
-                        string msg = name + "<DeclineSwap>";
-                        var classWriter = new DataStreamWriter(msg.Length + 2, Allocator.Temp);
-
-                        byte[] message = Encoding.ASCII.GetBytes(msg);
-                        classWriter.Write(message);
-                        m_ClientDriver.Send(m_clientToServerConnection, classWriter);
-                        classWriter.Dispose();
-                    }
-                }
-                else if (data.Contains("<SwapAccepted>"))
-                {
-                    Debug.Log("swapAccepted");
-                    /// Should not really be neccessary, since this is run when client has already accepted. But nice to have :)
-                    if (swapInfo == SwapInfo.Accepted)
-                    {
-                        swapInfo = SwapInfo.Null;
-                        /// Swap the two clients on client nr.2's screen.
-                        string fromName = data.Substring(0, data.IndexOf("<SwapAccepted>"));
-                        string toName = nm.userName;
-                        nm.FindSwapNames(fromName, toName);
-
-                        /// Finish up the swap:
-                        nm.DestroySwap();
-                        swapInfo = SwapInfo.Null;
-                    }
-                }
-                else if (data.Contains("<SwapMessage>"))
-                {
-                    /// Start swap loading screen for client with name given from client that wants to swap.
-                    string name = data.Substring(0, data.IndexOf("<SwapMessage>"));
-                    monoBehaviour.StartCoroutine(nm.StartSwapLoadBar(name, false));
-                }
-                else if (data.Contains("<Scenario>"))
+                
+                if (data.Contains("<Scenario>"))
                 {
                     data = data.Substring(0, data.Length - 10);
                     Debug.Log("Client - got scenario: " + data);
-                }
-                else if (data.Contains("<ClientConnect>"))///don't need this anymore? TODO
-                {
-                    /// Add new client connected to list of players in lobby:
-                    nm.AddPlayerName(data.Substring(0, data.IndexOf("<ClientConnect>")));
                 }
                 else if (data.Contains("<ClientDisconnect>"))
                 {
@@ -759,12 +644,50 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage
 
         nm.playerType = nm.FindPlayerType();
         Debug.Log("OnConnection - You are connected to server!");
-
-        //throw new NotImplementedException();
     }
 
     public void OnChatMessage(ChatMessage message)
     {
         nm.GetChatMessage(message.message);
+    }
+
+    public void OnSwap(SwapMessage message)
+    {
+        if (message.swapMsg == SwapMsgType.Request)
+        {
+            /// Start swap loading screen for client with name given from client that wants to swap.
+            string name = message.senderName;
+            nm.StartCoroutine(nm.StartSwapLoadBar(name, false));
+        }
+        else if (message.swapMsg == SwapMsgType.Accept)
+        {
+            /// If first client has not declined while second client accepted, start the swapping.
+            if (swapInfo == SwapInfo.Waiting)
+            {
+                SendMessage(new SwapMessage(message.senderName, message.targetName, MessageTypes.Network.Swap, SwapMsgType.Acknowledge));
+
+                swapInfo = SwapInfo.Null;
+                nm.FindSwapNames(message.senderName, message.targetName);
+                nm.DestroySwap();
+            }
+            else
+            {
+                swapInfo = SwapInfo.Null;
+                SendMessage(new SwapMessage(message.senderName, message.targetName, MessageTypes.Network.Swap, SwapMsgType.Decline));
+            }
+        }
+        else if (message.swapMsg == SwapMsgType.Decline)
+        {
+            swapInfo = SwapInfo.Null;
+            nm.DestroySwap();
+        }
+        else
+        {
+            nm.FindSwapNames(message.senderName, message.targetName);
+
+            /// Finish up the swap:
+            nm.DestroySwap();
+            swapInfo = SwapInfo.Null;
+        }
     }
 }
