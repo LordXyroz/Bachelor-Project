@@ -319,6 +319,9 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
 
                     Debug.Log("Server - Disconnecting client named " + name);
 
+                    BroadcastMessage2(new DiscClientMessage("Client", nm.userName, MessageTypes.Network.ClientDisconnect, name), i);
+
+                    /*
                     /// Create writer to send message to other clients that client with connection i is disconnecting.
                     var writer = new DataStreamWriter(100, Allocator.Temp);
 
@@ -334,10 +337,25 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
 
                     /// Dispose the writer when message has been sent.
                     writer.Dispose();
-
+                    */
                     m_ServerDriver.Disconnect(m_connections[i]);
                     /// This connection no longer exists.
+                    Debug.Log("---LOG---: Connections before - " + m_connections.Length);
+
                     m_connections.RemoveAtSwapBack(i);
+
+                    Debug.Log("---LOG---: Connections after - " + m_connections.Length);
+
+                    for (int j = 0; j < m_connections.Length; j++)
+                    {
+                        connectionNames[j] = (connectionNames[j].name, j);
+                    }
+
+                    cancellationTokenSource = new CancellationTokenSource();
+                    cancellationToken = cancellationTokenSource.Token;
+
+                    findConnections = Task.Factory.StartNew(() => FindConnections(), cancellationToken);
+
                     if (i >= m_connections.Length)
                         break;
                 }
@@ -362,6 +380,21 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
         GameObject.Find("Canvas").SetActive(false);
 
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
+    }
+
+    public void BroadcastMessage2(DiscClientMessage message, int index)
+    {
+        var str = JsonUtility.ToJson(message);
+        str = str + "|" + message.GetType();
+
+        var writer = new DataStreamWriter(1024, Allocator.Temp);
+        writer.Write(Encoding.ASCII.GetBytes(str));
+
+        for (int i = 0; i < m_connections.Length; i++)
+            if (i != index)
+                m_ServerDriver.Send(m_connections[i], writer);
+
+        writer.Dispose();
     }
 
     public void BroadcastMessage(dynamic message)

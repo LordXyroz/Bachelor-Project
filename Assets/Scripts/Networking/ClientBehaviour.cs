@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap
+public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconnectClient
 {
     private NetworkingManager nm;
 
@@ -72,6 +72,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap
         cancellationTokenSource.Dispose();
 
         m_ClientDriver.ScheduleUpdate().Complete();
+        m_ClientDriver.Disconnect(m_clientToServerConnection);
         m_clientToServerConnection.Close(m_ClientDriver);
         m_clientToServerConnection = default;
         m_ClientDriver.Dispose();
@@ -84,6 +85,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap
         cancellationTokenSource.Dispose();
 
         m_ClientDriver.ScheduleUpdate().Complete();
+        m_ClientDriver.Disconnect(m_clientToServerConnection);
         m_clientToServerConnection.Close(m_ClientDriver);
         m_clientToServerConnection = default;
         m_ClientDriver.Dispose();
@@ -230,10 +232,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap
         
         // Disconnect client from host:
         m_clientToServerConnection.Disconnect(m_ClientDriver);
+        m_ClientDriver.Disconnect(m_clientToServerConnection);
         ServerEndPoint = default;
         m_clientToServerConnection = default;
-        m_ClientDriver.Dispose();
-
+        results.Clear();
 
         /// Change connectionText according to connection status:
         GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
@@ -243,6 +245,11 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap
         GameObject gm = GameObject.Find("GameManager");
         gm.GetComponent<NetworkingManager>().connectionField.SetActive(true);
         gm.GetComponent<NetworkingManager>().chatField.SetActive(false);
+
+        foreach (Transform t in nm.lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform)
+        {
+            GameObject.Destroy(t);
+        }
     }
 
     /// <summary>
@@ -403,8 +410,9 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap
                 nm.RemoveLobbies();
             }
         }
-        catch
+        catch (Exception e)
         {
+            Debug.Log(e.Message);
             Debug.Log("Could not find a host!");
         }
 
@@ -595,9 +603,6 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap
                 Debug.Log("Client - Disconnecting");
 
                 Disconnect();
-                
-                /// If the server disconnected us we clear out connection
-                m_clientToServerConnection = default(NetworkConnection);
             }
         }
     }
@@ -689,5 +694,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap
             nm.DestroySwap();
             swapInfo = SwapInfo.Null;
         }
+    }
+
+    public void OnClientDisconnect(DiscClientMessage message)
+    {
+        nm.FindPlayerForRemoval(message.disconnectingClient);
     }
 }

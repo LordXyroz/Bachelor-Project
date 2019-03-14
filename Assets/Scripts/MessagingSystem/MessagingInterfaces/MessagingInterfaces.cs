@@ -25,6 +25,11 @@
         void OnConnection(ConnectMessage message, int index);
     }
 
+    public interface IDisconnectClient
+    {
+        void OnClientDisconnect(DiscClientMessage message);
+    }
+
     public interface IChatMessage
     {
         void OnChatMessage(ChatMessage message);

@@ -383,6 +383,12 @@ public class NetworkingManager : MonoBehaviour
             /// Delete chat text as client is disconnecting from lobby.
             cb.Disconnect();
 
+            foreach (var a in attackerNames)
+                a.transform.Find("Text").GetComponent<Text>().text = "";
+
+            foreach (var b in defenderNames)
+                b.transform.Find("Text").GetComponent<Text>().text = "";
+
             /// Disconnect client from host.
             yield return new WaitForSeconds(1);
             cb = null;
@@ -641,7 +647,7 @@ public class NetworkingManager : MonoBehaviour
             /// Check for player wanted to be removed being in defenderlist.
             if (defenderNames[i].activeSelf)
             {
-                if (attackerNames[i].transform.Find("Text").GetComponent<Text>().text == name)
+                if (defenderNames[i].transform.Find("Text").GetComponent<Text>().text == name)
                 {
                     RemovePlayer(defenderNames, i);
                     return;
@@ -672,6 +678,7 @@ public class NetworkingManager : MonoBehaviour
         }
         /// Remove last position in list that is no longer used.
         nameList[position].SetActive(false);
+        nameList[position].transform.Find("Text").GetComponent<Text>().text = "";
     }
 
     /// <summary>

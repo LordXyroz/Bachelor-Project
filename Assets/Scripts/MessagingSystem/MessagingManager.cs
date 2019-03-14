@@ -190,9 +190,7 @@ public static class MessagingManager
 
             case MessageTypes.Network.Connect:
                 {
-                    if (_NetworkingManager.cb != null)
-                        _NetworkingManager.cb.OnConnection((ConnectMessage) message, index);
-                    else if (_NetworkingManager.sb != null)
+                    if (_NetworkingManager.sb != null)
                         _NetworkingManager.sb.OnConnection((ConnectMessage) message, index);
 
                     break;
@@ -202,12 +200,18 @@ public static class MessagingManager
                 {
                     if (_NetworkingManager.cb != null)
                         _NetworkingManager.cb.OnConnection((ConnectMessage)message, index);
-                    else if (_NetworkingManager.sb != null)
-                        _NetworkingManager.sb.OnConnection((ConnectMessage)message, index);
 
                     break;
                 }
 
+            case MessageTypes.Network.ClientDisconnect:
+                {
+                    if (_NetworkingManager.cb != null)
+                        _NetworkingManager.cb.OnClientDisconnect((DiscClientMessage) message);
+
+                    break;
+                }
+            
             case MessageTypes.Network.Ping:
                 {
                     if (_NetworkingManager.cb != null)
