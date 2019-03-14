@@ -159,14 +159,14 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     {
         if (message.depth == graphDepth)
         {
-            List<GameNetworkComponent> list = new List<GameNetworkComponent>();
+            List<string> list = new List<string>();
 
             if (message.targetName == "")
             {
                 if (!uiElement.activeSelf)
                 {
                     uiElement.SetActive(true);
-                    list.Add(this);
+                    list.Add(name);
                 }
 
                 if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
@@ -180,7 +180,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 {
                     if (!child.uiElement.activeSelf && (Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f))))
                     {
-                        list.Add(child);
+                        list.Add(child.name);
                         child.uiElement.SetActive(true);
                     }
                 }

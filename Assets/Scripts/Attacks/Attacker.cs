@@ -345,8 +345,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             msg += "discovered - ";
             foreach (var entry in message.discovered)
             {
-                msg += entry.name + ", ";
-                info.Add(new NodeInfo(entry.gameObject));
+                msg += entry + ", ";
+                info.Add(new NodeInfo(GameObject.Find(entry)));
             }
             uiScript.TogglePopupWindow(true, "Success!", "New locations have been revealed!");
         }

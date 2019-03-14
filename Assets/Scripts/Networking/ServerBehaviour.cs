@@ -319,7 +319,7 @@ public class ServerBehaviour : IPing, IConnection
                         var type = Type.GetType(str[1]);
                         dynamic msg = JsonUtility.FromJson(str[0], type);
 
-                        MessagingManager.BroadcastMessage(msg, i);
+                        MessagingManager.BroadcastMessage((Message) msg, i);
                     }
                     else if (data.Contains("<SwapAccepted>"))
                     {
@@ -495,6 +495,20 @@ public class ServerBehaviour : IPing, IConnection
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 
+    public void BroadcastMessage(dynamic message)
+    {
+        var str = JsonUtility.ToJson(message);
+        str = str + "|" + message.GetType();
+        
+        var writer = new DataStreamWriter(512, Allocator.Temp);
+        writer.Write(Encoding.ASCII.GetBytes(str));
+
+        for (int i = 0; i < m_connections.Length; i++)
+            m_ServerDriver.Send(m_connections[i], writer);
+
+        writer.Dispose();
+    }
+
     public void OnPing(Message message, int index)
     {
         var msg = new Message("client", nm.userName, MessageTypes.Network.PingAck);
@@ -533,5 +547,7 @@ public class ServerBehaviour : IPing, IConnection
 
         for (int i = 0; i < m_connections.Length; i++)
             m_ServerDriver.Send(m_connections[i], writer);
+
+        writer.Dispose();
     }
 }

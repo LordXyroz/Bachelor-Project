@@ -106,11 +106,15 @@ public static class LogSaving
         if (message.targetName == "Attacker" || message.senderName == "Attacker")
         {
             string log = "\tDiscovered: ";
+            
             if (message.discovered != null)
+            {
                 foreach (var o in message.discovered)
-                    log += o.name + "  ";
+                    log += o + "  ";
+            }
             else
                 log += message.senderName;
+
             attackerWriter.WriteLine(log);
         }
     }

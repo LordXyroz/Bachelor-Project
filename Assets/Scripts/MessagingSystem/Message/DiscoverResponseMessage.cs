@@ -8,9 +8,9 @@ using UnityEngine;
 [System.Serializable]
 public class DiscoverResponseMessage : Message
 {
-    public List<GameNetworkComponent> discovered;
+    public List<string> discovered;
 
-    public DiscoverResponseMessage(string target, string sender, ushort type, List<GameNetworkComponent> response)
+    public DiscoverResponseMessage(string target, string sender, ushort type, List<string> response)
         : base(target, sender, type)
     {
         targetName = target;

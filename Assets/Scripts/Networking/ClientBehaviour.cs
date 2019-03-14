@@ -475,7 +475,8 @@ public class ClientBehaviour : IPing, IConnection
     {
         if (m_clientToServerConnection.IsCreated)
         {
-            string messageObj = JsonUtility.ToJson(msg) + "<Message>" + msg.GetType().ToString();
+            string messageObj = JsonUtility.ToJson(msg) + "|" + msg.GetType();
+            Debug.Log("----LOG----: " + messageObj);
             var classWriter = new DataStreamWriter(messageObj.Length + 2, Allocator.Temp);
             
             byte[] message = Encoding.ASCII.GetBytes(messageObj);
@@ -718,7 +719,7 @@ public class ClientBehaviour : IPing, IConnection
                     var type = Type.GetType(str[1]);
                     dynamic msg = JsonUtility.FromJson(str[0], type);
 
-                    MessagingManager.BroadcastMessage(msg);
+                    MessagingManager.BroadcastMessage((Message) msg);
                 }
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
