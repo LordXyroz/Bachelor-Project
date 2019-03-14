@@ -1,4 +1,4 @@
-﻿
+﻿[System.Serializable]
 public class ConnectMessage : Message
 {
     public string hostName;

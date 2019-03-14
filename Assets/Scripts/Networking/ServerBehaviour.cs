@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ServerBehaviour : IPing, IConnection
+public class ServerBehaviour : IPing, IConnection, IChatMessage
 {
     NetworkingManager nm;
 
@@ -209,16 +209,21 @@ public class ServerBehaviour : IPing, IConnection
         /// If any client has joined the lobby, the host will send the message to them:
         if (m_connections.IsCreated)
         {
-            var messageWriter = new DataStreamWriter(message.Length + 15, Allocator.Temp);
+            var msg = new ChatMessage("Server", nm.userName, MessageTypes.Network.Chat, message);
 
-            message += "<MessageReply>";
-            messageWriter.Write(Encoding.ASCII.GetBytes(message));
+            var str = JsonUtility.ToJson(msg);
+            str = str + "|" + msg.GetType();
+
+            var writer = new DataStreamWriter(512, Allocator.Temp);
+            writer.Write(Encoding.ASCII.GetBytes(str));
+
             /// Go through all joined clients:
             for (int i = 0; i < m_connections.Length; i++)
             {
-                m_ServerDriver.Send(m_connections[i], messageWriter);
+                m_ServerDriver.Send(m_connections[i], writer);
             }
-            messageWriter.Dispose();
+
+            writer.Dispose();
         }
     }
 
@@ -387,46 +392,6 @@ public class ServerBehaviour : IPing, IConnection
                         m_ServerDriver.Send(m_connections[connectionNr], writer);
                         
                     }
-                    else if (data.Contains("<Message>"))
-                    {
-                        Debug.Log("Server - Got message from client.");
-                        
-                        writer.Write(Encoding.ASCII.GetBytes(data));
-
-                        /// Send a message received to all clients:
-                        for (int j = 0; j < m_connections.Length; j++)
-                        {
-                            m_ServerDriver.Send(m_connections[j], writer);
-                        }
-
-                        var type = data.Substring(data.LastIndexOf("<Message>") + 9);
-                        Type typed = Type.GetType(type);
-                        
-                        data = data.Substring(0, data.IndexOf("<Message>"));
-
-                        dynamic msg = JsonUtility.FromJson(data, typed);
-                        
-                        MessagingManager.BroadcastMessage(msg);
-                    }
-                    else if (data.Contains("<ChatMessage>"))
-                    {
-                        /// Encode message received to for writer to write:
-                        Debug.Log("Server - Got chat message: " + data);
-                        data = data.Substring(0, data.IndexOf("<ChatMessage>"));
-                        writer.Write(Encoding.ASCII.GetBytes(data + "<MessageReply>"));
-
-                        /// Send a message received to all clients:
-                        for (int j = 0; j < m_connections.Length; j++)
-                        {
-                            m_ServerDriver.Send(m_connections[j], writer);
-                        }
-                        
-                        /// Send message to the chat field.
-                        nm.GetChatMessage(data);
-
-                        /// Give the message received to the host aswell:
-                        Debug.Log("Host has data: " + data);
-                    }
                     else if (data.Contains("<Scenario>"))
                     {
                         /// Send scenario wanted by the host to all clients:
@@ -481,7 +446,7 @@ public class ServerBehaviour : IPing, IConnection
     /// </summary>
     public void StartGame()
     {
-        var writer = new DataStreamWriter(128, Allocator.Temp);
+        var writer = new DataStreamWriter(512, Allocator.Temp);
         writer.Write(Encoding.ASCII.GetBytes("Start game<StartGame>"));
 
         for (int i = 0; i < m_connections.Length; i++)
@@ -500,7 +465,7 @@ public class ServerBehaviour : IPing, IConnection
         var str = JsonUtility.ToJson(message);
         str = str + "|" + message.GetType();
         
-        var writer = new DataStreamWriter(512, Allocator.Temp);
+        var writer = new DataStreamWriter(1024, Allocator.Temp);
         writer.Write(Encoding.ASCII.GetBytes(str));
 
         for (int i = 0; i < m_connections.Length; i++)
@@ -547,6 +512,25 @@ public class ServerBehaviour : IPing, IConnection
 
         for (int i = 0; i < m_connections.Length; i++)
             m_ServerDriver.Send(m_connections[i], writer);
+
+        writer.Dispose();
+    }
+
+    public void OnChatMessage(ChatMessage message)
+    {
+        nm.GetChatMessage(message.message);
+
+        var str = JsonUtility.ToJson(message);
+        str = str + "|" + message.GetType();
+
+        var writer = new DataStreamWriter(512, Allocator.Temp);
+        writer.Write(Encoding.ASCII.GetBytes(str));
+        
+        /// Send a message received to all clients:
+        for (int j = 0; j < m_connections.Length; j++)
+        {
+            m_ServerDriver.Send(m_connections[j], writer);
+        }
 
         writer.Dispose();
     }

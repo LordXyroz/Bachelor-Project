@@ -42,6 +42,10 @@ namespace MessageTypes
         public const ushort Ping = offset + 5;
         public const ushort PingAck = offset + 6;
 
+        public const ushort Chat = offset + 7;
+
+        public const ushort Swap = offset + 8;
+
     }
 
     /// <summary>

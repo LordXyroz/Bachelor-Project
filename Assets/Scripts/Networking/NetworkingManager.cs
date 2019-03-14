@@ -60,8 +60,6 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     void Start()
     {
-        QualitySettings.vSyncCount = 0;
-
         cb = null;
         sb = null;
         

@@ -25,6 +25,11 @@
         void OnConnection(ConnectMessage message, int index);
     }
 
+    public interface IChatMessage
+    {
+        void OnChatMessage(ChatMessage message);
+    }
+
     public interface IDefenseResponse
     {
         void DefenseResponse(SuccessMessage message);

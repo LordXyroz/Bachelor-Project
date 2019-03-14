@@ -228,6 +228,16 @@ public static class MessagingManager
                     break;
                 }
 
+            case MessageTypes.Network.Chat:
+                {
+                    if (_NetworkingManager.cb != null)
+                        _NetworkingManager.cb.OnChatMessage((ChatMessage) message);
+                    else if (_NetworkingManager.sb != null)
+                        _NetworkingManager.sb.OnChatMessage((ChatMessage) message);
+
+                    break;
+                }
+
             default:
                 string msg = "Unimplemented event sent!";
                 BroadcastMessage(new LoggingMessage("", message.senderName, MessageTypes.Logging.Error, msg));

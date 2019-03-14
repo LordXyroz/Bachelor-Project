@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ClientBehaviour : IPing, IConnection
+public class ClientBehaviour : IPing, IConnection, IChatMessage
 {
     private NetworkingManager nm;
 
@@ -477,8 +477,7 @@ public class ClientBehaviour : IPing, IConnection
         {
             var str = JsonUtility.ToJson(msg);
             str = str + "|" + msg.GetType();
-
-            Debug.Log("----LOG----: " + str);
+            
             var writer = new DataStreamWriter(1024, Allocator.Temp);
 
             writer.Write(Encoding.ASCII.GetBytes(str));
@@ -495,14 +494,17 @@ public class ClientBehaviour : IPing, IConnection
     {
         if (m_clientToServerConnection.IsCreated)
         {
-            // Example of sending a string through the network:
-            var messageWriter = new DataStreamWriter(100, Allocator.Temp);
-            // Setting prefix for server to easily know what kind of msg is being written.
-            message += "<ChatMessage>";
-            byte[] msg = Encoding.ASCII.GetBytes(message);
-            messageWriter.Write(msg);
-            m_ClientDriver.Send(m_clientToServerConnection, messageWriter);
-            messageWriter.Dispose();
+            var msg = new ChatMessage("Server", nm.userName, MessageTypes.Network.Chat, message);
+
+            var str = JsonUtility.ToJson(msg);
+            str = str + "|" + msg.GetType();
+
+            var writer = new DataStreamWriter(512, Allocator.Temp);
+            writer.Write(Encoding.ASCII.GetBytes(str));
+
+            m_ClientDriver.Send(m_clientToServerConnection, writer);
+
+            writer.Dispose();
         }
     }
 
@@ -594,28 +596,8 @@ public class ClientBehaviour : IPing, IConnection
                 /// Read message sent from client and respond to that:
                 byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
                 string data = Encoding.ASCII.GetString(bytes);
-                
-                if (data.Contains("<Message>"))
-                {
-                    /// Convert data to message of type Message:
-                    var type = data.Substring(data.LastIndexOf("<Message>") + 9);
-                    Type typed = Type.GetType(type);
 
-                    data = data.Substring(0, data.IndexOf("<Message>"));
-
-                    dynamic msg = JsonUtility.FromJson(data, typed);
-                    
-                    /// Send message to the chat field.
-                    nm.GetMessage((Message)msg);
-                }
-                else if (data.Contains("<MessageReply>"))
-                {
-                    data = data.Substring(0, data.Length - 14);
-
-                    /// Send message to the chat field.
-                    nm.GetChatMessage(data);
-                }
-                else if (data.Contains("<DeclineSwap>"))
+                if (data.Contains("<DeclineSwap>"))
                 {
                     nm.DestroySwap();
                     swapInfo = SwapInfo.Null;
@@ -779,5 +761,10 @@ public class ClientBehaviour : IPing, IConnection
         Debug.Log("OnConnection - You are connected to server!");
 
         //throw new NotImplementedException();
+    }
+
+    public void OnChatMessage(ChatMessage message)
+    {
+        nm.GetChatMessage(message.message);
     }
 }
