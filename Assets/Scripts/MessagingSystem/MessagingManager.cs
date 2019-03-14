@@ -190,6 +190,18 @@ public static class MessagingManager
                     break;
                 }
 
+            case MessageTypes.Network.PingAck:
+                {
+                    var netManager = GameObject.FindObjectOfType<NetworkingManager>();
+
+                    if (netManager.cb != null)
+                        netManager.cb.OnPing(message, index);
+                    else if (netManager.sb != null)
+                        netManager.sb.OnPing(message, index);
+
+                    break;
+                }
+
             default:
                 string msg = "Unimplemented event sent!";
                 BroadcastMessage(new LoggingMessage("", message.senderName, MessageTypes.Logging.Error, msg));

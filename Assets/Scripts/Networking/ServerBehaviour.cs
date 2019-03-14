@@ -102,7 +102,7 @@ public class ServerBehaviour : IPing, IConnection
 
             /// Buffer for reading data
             Byte[] bytes = new Byte[256];
-            String data = null;
+
             /// Enter the listening loop.
             while (server != null)
             {
@@ -129,9 +129,7 @@ public class ServerBehaviour : IPing, IConnection
 
                 /// Perform a blocking call to accept requests.
                 TcpClient client = server.AcceptTcpClient();
-
-                data = null;
-
+                
                 /// Get a stream object for reading and writing
                 NetworkStream stream = client.GetStream();
 
@@ -156,7 +154,7 @@ public class ServerBehaviour : IPing, IConnection
         catch (SocketException e)
         {
             /// When host wants to close connection there will be sent a block call to WSACancelBlockingCall causing an wanted exception. Debug for testing.
-            Debug.Log("SocketException: " + e);
+            /// Debug.Log("SocketException: " + e);
         }
         catch (OperationCanceledException e)
         {
@@ -250,6 +248,20 @@ public class ServerBehaviour : IPing, IConnection
         m_connections.Dispose();
     }
 
+#if UNITY_EDITOR
+    public void Destructor()
+    {
+        cancellationTokenSource.Dispose();
+
+        // All jobs must be completed before we can dispose the data they use
+        m_ServerDriver.ScheduleUpdate().Complete();
+        m_connections.Clear();
+        m_updateHandle.Complete();
+        m_ServerDriver.Dispose();
+        m_connections.Dispose();
+    }
+#endif
+
     /// <summary>
     /// FixedUpdate is a function called ca. 50 times per second. Used to see for events through the network.
     /// If any messages is sent in the server behaviour will accordingly answer by sending a message back, and give some message to all other clients aswell.
@@ -301,52 +313,13 @@ public class ServerBehaviour : IPing, IConnection
                     var writer = new DataStreamWriter(1024, Allocator.Temp);
                     if (data.Contains("|"))
                     {
+                        /// using message
+
                         var str = data.Split('|');
                         var type = Type.GetType(str[1]);
                         dynamic msg = JsonUtility.FromJson(str[0], type);
 
                         MessagingManager.BroadcastMessage(msg, i);
-
-                        //writer.Write(Encoding.ASCII.GetBytes("Connection updated<UpdateConnection>"));
-                        //m_ServerDriver.Send(m_connections[i], writer);
-                    }
-                    else if (data.Contains("<Connecting>"))
-                    {
-
-                        /// Add new client to list of players in lobby:
-                        string name = data.Substring(0, data.Length - 12);
-                        Debug.Log("Server - Connecting client with name: " + name + " , nr of clients: " + m_connections.Length);
-                        Debug.Log("server - connectionnames lenght: " + connectionNames.Count);
-                        nm.AddPlayerName(name);
-
-                        /// Add name of the client to serverlist:
-                        connectionNames.Add((name, i));
-                        
-                        /// Setup info to send to all clients about new client connecting:
-                        string message = nm.userName + "<HostName>";
-                        
-                        /// Get names of all players in lobby:
-                        int j = 0;
-                        while (j < nm.attackerNames.Count && nm.attackerNames[j].activeSelf)
-                        {
-                            message += nm.attackerNames[j].transform.Find("Text").GetComponent<Text>().text + "<AttackerName>";
-                            j++;
-                        }
-
-                        j = 0;
-                        while (j < nm.defenderNames.Count && nm.defenderNames[j].activeSelf)
-                        {
-                            message += nm.defenderNames[j].transform.Find("Text").GetComponent<Text>().text + "<DefenderName>";
-                            j++;
-                        }
-                        
-                        writer.Write(Encoding.ASCII.GetBytes(message + "<Connected>"));
-
-                        /// Send a message to all of the clients with information about the connection.
-                        for (int k = 0; k < m_connections.Length; k++)
-                        {
-                            m_ServerDriver.Send(m_connections[k], writer);
-                        }
                     }
                     else if (data.Contains("<SwapAccepted>"))
                     {
@@ -524,24 +497,17 @@ public class ServerBehaviour : IPing, IConnection
 
     public void OnPing(Message message, int index)
     {
-        switch (message.messageType)
-        {
-            case MessageTypes.Network.Ping:
-                var msg = new Message("client", nm.userName, MessageTypes.Network.PingAck);
-                var str = JsonUtility.ToJson(msg);
+        var msg = new Message("client", nm.userName, MessageTypes.Network.PingAck);
+        var str = JsonUtility.ToJson(msg);
 
-                str = str + "|" + msg.GetType();
+        str = str + "|" + msg.GetType();
 
-                var writer = new DataStreamWriter(256, Allocator.Temp);
-                
-                writer.Write(Encoding.ASCII.GetBytes(str));
-                m_ServerDriver.Send(m_connections[index], writer);
+        var writer = new DataStreamWriter(256, Allocator.Temp);
 
-                writer.Dispose();
-                break;
-        }
+        writer.Write(Encoding.ASCII.GetBytes(str));
+        m_ServerDriver.Send(m_connections[index], writer);
 
-        //throw new NotImplementedException();
+        writer.Dispose();
     }
 
     public void OnConnection(ConnectMessage message, int index)
@@ -567,7 +533,5 @@ public class ServerBehaviour : IPing, IConnection
 
         for (int i = 0; i < m_connections.Length; i++)
             m_ServerDriver.Send(m_connections[i], writer);
-
-        //throw new NotImplementedException();
     }
 }

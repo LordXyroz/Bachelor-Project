@@ -115,6 +115,16 @@ public class NetworkingManager : MonoBehaviour
         GameObject.Find("UserNameInputField").GetComponent<InputField>().onValueChanged.AddListener(delegate { ValueChangeCheck(); });
     }
 
+#if UNITY_EDITOR
+    private void OnDestroy()
+    {
+        if (cb != null)
+            cb.Destructor();
+        if (sb != null)
+            sb.Destructor();
+    }
+#endif
+
     /// <summary>
     /// This will start the gameplay scene when all clients in a lobby is ready.
     /// </summary>

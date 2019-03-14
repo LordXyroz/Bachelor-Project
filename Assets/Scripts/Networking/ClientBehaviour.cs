@@ -74,9 +74,22 @@ public class ClientBehaviour : IPing, IConnection
         m_ClientDriver.ScheduleUpdate().Complete();
         m_clientToServerConnection.Close(m_ClientDriver);
         m_clientToServerConnection = default;
+        m_ClientDriver.Dispose();
         m_ClientDriver = default;
-        //m_ClientDriver.Dispose();
     }
+
+#if UNITY_EDITOR
+    public void Destructor()
+    {
+        cancellationTokenSource.Dispose();
+
+        m_ClientDriver.ScheduleUpdate().Complete();
+        m_clientToServerConnection.Close(m_ClientDriver);
+        m_clientToServerConnection = default;
+        m_ClientDriver.Dispose();
+        m_ClientDriver = default;
+    }
+#endif
 
     public enum SwapInfo{
         Null,
@@ -100,7 +113,6 @@ public class ClientBehaviour : IPing, IConnection
         {
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
-                Debug.Log("My ip: " + ip.ToString());
                 return ip.ToString();
             }
         }
@@ -155,9 +167,7 @@ public class ClientBehaviour : IPing, IConnection
                         break;
                 }
             }
-
-            Debug.Log("Response data: " + responseData);
-
+            
             ServerName = responseData;
             serverName = responseData;
 
@@ -173,7 +183,7 @@ public class ClientBehaviour : IPing, IConnection
         catch (SocketException e)
         {
             /// Client will get socket exception when trying to ask other computers if they are hosting or not, and they don't answer yes.
-            Debug.Log("\nSocketException for ip: " + ip + "\n\nException msg: " + e);
+            /// Debug.Log("\nSocketException for ip: " + ip + "\n\nException msg: " + e);
         }
         catch (OperationCanceledException e)
         {
@@ -295,13 +305,9 @@ public class ClientBehaviour : IPing, IConnection
         List<string> ips = FindIPs();
         var serverName = "";
 
-        //setupHostIp = Task.Factory.StartNew(() => FindHost(ips[0], out serverName), cancellationToken);
-
         /// Go through possible ips.
         for (int i = 0; i < ips.Count; i++)
         {
-            Debug.Log("Checking ip: " + ips[i]);
-
             /// Stop connecting if user wants to.
             if (cancellationToken.IsCancellationRequested || cancellationTokenSource.IsCancellationRequested || cancellationTokenSource == null)
             {
@@ -320,11 +326,8 @@ public class ClientBehaviour : IPing, IConnection
             cancellationToken = cancellationTokenSource.Token;
 
             /// Get IP of host that wants to serve a match
-            //setupHostIp.ContinueWith((t) => FindHost(ips[i], out serverName), cancellationToken);
-
             setupHostIp = Task.Factory.StartNew(() => FindHost(ips[i], out serverName), cancellationToken);
-
-            //setupHostIp.Wait();
+            
             yield return new WaitForSeconds(0.25f);
 
             if (ServerEndPoint.IsValid)
@@ -342,9 +345,7 @@ public class ClientBehaviour : IPing, IConnection
                 }
             }
         }
-
-        yield return new WaitForSeconds(0.5f);
-
+        
         if (!ServerEndPoint.IsValid)
         {
             nm.StopConnecting();
@@ -548,15 +549,7 @@ public class ClientBehaviour : IPing, IConnection
         if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid && m_clientWantsConnection == false && m_ClientDriver.IsCreated)
         {
             try
-            {/*
-                var updateWriter = new DataStreamWriter(32, Allocator.Temp);
-                /// Setting prefix for server to easily know what kind of msg is being written.
-                string message = "<UpdateConnection>";
-                updateWriter.Write(Encoding.ASCII.GetBytes(message));
-                m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
-                updateWriter.Dispose();
-                */
-                
+            {
                 var msg = new Message("Server", nm.userName, MessageTypes.Network.Ping);
                 var str = JsonUtility.ToJson(msg);
 
@@ -579,16 +572,9 @@ public class ClientBehaviour : IPing, IConnection
         while ((cmd = m_clientToServerConnection.PopEvent(m_ClientDriver, out DataStreamReader strm)) != NetworkEvent.Type.Empty)
         {
             if (cmd == NetworkEvent.Type.Connect)
-            {/*
-                // Create a 4 byte data stream which we can store our ping sequence number in
-                var connectionWriter = new DataStreamWriter(100, Allocator.Temp);
-                string name = nm.userName;
-                byte[] msg = Encoding.ASCII.GetBytes(name + "<Connecting>");
-                connectionWriter.Write(msg);
-                m_clientToServerConnection.Send(m_ClientDriver, connectionWriter);
-
-                connectionWriter.Dispose();*/
-
+            {
+                /// Uses message
+                
                 var msg = new ConnectMessage("Server", nm.userName, MessageTypes.Network.Connect, "", "", "");
                 var str = JsonUtility.ToJson(msg);
                 str = str + "|" + msg.GetType();
@@ -607,46 +593,7 @@ public class ClientBehaviour : IPing, IConnection
                 byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
                 string data = Encoding.ASCII.GetString(bytes);
                 
-                if (data.Contains("<Connected>"))
-                {
-                    /// A client just connected.
-
-                    /// Receives hostname:
-                    nm.hostText.GetComponent<Text>().text = ServerName;
-                    //nm.hostText.GetComponent<Text>().text = "Host: " + data.Substring(0, data.IndexOf("<HostName>"));
-                    data = data.Substring(data.IndexOf("<HostName>") + 10, data.Length - (data.IndexOf("<HostName>") + 10));
-                    
-
-                    /// Receives names of other people in attackerlist(if any).
-                    int i = 0;
-                    while (data.Contains("<AttackerName>"))
-                    {
-                        nm.attackerNames[i].SetActive(true);
-                        nm.attackerNames[i].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<AttackerName>"));
-
-                        int offsetPosition = data.IndexOf("<AttackerName>") + 14;
-                        data = data.Substring(offsetPosition, data.Length - offsetPosition);
-                        i++;
-                    }
-
-                    /// Receives names of other people in defenderlist(if any).
-                    i = 0;
-                    while (data.Contains("<DefenderName>"))
-                    {
-                        nm.defenderNames[i].SetActive(true);
-                        nm.defenderNames[i].transform.Find("Text").GetComponent<Text>().text = data.Substring(0, data.IndexOf("<DefenderName>"));
-
-                        int offsetPosition = data.IndexOf("<DefenderName>") + 14;
-                        data = data.Substring(offsetPosition, data.Length - offsetPosition);
-                        i++;
-                    }
-
-                    /// Receive what playerType the client is set as; May be changed by client itself after it has been set once.
-                    nm.playerType = nm.FindPlayerType();
-
-                    Debug.Log("Client - You are connected to server!");
-                }
-                else if (data.Contains("<Message>"))
+                if (data.Contains("<Message>"))
                 {
                     /// Convert data to message of type Message:
                     var type = data.Substring(data.LastIndexOf("<Message>") + 9);
@@ -765,6 +712,8 @@ public class ClientBehaviour : IPing, IConnection
                 }
                 else if (data.Contains("|"))
                 {
+                    /// This is using message
+                    
                     var str = data.Split('|');
                     var type = Type.GetType(str[1]);
                     dynamic msg = JsonUtility.FromJson(str[0], type);
@@ -804,13 +753,8 @@ public class ClientBehaviour : IPing, IConnection
 
     public void OnPing(Message message, int index)
     {
-        switch (message.messageType)
-        {
-            case MessageTypes.Network.PingAck:
-                Debug.Log("Ping ack!");
-                break;
-        }
-        //throw new NotImplementedException();
+        // Debug.Log("Ping ack!");
+        // throw new NotImplementedException();
     }
 
     public void OnConnection(ConnectMessage message, int index)
