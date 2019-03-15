@@ -113,16 +113,6 @@ public class NetworkingManager : MonoBehaviour
         GameObject.Find("UserNameInputField").GetComponent<InputField>().onValueChanged.AddListener(delegate { ValueChangeCheck(); });
     }
 
-#if UNITY_EDITOR
-    private void OnDestroy()
-    {
-        if (cb != null)
-            cb.Destructor();
-        if (sb != null)
-            sb.Destructor();
-    }
-#endif
-
     /// <summary>
     /// This will start the gameplay scene when all clients in a lobby is ready.
     /// </summary>
@@ -223,13 +213,10 @@ public class NetworkingManager : MonoBehaviour
                     /// Player may not start hosting while looking for connection as a client.
                     return;
                 }
+                
+                sb = new ServerBehaviour();
+                playerType = PlayerManager.PlayerType.Observer;
 
-                if (sb == null)
-                {
-                    /// Instantiate behaviour:
-                    sb = new ServerBehaviour();
-                    playerType = PlayerManager.PlayerType.Observer;
-                }
                 lobbyScrollField.SetActive(false);
 
                 /// Changing view:
@@ -255,10 +242,8 @@ public class NetworkingManager : MonoBehaviour
             else
             {
                 /// Add client behaviour and try to find a host.
-                if (cb == null && sb == null)
-                {
-                    cb = new ClientBehaviour();
-                }
+                
+                cb = new ClientBehaviour();
 
                 lobbyScrollField.SetActive(true);
 
@@ -341,11 +326,8 @@ public class NetworkingManager : MonoBehaviour
                 }
             }
             sb.StopListening();
-            sb.m_connections.Clear();
-            sb.m_connections.Dispose();
-            sb.m_ServerDriver.Dispose();
-            sb = null;
-            
+            sb.Destructor();
+
             /// Delete chat when exiting lobby:
             for (int i = 0; i < messageList.Count; i++)
             {
@@ -391,7 +373,7 @@ public class NetworkingManager : MonoBehaviour
 
             /// Disconnect client from host.
             yield return new WaitForSeconds(1);
-            cb = null;
+            cb.Destructor();
         }
 
         playerType = default;

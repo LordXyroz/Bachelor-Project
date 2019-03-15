@@ -213,29 +213,27 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
     /// </summary>
     ~ServerBehaviour()
     {
-        cancellationTokenSource.Dispose();
+        //cancellationTokenSource.Dispose();
 
         // All jobs must be completed before we can dispose the data they use
         m_ServerDriver.ScheduleUpdate().Complete();
-        m_connections.Clear();
-        m_updateHandle.Complete();
+        //m_connections.Clear();
+        //m_updateHandle.Complete();
         m_ServerDriver.Dispose();
         m_connections.Dispose();
     }
 
-#if UNITY_EDITOR
     public void Destructor()
     {
-        cancellationTokenSource.Dispose();
+        //cancellationTokenSource.Dispose();
 
         // All jobs must be completed before we can dispose the data they use
         m_ServerDriver.ScheduleUpdate().Complete();
-        m_connections.Clear();
-        m_updateHandle.Complete();
+        //m_connections.Clear();
+        //m_updateHandle.Complete();
         m_ServerDriver.Dispose();
         m_connections.Dispose();
     }
-#endif
 
     /// <summary>
     /// FixedUpdate is a function called ca. 50 times per second. Used to see for events through the network.

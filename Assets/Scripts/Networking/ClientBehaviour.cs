@@ -69,29 +69,27 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     /// </summary>
     ~ClientBehaviour()
     {
-        cancellationTokenSource.Dispose();
+        //cancellationTokenSource.Dispose();
 
         m_ClientDriver.ScheduleUpdate().Complete();
-        m_ClientDriver.Disconnect(m_clientToServerConnection);
-        m_clientToServerConnection.Close(m_ClientDriver);
-        m_clientToServerConnection = default;
+        //m_ClientDriver.Disconnect(m_clientToServerConnection);
+        //m_clientToServerConnection.Close(m_ClientDriver);
+        //m_clientToServerConnection = default;
         m_ClientDriver.Dispose();
-        m_ClientDriver = default;
+        //m_ClientDriver = default;
     }
-
-#if UNITY_EDITOR
+    
     public void Destructor()
     {
-        cancellationTokenSource.Dispose();
+        //cancellationTokenSource.Dispose();
 
         m_ClientDriver.ScheduleUpdate().Complete();
-        m_ClientDriver.Disconnect(m_clientToServerConnection);
-        m_clientToServerConnection.Close(m_ClientDriver);
-        m_clientToServerConnection = default;
+        //m_ClientDriver.Disconnect(m_clientToServerConnection);
+        //m_clientToServerConnection.Close(m_ClientDriver);
+        //m_clientToServerConnection = default;
         m_ClientDriver.Dispose();
-        m_ClientDriver = default;
+        //m_ClientDriver = default;
     }
-#endif
 
     public enum SwapInfo{
         Null,
