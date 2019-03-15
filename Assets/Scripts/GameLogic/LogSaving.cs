@@ -43,6 +43,8 @@ public static class LogSaving
         {
             defenderWriter.WriteLine("\tProbability: " + message.probability);
         }
+
+        FlushWriters();
     }
 
     public static void Save(AnalyzeResponeMessage message)
@@ -61,6 +63,8 @@ public static class LogSaving
         {
             defenderWriter.WriteLine(log);
         }
+
+        FlushWriters();
     }
 
     public static void Save(AttackMessage message)
@@ -74,6 +78,8 @@ public static class LogSaving
         {
             attackerWriter.WriteLine("\tAttack: " + message.attack);
         }
+
+        FlushWriters();
     }
 
     public static void Save(DefenseMessage message)
@@ -87,6 +93,8 @@ public static class LogSaving
         {
             defenderWriter.WriteLine("\tDefense: " + message.defense);
         }
+
+        FlushWriters();
     }
 
     public static void Save(DiscoverMessage message)
@@ -97,6 +105,8 @@ public static class LogSaving
         {
             attackerWriter.WriteLine("\tProbability: " + message.probability);
         }
+
+        FlushWriters();
     }
 
     public static void Save(DiscoverResponseMessage message)
@@ -117,6 +127,8 @@ public static class LogSaving
 
             attackerWriter.WriteLine(log);
         }
+
+        FlushWriters();
     }
     
     public static void Save(Message message)
@@ -145,6 +157,8 @@ public static class LogSaving
             else
                 defenderWriter.WriteLine("\tTo: Root");
         }
+
+        FlushWriters();
     }
 
     public static void Save(ProbeResponseMessage message)
@@ -163,6 +177,8 @@ public static class LogSaving
             defenderWriter.WriteLine("\tChild nodes: " + message.numOfChildren);
             defenderWriter.WriteLine("\tNumber of Vulnerabilities: " + message.numOfVulnerabilities);
         }
+
+        FlushWriters();
     }
 
     public static void Save(SuccessMessage message)
@@ -177,5 +193,13 @@ public static class LogSaving
         {
             defenderWriter.WriteLine("\tSuccess: " + message.success);
         }
+
+        FlushWriters();
+    }
+
+    public static void FlushWriters()
+    {
+        attackerWriter.Flush();
+        defenderWriter.Flush();
     }
 }

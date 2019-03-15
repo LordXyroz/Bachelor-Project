@@ -212,7 +212,8 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
     /// Destructor for server behaviour, makes sure that important data is cleaned up.
     /// </summary>
     ~ServerBehaviour()
-    {
+    { 
+        Debug.Log("Running the actual destructor");
         //cancellationTokenSource.Dispose();
 
         // All jobs must be completed before we can dispose the data they use
@@ -225,6 +226,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
 
     public void Destructor()
     {
+        Debug.Log("Running the 'custom' destructor");
         //cancellationTokenSource.Dispose();
 
         // All jobs must be completed before we can dispose the data they use
@@ -428,6 +430,8 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
         var str = JsonUtility.ToJson(msg);
 
         str = str + "|" + msg.GetType();
+        
+        Debug.Log(str);
 
         var writer = new DataStreamWriter(256, Allocator.Temp);
 

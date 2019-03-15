@@ -69,6 +69,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     /// </summary>
     ~ClientBehaviour()
     {
+        Debug.Log("Running the actual destructor");
         //cancellationTokenSource.Dispose();
 
         m_ClientDriver.ScheduleUpdate().Complete();
@@ -81,6 +82,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     
     public void Destructor()
     {
+        Debug.Log("Running the 'custom' destructor");
         //cancellationTokenSource.Dispose();
 
         m_ClientDriver.ScheduleUpdate().Complete();
@@ -515,16 +517,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         if (m_clientToServerConnection.IsCreated && ServerEndPoint.IsValid && m_clientWantsConnection == false && m_ClientDriver.IsCreated)
         {
             try
-            {
-                var msg = new Message("Server", nm.userName, MessageTypes.Network.Ping);
-                var str = JsonUtility.ToJson(msg);
-
-                str = str + "|" + msg.GetType();
-
-                var updateWriter = new DataStreamWriter(256, Allocator.Temp);
-                updateWriter.Write(Encoding.ASCII.GetBytes(str));
-                m_ClientDriver.Send(m_clientToServerConnection, updateWriter);
-                updateWriter.Dispose();
+            { 
+                SendMessage(new Message("Server", nm.userName, MessageTypes.Network.Ping));
             }
             catch(InvalidOperationException e)
             {
@@ -539,17 +533,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         {
             if (cmd == NetworkEvent.Type.Connect)
             {
-                /// Uses message
-                
-                var msg = new ConnectMessage("Server", nm.userName, MessageTypes.Network.Connect, "", "", "");
-                var str = JsonUtility.ToJson(msg);
-                str = str + "|" + msg.GetType();
-
-                var writer = new DataStreamWriter(256, Allocator.Temp);
-                writer.Write(Encoding.ASCII.GetBytes(str));
-                m_clientToServerConnection.Send(m_ClientDriver, writer);
-                writer.Dispose();
-
+                SendMessage(new ConnectMessage("Server", nm.userName, MessageTypes.Network.Connect, "", "", ""));
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
