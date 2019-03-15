@@ -13,7 +13,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Camera mainCamera;
     private Canvas canvas;
     private Image systemComponentImage;
-    private SelectedObject objectSelect;
+    private SelectedObject selectedObject;
     private SystemComponent systemComponent;
     private SystemComponentMenu systemComponentMenu;
     private ReferenceLineMenu referenceLineMenu;
@@ -33,7 +33,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         spawnPosition = new Vector2(300, 650);
         mainCamera = Camera.main;
         canvas = GetComponentInParent<Canvas>();
-        objectSelect = FindObjectOfType<SelectedObject>();
+        selectedObject = FindObjectOfType<SelectedObject>();
         systemComponent = GetComponent<SystemComponent>();
         systemComponentMenu = canvas.transform.GetComponentInChildren<SystemComponentMenu>(true);
         referenceLineMenu = canvas.transform.GetComponentInChildren<ReferenceLineMenu>(true);
@@ -65,11 +65,11 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 {
                     referenceLineMenu.gameObject.SetActive(false);
                 }
-                objectSelect.SelectObject(this.gameObject, true, true);
+                selectedObject.SelectObject(this.gameObject, true, true);
             }
             else
             {
-                objectSelect.SelectObject(this.gameObject, true, false);
+                selectedObject.SelectObject(this.gameObject, true, false);
             }
         }
 
@@ -89,6 +89,15 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         this.transform.position = eventData.position + offset;
         this.systemComponent.MoveConnections();
+
+        if (this.systemComponent.connectedReferenceLines != null)
+        {
+            Debug.Log("Calling Update firewall");
+            foreach (GameObject connection in systemComponent.connectedReferenceLines)
+            {
+                referenceLineMenu.UpdateFirewall(connection);
+            }
+        }
     }
 
 
@@ -100,17 +109,18 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         this.transform.SetParent(parentToReturnTo);
 
         /// Setting up the area for the drop zone, deleting objects dropped outside of the drop zone
-        GameObject dropZone = GameObject.Find("SystemSetupScreen");
-        RectTransform setupScreen = dropZone.GetComponent<RectTransform>();
+        //GameObject dropZone = GameObject.Find("SystemSetupScreen");
+        // RectTransform setupScreen = dropZone.GetComponent<RectTransform>();
 
-        objectPosition = this.transform.position;
-        float width = setupScreen.rect.width;
-        float height = setupScreen.rect.height;
-        float objectWidth = this.GetComponent<RectTransform>().rect.width;
-        float objectHeight = this.GetComponent<RectTransform>().rect.height;
+        //objectPosition = this.transform.position;
+        //float width = setupScreen.rect.width;
+        //float height = setupScreen.rect.height;
+        //float objectWidth = this.GetComponent<RectTransform>().rect.width;
+        //float objectHeight = this.GetComponent<RectTransform>().rect.height;
 
         /// Delete the object if it is placed outside of the editing screen field
-        if (!eventData.pointerCurrentRaycast.gameObject.name.Equals("DropzoneBackgroundButton"))
+        if (eventData.pointerCurrentRaycast.gameObject == null
+            || !eventData.pointerCurrentRaycast.gameObject.name.Equals("DropzoneBackgroundButton"))
         {
             if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
             {
@@ -119,13 +129,13 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             else
             {
                 Debug.Log("DraggableObject dropped outside edit field: " + this.gameObject.name);
-                objectSelect.DeleteSelectedObject();
+                selectedObject.DeleteSelectedObject();
             }
         }
     }
 
     void OnBecameInvisible()
     {
-        objectSelect.DeleteSelectedObject();
+        selectedObject.DeleteSelectedObject();
     }
 }

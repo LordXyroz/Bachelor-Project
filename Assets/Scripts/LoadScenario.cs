@@ -18,6 +18,7 @@ public class LoadScenario : MonoBehaviour
     private ConnectionReferences lineReference;
     private SaveMenu saveMenu;
     private Canvas canvas;
+    private ReferenceLineMenu referenceLineMenu;
     [SerializeField]
     Save loadFromJSON;
 
@@ -42,6 +43,7 @@ public class LoadScenario : MonoBehaviour
     public GameObject InternetPrefab;
     public GameObject SwitchPrefab;
     public GameObject WebsitePrefab;
+    public GameObject ServerPrefab;
 
 
 
@@ -51,6 +53,7 @@ public class LoadScenario : MonoBehaviour
         saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
         selectedObject = FindObjectOfType<SelectedObject>();
         dropZone = FindObjectOfType<DropZone>();
+        referenceLineMenu = canvas.transform.GetComponentInChildren<ReferenceLineMenu>(true);
 
         directoryPath = Application.dataPath + "/Savefiles";
         filePath = Path.Combine(directoryPath, saveMenu.filename + ".json");
@@ -137,9 +140,15 @@ public class LoadScenario : MonoBehaviour
                 lineReference.referenceToObject.GetComponent<SystemComponent>().connectedReferenceLines.Add(line);
 
                 lineReference.hasFirewall = loadFromJSON.hasFirewall[i];
+                lineReference.transform.position = loadFromJSON.firewallPositionsList[i];
                 lineReference.referenceFromObject.GetComponent<SystemComponent>().SetConnectionLines(lineReference.referenceFromObject.gameObject.transform.position,
                                                                                                      lineReference.referenceToObject.gameObject.transform.position,
                                                                                                      line);
+            }
+
+            if (selectedObject.connectionReferencesList != null)
+            {
+                referenceLineMenu.LoadFirewall(selectedObject.connectionReferencesList);
             }
             Debug.Log("Game Loaded: " + json);
         }
@@ -168,6 +177,10 @@ public class LoadScenario : MonoBehaviour
 
             case "Website":
                 InstantiateObject(WebsitePrefab);
+                break;
+
+            case "Server":
+                InstantiateObject(ServerPrefab);
                 break;
 
             case "System component":
@@ -241,5 +254,15 @@ public class LoadScenario : MonoBehaviour
     {
         pos = new Vector2(300, 650);
         InstantiateObject(DefaultPrefab);
+    }
+
+
+    /// <summary>
+    /// Need separate function for each prefab type in order to link the functions to separate buttons
+    /// </summary>
+    public void InstantiateServerButton()
+    {
+        pos = new Vector2(300, 650);
+        InstantiateObject(ServerPrefab);
     }
 }

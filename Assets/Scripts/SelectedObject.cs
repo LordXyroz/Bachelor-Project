@@ -60,21 +60,18 @@ public class SelectedObject : MonoBehaviour
     {
         if (newSelected != null)
         {
+            /// Reset and set active to null if the selected object is clicked again (not dragged)
+            if (selected == newSelected && !dragged)
+            {
+                Debug.Log("selected == newSelected");
+                connectionStarted = false;
+                DeselectObjects();
+                return;
+            }
             DeselectObjects();
 
             if (systemComponent)
             {
-                /// Reset and set active to null if the selected object is clicked again (not dragged)
-                if (selected == newSelected && !dragged)
-                {
-                    image.material = default;
-                    imageBox.gameObject.SetActive(false);
-                    oldSelected = selected;
-                    selected = null;
-                    connectionStarted = false;
-                    return;
-                }
-
                 if (newSelected != selected && selected != null)
                 {
                     oldSelected = selected;

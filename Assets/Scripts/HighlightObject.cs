@@ -33,8 +33,9 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void Start()
     {
         dropZone = FindObjectOfType<DropZone>();
-        /// Need to differentiate between connections and components
         image = GetComponent<Image>();
+
+        /// Need to differentiate between connections and components
         if (image != null)
         {
             originalColor = image.color;
@@ -144,7 +145,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                     }
                 }
 
-                //RectTransform dropZone = dropZone.GetComponent<RectTransform>();
                 float width = dropZone.GetComponent<RectTransform>().rect.width;
                 float height = dropZone.GetComponent<RectTransform>().rect.height;
                 float newX;
@@ -152,7 +152,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
                 if (image != null)
                 {
-
                     componentMenu.gameObject.SetActive(true);
                     if (eventData.position.x + componentMenu.rect.width > width)
                     {

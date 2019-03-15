@@ -19,6 +19,7 @@ public class Save
     public List<string> referenceFromObjectName = new List<string>();
     public List<string> referenceToObjectName = new List<string>();
     public List<bool> hasFirewall = new List<bool>();
+    public List<Vector3> firewallPositionsList = new List<Vector3>();
 
     [Header("Empty objects intended for later development cycles")]
     public List<string> OSList = new List<string>();

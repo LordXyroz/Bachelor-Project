@@ -32,6 +32,7 @@ public class ConnectionReferences : MonoBehaviour
         systemComponent = referenceToObject.GetComponent<SystemComponent>();
         systemComponent.connectedReferenceLines.Remove(this.gameObject);
         FindObjectOfType<SelectedObject>().connectionReferencesList.Remove(this.gameObject);
+        hasFirewall = false;
         Destroy(this.gameObject);
     }
 }

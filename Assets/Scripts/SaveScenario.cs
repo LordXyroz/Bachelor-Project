@@ -117,6 +117,7 @@ public class SaveScenario : MonoBehaviour
                 save.referenceFromObjectName.Add(lineReference.referenceFromObject.name);
                 save.referenceToObjectName.Add(lineReference.referenceToObject.name);
                 save.hasFirewall.Add(lineReference.hasFirewall);
+                save.firewallPositionsList.Add(lineReference.transform.position);
             }
             return save;
         }

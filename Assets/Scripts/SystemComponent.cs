@@ -7,13 +7,8 @@ using UnityEngine;
 /// </summary>
 /// 
 
-/// TODO 
-/// 
-/// 
-/// Fix drop deletion range for when an object is dropped outside the dropzone
-/// 
-/// Fix the resolution to be 16:9 instead of standalone
-/// 
+/// TODO
+/// Loading does not succesfully delete old objects before loading, causing it to break
 
 
 public class SystemComponent : MonoBehaviour
@@ -32,6 +27,7 @@ public class SystemComponent : MonoBehaviour
     private GameObject connectedSystemCommponent;
     private Transform lineToEnd;
     private Transform lineFromStart;
+    private GameObject firewall;
 
     [Header("Items needed for deleting a system component")]
     private SystemComponent systemComponent;
@@ -209,9 +205,9 @@ public class SystemComponent : MonoBehaviour
         componentVulnerabilities = vulnerabilities;
     }
 
+
     public void UpdateComponentName()
     {
-
         displayedName.text = componentName;
     }
 }
