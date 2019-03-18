@@ -209,6 +209,9 @@ public class LoadScenario : MonoBehaviour
                                          pos,
                                          Quaternion.identity,
                                          dropZone.transform);
+        if (target == null)
+            Debug.Log("Or so help me lord I will...");
+
         target.name = target.name + prefabNo++;
         dropZone.editableSystemComponents.Add(target);
     }

@@ -1944,6 +1944,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 7793374144069430950, guid: 52fdc97521fb4a24d9a9f5eadc189a78,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.00005722046
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52fdc97521fb4a24d9a9f5eadc189a78, type: 3}
 --- !u!1 &154865275
@@ -7970,6 +7975,7 @@ MonoBehaviour:
     referenceFromObjectName: []
     referenceToObjectName: []
     hasFirewall: 
+    firewallPositionsList: []
     OSList: []
     subnetList: []
     configPresentList: []
@@ -8008,6 +8014,7 @@ MonoBehaviour:
     referenceFromObjectName: []
     referenceToObjectName: []
     hasFirewall: 
+    firewallPositionsList: []
     OSList: []
     subnetList: []
     configPresentList: []
@@ -8037,6 +8044,8 @@ MonoBehaviour:
   WebsitePrefab: {fileID: 8997441772062502934, guid: 50833bb3029d2854ea7e8664fc756cdf,
     type: 3}
   ServerPrefab: {fileID: 8997441772062502934, guid: bf3110aaf0fa2e14f8610e2d21dbb806,
+    type: 3}
+  ComputerPrefab: {fileID: 8997441772062502934, guid: 20f724186144ddb4cb2bd1ddf0dc0cdd,
     type: 3}
 --- !u!1 &743089119
 GameObject:
