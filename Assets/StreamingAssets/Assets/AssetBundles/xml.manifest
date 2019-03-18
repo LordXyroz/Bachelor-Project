@@ -1,0 +1,25 @@
+ManifestFileVersion: 0
+CRC: 2064894548
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 3952d195dffe22b2b10b29d9540d1fac
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 03970310989e9ae0e8cd1c6f532688cc
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 49
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Resources/DefenseStrings.xml
+- Assets/Resources/Sprites/UIFrameMask.png
+- Assets/Resources/Sprites/Progressbar.png
+- Assets/Resources/AttackStrings.xml
+- Assets/Resources/VulnerabilityLogic.xml
+- Assets/Resources/vulnerabilitypairings.xml
+Dependencies: []
