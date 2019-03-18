@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
+public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposable
 {
     NetworkingManager nm;
 
@@ -66,6 +66,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
     {
         if (!findConnections.IsCompleted && !findConnections.IsCanceled)
         {
+            Debug.Log("Canceling tcplistener");
             cancellationTokenSource.Cancel();
         }
     }
@@ -109,6 +110,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
 
                 if (cancellationToken.IsCancellationRequested)
                 {
+                    Debug.Log("Canceling tcplistener, cancellation");
                     /// Clean up.
                     server.Stop();
                     server = null;
@@ -122,6 +124,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
                     /// Lobby is full:
                     if (m_connections.Length == 2) /// 2 is total amount of clients
                     {
+                        Debug.Log("Canceling tcplistener, server full");
                         server.Stop();
                         return;
                     }
@@ -178,9 +181,9 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
         /// Set token for connections.
         cancellationTokenSource = new CancellationTokenSource();
         cancellationToken = cancellationTokenSource.Token;
-
-
+        
         connectionNames = new List<(string name, int connectionNumber)> { };
+        m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
 
         findConnections = Task.Factory.StartNew(() => FindConnections(), cancellationToken);
         
@@ -194,7 +197,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
             Debug.Log("Server - Listening...");
         }
 
-        m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
     }
     
     /// <summary>
@@ -207,36 +209,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
         GameObject.Find("MessageText3").GetComponent<Text>().text = GameObject.Find("MessageText2").GetComponent<Text>().text;
         GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
     }
-
-    /// <summary>
-    /// Destructor for server behaviour, makes sure that important data is cleaned up.
-    /// </summary>
-    ~ServerBehaviour()
-    { 
-        Debug.Log("Running the actual destructor");
-        //cancellationTokenSource.Dispose();
-
-        // All jobs must be completed before we can dispose the data they use
-        m_ServerDriver.ScheduleUpdate().Complete();
-        //m_connections.Clear();
-        //m_updateHandle.Complete();
-        m_ServerDriver.Dispose();
-        m_connections.Dispose();
-    }
-
-    public void Destructor()
-    {
-        Debug.Log("Running the 'custom' destructor");
-        //cancellationTokenSource.Dispose();
-
-        // All jobs must be completed before we can dispose the data they use
-        m_ServerDriver.ScheduleUpdate().Complete();
-        //m_connections.Clear();
-        //m_updateHandle.Complete();
-        m_ServerDriver.Dispose();
-        m_connections.Dispose();
-    }
-
+    
     /// <summary>
     /// FixedUpdate is a function called ca. 50 times per second. Used to see for events through the network.
     /// If any messages is sent in the server behaviour will accordingly answer by sending a message back, and give some message to all other clients aswell.
@@ -312,49 +285,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
-                    /// Remove client that disconnected from list of people who ARE indeed connected.
-                    string name = connectionNames.Find(x => x.connectionNumber == i).name;
-                    connectionNames.Remove(connectionNames.Find(x => x.name == name));
-                    nm.FindPlayerForRemoval(name);
-
-                    Debug.Log("Server - Disconnecting client named " + name);
-
-                    BroadcastMessage2(new DiscClientMessage("Client", nm.userName, MessageTypes.Network.ClientDisconnect, name), i);
-
-                    /*
-                    /// Create writer to send message to other clients that client with connection i is disconnecting.
-                    var writer = new DataStreamWriter(100, Allocator.Temp);
-
-                    writer.Write(Encoding.ASCII.GetBytes(name + "<ClientDisconnect>"));
-                    for (int k = 0; k < m_connections.Length; k++)
-                    {
-                        /// Send message to client as long as it is not the connected one.
-                        if (k != i)
-                        {
-                            m_ServerDriver.Send(m_connections[k], writer);
-                        }
-                    }
-
-                    /// Dispose the writer when message has been sent.
-                    writer.Dispose();
-                    */
-                    m_ServerDriver.Disconnect(m_connections[i]);
-                    /// This connection no longer exists.
-                    Debug.Log("---LOG---: Connections before - " + m_connections.Length);
-
-                    m_connections.RemoveAtSwapBack(i);
-
-                    Debug.Log("---LOG---: Connections after - " + m_connections.Length);
-
-                    for (int j = 0; j < m_connections.Length; j++)
-                    {
-                        connectionNames[j] = (connectionNames[j].name, j);
-                    }
-
-                    cancellationTokenSource = new CancellationTokenSource();
-                    cancellationToken = cancellationTokenSource.Token;
-
-                    findConnections = Task.Factory.StartNew(() => FindConnections(), cancellationToken);
+                    DisconnectClient(i);
 
                     if (i >= m_connections.Length)
                         break;
@@ -367,34 +298,42 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
     /// Tells all clients to start game, and loads game scene for host
     /// </summary>
     public void StartGame()
-    {
-        var writer = new DataStreamWriter(512, Allocator.Temp);
-        writer.Write(Encoding.ASCII.GetBytes("Start game<StartGame>"));
-
-        for (int i = 0; i < m_connections.Length; i++)
-            m_ServerDriver.Send(m_connections[i], writer);
-
-        writer.Dispose();
-
+    { 
+        BroadcastMessage(new Message("Client", nm.userName, MessageTypes.Game.Start));
 
         GameObject.Find("Canvas").SetActive(false);
 
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 
-    public void BroadcastMessage2(DiscClientMessage message, int index)
+    public void DisconnectClient(int index)
     {
-        var str = JsonUtility.ToJson(message);
-        str = str + "|" + message.GetType();
+        /// Remove client that disconnected from list of people who ARE indeed connected.
+        string name = connectionNames.Find(x => x.connectionNumber == index).name;
+        connectionNames.Remove(connectionNames.Find(x => x.name == name));
+        nm.FindPlayerForRemoval(name);
 
-        var writer = new DataStreamWriter(1024, Allocator.Temp);
-        writer.Write(Encoding.ASCII.GetBytes(str));
+        Debug.Log("Server - Disconnecting client named " + name);
 
-        for (int i = 0; i < m_connections.Length; i++)
-            if (i != index)
-                m_ServerDriver.Send(m_connections[i], writer);
+        BroadcastMessage(new DiscClientMessage("Client", nm.userName, MessageTypes.Network.ClientDisconnect, name), index);
 
-        writer.Dispose();
+        m_ServerDriver.Disconnect(m_connections[index]);
+        /// This connection no longer exists.
+        Debug.Log("---LOG---: Connections before - " + m_connections.Length);
+
+        m_connections.RemoveAtSwapBack(index);
+
+        Debug.Log("---LOG---: Connections after - " + m_connections.Length);
+
+        for (int j = 0; j < m_connections.Length; j++)
+        {
+            connectionNames[j] = (connectionNames[j].name, j);
+        }
+
+        cancellationTokenSource = new CancellationTokenSource();
+        cancellationToken = cancellationTokenSource.Token;
+
+        findConnections = Task.Factory.StartNew(() => FindConnections(), cancellationToken);
     }
 
     public void BroadcastMessage(dynamic message)
@@ -424,6 +363,21 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
         writer.Dispose();
     }
 
+    public void BroadcastMessage(DiscClientMessage message, int index)
+    {
+        var str = JsonUtility.ToJson(message);
+        str = str + "|" + message.GetType();
+
+        var writer = new DataStreamWriter(1024, Allocator.Temp);
+        writer.Write(Encoding.ASCII.GetBytes(str));
+
+        for (int i = 0; i < m_connections.Length; i++)
+            if (i != index)
+                m_ServerDriver.Send(m_connections[i], writer);
+
+        writer.Dispose();
+    }
+
     public void OnPing(Message message, int index)
     {
         var msg = new Message("client", nm.userName, MessageTypes.Network.PingAck);
@@ -431,8 +385,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
 
         str = str + "|" + msg.GetType();
         
-        Debug.Log(str);
-
         var writer = new DataStreamWriter(256, Allocator.Temp);
 
         writer.Write(Encoding.ASCII.GetBytes(str));
@@ -473,4 +425,46 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap
         if (message.swapMsg == ClientBehaviour.SwapMsgType.Acknowledge)
             nm.FindSwapNames(sender, target);
     }
+
+    #region IDisposable
+    private bool disposedValue = false; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                
+                
+            }
+            Debug.Log("Running Dispose");
+            //cancellationTokenSource.Dispose();
+
+            for (int i = m_connections.Length - 1; i >= 0; i--)
+                DisconnectClient(i);
+
+            // All jobs must be completed before we can dispose the data they use
+            m_ServerDriver.ScheduleUpdate().Complete();
+            //m_connections.Clear();
+            //m_updateHandle.Complete();
+            m_ServerDriver.Dispose();
+            m_connections.Dispose();
+
+            disposedValue = true;
+        }
+    }
+    
+    ~ServerBehaviour()
+    {
+      Dispose(false);
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+
+    }
+    #endregion
 }

@@ -25,6 +25,11 @@
         void OnConnection(ConnectMessage message, int index);
     }
 
+    public interface IDisconect
+    {
+        void OnDisconnect();
+    }
+
     public interface IDisconnectClient
     {
         void OnClientDisconnect(DiscClientMessage message);
@@ -73,6 +78,11 @@
     public interface IProbeResponse
     {
         void OnProbeResponse(ProbeResponseMessage message);
+    }
+
+    public interface IStartGame
+    {
+        void OnStartGame();
     }
 
     public interface ISwap

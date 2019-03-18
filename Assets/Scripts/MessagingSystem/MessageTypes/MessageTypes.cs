@@ -37,15 +37,14 @@ namespace MessageTypes
         public const ushort ConnectAck = offset + 2;
 
         public const ushort Disconnect = offset + 3;
-        public const ushort DisconnectAck = offset + 4;
-        public const ushort ClientDisconnect = offset + 5;
+        public const ushort ClientDisconnect = offset + 4;
 
-        public const ushort Ping = offset + 6;
-        public const ushort PingAck = offset + 7;
+        public const ushort Ping = offset + 5;
+        public const ushort PingAck = offset + 6;
 
-        public const ushort Chat = offset + 8;
+        public const ushort Chat = offset + 7;
 
-        public const ushort Swap = offset + 9;
+        public const ushort Swap = offset + 8;
 
     }
 
@@ -57,16 +56,18 @@ namespace MessageTypes
     {
         private const ushort offset = 0x0200;
 
-        public const ushort Attack = offset + 1;
-        public const ushort AttackResponse = offset + 2;
-        public const ushort Defense = offset + 3;
-        public const ushort DefenseResponse = offset + 4;
-        public const ushort Discover = offset + 5;
-        public const ushort DiscoverResponse = offset + 6;
-        public const ushort Analyze = offset + 7;
-        public const ushort AnalyzeResponse = offset + 8;
-        public const ushort Probe = offset + 9;
-        public const ushort ProbeResponse = offset + 10;
+        public const ushort Start = offset + 1;
+
+        public const ushort Attack = offset + 2;
+        public const ushort AttackResponse = offset + 3;
+        public const ushort Defense = offset + 4;
+        public const ushort DefenseResponse = offset + 5;
+        public const ushort Discover = offset + 6;
+        public const ushort DiscoverResponse = offset + 7;
+        public const ushort Analyze = offset + 8;
+        public const ushort AnalyzeResponse = offset + 9;
+        public const ushort Probe = offset + 10;
+        public const ushort ProbeResponse = offset + 11;
     }
 
     /// <summary>

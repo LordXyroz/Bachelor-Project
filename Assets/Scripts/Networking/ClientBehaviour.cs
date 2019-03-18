@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconnectClient
+public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconnectClient, IDisconect, IStartGame, IDisposable
 {
     private NetworkingManager nm;
 
@@ -62,37 +62,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         m_clientToServerConnection = default;
         m_clientWantsConnection = false;
     }
-
     
-    /// <summary>
-    /// Destructor for client behaviour, makes sure that important data is cleaned up.
-    /// </summary>
-    ~ClientBehaviour()
-    {
-        Debug.Log("Running the actual destructor");
-        //cancellationTokenSource.Dispose();
-
-        m_ClientDriver.ScheduleUpdate().Complete();
-        //m_ClientDriver.Disconnect(m_clientToServerConnection);
-        //m_clientToServerConnection.Close(m_ClientDriver);
-        //m_clientToServerConnection = default;
-        m_ClientDriver.Dispose();
-        //m_ClientDriver = default;
-    }
-    
-    public void Destructor()
-    {
-        Debug.Log("Running the 'custom' destructor");
-        //cancellationTokenSource.Dispose();
-
-        m_ClientDriver.ScheduleUpdate().Complete();
-        //m_ClientDriver.Disconnect(m_clientToServerConnection);
-        //m_clientToServerConnection.Close(m_ClientDriver);
-        //m_clientToServerConnection = default;
-        m_ClientDriver.Dispose();
-        //m_ClientDriver = default;
-    }
-
     public enum SwapInfo{
         Null,
         Waiting,
@@ -193,7 +163,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         catch (SocketException e)
         {
             /// Client will get socket exception when trying to ask other computers if they are hosting or not, and they don't answer yes.
-            /// Debug.Log("\nSocketException for ip: " + ip + "\n\nException msg: " + e);
+            Debug.Log("\nSocketException for ip: " + ip + "\n\nException msg: " + e);
         }
         catch (OperationCanceledException e)
         {
@@ -479,24 +449,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     {
         if (m_clientToServerConnection.IsCreated)
         {
-            /*Scenario obj = new Scenario
-            {
-                playerName = "Chris",
-                timeElapsed = 3.14f,
-                level = 5,
-                position = new Vector2(5, 3),
-                values = new int[] { 5, 3, 6, 8, 2 }
-            };
-
-            Debug.Log("Client - Sending Scenario.");
-            // Maybe change this to <Message> later on, as simple string messages won't be sent over the network then.
-            string classObj = JsonUtility.ToJson(obj) + "<Scenario>";
-            var classWriter = new DataStreamWriter(classObj.Length + 2, Allocator.Temp);
-            // Setting prefix for server to easily know what kind of msg is being written.
-            byte[] msg = Encoding.ASCII.GetBytes(classObj);
-            classWriter.Write(msg);
-            m_ClientDriver.Send(m_clientToServerConnection, classWriter);
-            classWriter.Dispose();*/
+            // Todo: scenario stuff
         }
     }
     
@@ -548,27 +501,6 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
                     data = data.Substring(0, data.Length - 10);
                     Debug.Log("Client - got scenario: " + data);
                 }
-                else if (data.Contains("<ClientDisconnect>"))
-                {
-                    string name = data.Substring(0, data.IndexOf("<ClientDisconnect>"));
-                    /// Remove client that disconnected from list of people who ARE indeed connected.
-                    Debug.Log("Client - removing other client");
-                    nm.FindPlayerForRemoval(name);
-                }
-                else if (data.Contains("<Disconnect>"))
-                {
-                    Debug.Log("Client - host wants me to disconnect!");
-                    
-                    //Disconnect();
-                    nm.DisconnectFromServer();
-                    
-                    /// If the server disconnected us we clear out connection
-                    m_clientToServerConnection = default(NetworkConnection);
-                }
-                else if (data.Contains("<StartGame>"))
-                {
-                    StartGame();
-                }
                 else if (data.Contains("|"))
                 {
                     /// This is using message
@@ -600,13 +532,6 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
     }
 
-    void StartGame()
-    {
-        GameObject.Find("Canvas").SetActive(false);
-
-        SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
-    }
-
     public void OnPing(Message message, int index)
     {
         // Debug.Log("Ping ack!");
@@ -630,7 +555,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         }
 
         nm.playerType = nm.FindPlayerType();
-        Debug.Log("OnConnection - You are connected to server!");
+        Debug.Log("OnConnection - You are connected to server! ip: " + ServerEndPoint.GetIp());
     }
 
     public void OnChatMessage(ChatMessage message)
@@ -682,4 +607,55 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     {
         nm.FindPlayerForRemoval(message.disconnectingClient);
     }
+
+    public void OnDisconnect()
+    {
+        nm.DisconnectFromServer();
+    }
+
+    public void OnStartGame()
+    {
+        GameObject.Find("Canvas").SetActive(false);
+
+        SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
+    }
+
+    #region IDisposable Support
+    private bool disposedValue = false; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+
+            }
+            Debug.Log("Running client Dispose");
+            //cancellationTokenSource.Dispose();
+
+            m_ClientDriver.ScheduleUpdate().Complete();
+            m_clientToServerConnection = default;
+            m_ClientDriver.Dispose();
+            m_ClientDriver = default;
+
+            ServerEndPoint = default;
+
+            setupHostIp.Dispose();
+
+            disposedValue = true;
+        }
+    }
+    
+    ~ClientBehaviour()
+    {
+      Dispose(false);
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    #endregion
 }

@@ -165,7 +165,7 @@ public class NetworkingManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Makes sure to update the Client/Server-Behaviour every 0.02 seconds approximately.
+    /// Makes sure to update the Client/Server-Behaviour every 0.05 seconds approximately.
     /// </summary>
     void FixedUpdate()
     {
@@ -277,7 +277,92 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void DisconnectFromServer()
     {
-        StartCoroutine(Disconnect());
+        // StartCoroutine(Disconnect());
+        Debug.Log("Disconnecting");
+        /// When player disconnects/exits game, the player may start over with different playerType.(Observer, defender/attacker)
+
+        //yield return new WaitForSeconds(0.01f);
+        lobbyScrollField.SetActive(true);
+
+        if (playerType == PlayerManager.PlayerType.Observer)
+        {
+            if (sb == null)
+            {
+                /// Already no connection:
+                //yield return null;
+                return;
+            }
+            /// Disconnect clients from server:
+            if (sb.m_ServerDriver.IsCreated)
+            {
+                sb.m_ServerDriver.ScheduleUpdate().Complete();
+
+                if (sb.m_connections.IsCreated)
+                {
+                    sb.BroadcastMessage(new Message("Client", userName, MessageTypes.Network.Disconnect));
+
+                    Thread.Sleep(100);
+                    for (int i = 0; i < sb.m_connections.Length; i++)
+                        sb.m_ServerDriver.Disconnect(sb.m_connections[i]);
+
+                }
+            }
+            sb.StopListening();
+            sb.Dispose();
+
+            /// Delete chat when exiting lobby:
+            for (int i = 0; i < messageList.Count; i++)
+            {
+                messageList[i].gameObject.GetComponent<Text>().text = "";
+            }
+
+
+            /// Change connection text:
+            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
+            GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.red;
+
+            /// Change view to not be in a lobby:
+            chatField.SetActive(false);
+            connectionField.SetActive(true);
+
+            /// Make it possible for them to start game if they choose to be host:
+            startGameButton.SetActive(true);
+        }
+        else if (playerType == PlayerManager.PlayerType.Attacker || playerType == PlayerManager.PlayerType.Defender)
+        {
+            if (cb == null)
+            {
+                /// Already no connection:
+                //yield return null;
+                return;
+            }
+
+            Debug.Log("client disconnect");
+
+            /// Delete past chat:
+            for (int i = 1; i < messageList.Count; i++)
+            {
+                messageList[i].GetComponent<Text>().text = "";
+            }
+
+            /// Delete chat text as client is disconnecting from lobby.
+            cb.Disconnect();
+
+            foreach (var a in attackerNames)
+                a.transform.Find("Text").GetComponent<Text>().text = "";
+
+            foreach (var b in defenderNames)
+                b.transform.Find("Text").GetComponent<Text>().text = "";
+
+            cb.Dispose();
+
+            /// Disconnect client from host.
+            //yield return new WaitForSeconds(1);
+        }
+
+        playerType = default;
+        //Debug.Log("Right before GC.Collect()");
+        //System.GC.Collect(System.GC.MaxGeneration, System.GCCollectionMode.Forced);
     }
 
     /// <summary>
@@ -306,27 +391,16 @@ public class NetworkingManager : MonoBehaviour
                 
                 if (sb.m_connections.IsCreated)
                 {
-                    for (int i = 0; i < sb.m_connections.Length; ++i)
-                    {
-                        /// Send message for client to disconnect:
-                        string message = "<Disconnect>";
-                        var messageWriter = new DataStreamWriter(message.Length, Allocator.Temp);
-                        
-                        messageWriter.Write(Encoding.ASCII.GetBytes(message));
+                    sb.BroadcastMessage(new Message("Client", userName, MessageTypes.Network.Disconnect));
 
-                        sb.m_ServerDriver.Send(sb.m_connections[i], messageWriter);
-                        messageWriter.Dispose();
-
-
-                        /// Wait for client to disconnect:
-                        Thread.Sleep(100);
-                        /// Disconnect server:
+                    Thread.Sleep(100);
+                    for (int i = 0; i < sb.m_connections.Length; i++)
                         sb.m_ServerDriver.Disconnect(sb.m_connections[i]);
-                    }
+                    
                 }
             }
             sb.StopListening();
-            sb.Destructor();
+            sb.Dispose();
 
             /// Delete chat when exiting lobby:
             for (int i = 0; i < messageList.Count; i++)
@@ -371,12 +445,16 @@ public class NetworkingManager : MonoBehaviour
             foreach (var b in defenderNames)
                 b.transform.Find("Text").GetComponent<Text>().text = "";
 
+            cb = null;
+            
+
             /// Disconnect client from host.
             yield return new WaitForSeconds(1);
-            cb.Destructor();
         }
 
         playerType = default;
+        //Debug.Log("Right before GC.Collect()");
+        //System.GC.Collect(System.GC.MaxGeneration, System.GCCollectionMode.Forced);
     }
 
     /// <summary>

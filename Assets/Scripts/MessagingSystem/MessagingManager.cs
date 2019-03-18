@@ -136,6 +136,13 @@ public static class MessagingManager
                     break;
                 }
 
+            case MessageTypes.Game.Start:
+                {
+                    if (_NetworkingManager.cb != null)
+                        _NetworkingManager.cb.OnStartGame();
+                    break;
+                }
+
             case MessageTypes.Game.Probe:
                 {
                     var objects = Object.FindObjectsOfType<MonoBehaviour>().OfType<IProbe>();
@@ -211,7 +218,14 @@ public static class MessagingManager
 
                     break;
                 }
-            
+
+            case MessageTypes.Network.Disconnect:
+                {
+                    if (_NetworkingManager.cb != null)
+                        _NetworkingManager.cb.OnDisconnect();
+                    break;
+                }
+
             case MessageTypes.Network.Ping:
                 {
                     if (_NetworkingManager.cb != null)
