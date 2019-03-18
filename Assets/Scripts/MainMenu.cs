@@ -8,8 +8,12 @@ public class MainMenu : MonoBehaviour
     // Loading the game screen
     public void LoadGame()
     {
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        SceneManager.LoadScene("GameStart");
+        SceneManager.LoadScene("Matchmaking");
+    }
+    
+    public void ScenarioCreator()
+    {
+        // Load scenario creator
     }
 
     // Quitting the application
