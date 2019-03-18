@@ -67,11 +67,9 @@ public class ReferenceLineMenu : MonoBehaviour
         lineFromStart = line.gameObject.transform.Find("LineFromStart").GetComponent<RectTransform>().transform;
         firewall = line.gameObject.transform.Find("Firewall").gameObject;
 
-        Debug.Log("Update firewall");
         if (line.GetComponent<ConnectionReferences>().hasFirewall
             && lineToEnd != null)
         {
-            Debug.Log("Updating firewall");
             /// Place the firewall icon on the longest vector/line
             if (lineToEnd.localScale.magnitude > lineFromStart.localScale.magnitude)
             {
@@ -81,6 +79,8 @@ public class ReferenceLineMenu : MonoBehaviour
             {
                 firewall.transform.position = lineFromStart.position;
             }
+
+            /// Need to rotate the firewall if both are negative
             if (firewall.transform.position.x < 0 && firewall.transform.position.y < 0)
             {
                 firewall.transform.rotation = new Quaternion(0, 0, 90, 0);

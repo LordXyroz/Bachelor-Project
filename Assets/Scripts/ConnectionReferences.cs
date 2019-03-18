@@ -26,7 +26,6 @@ public class ConnectionReferences : MonoBehaviour
 
     public void RemoveConnectionComponent()
     {
-
         systemComponent = referenceFromObject.GetComponent<SystemComponent>();
         systemComponent.connectedReferenceLines.Remove(this.gameObject);
         systemComponent = referenceToObject.GetComponent<SystemComponent>();

@@ -44,6 +44,7 @@ public class LoadScenario : MonoBehaviour
     public GameObject SwitchPrefab;
     public GameObject WebsitePrefab;
     public GameObject ServerPrefab;
+    public GameObject ComputerPrefab;
 
 
 
@@ -64,21 +65,21 @@ public class LoadScenario : MonoBehaviour
     {
         filePath = chosenFilepath;
 
+        existingConnectionLines = selectedObject.connectionReferencesList;
+        existingSystemComponents = dropZone.editableSystemComponents;
+
+        /// Delete all existing components upon loading, before populating from the saved file
+        // for (int i = existingConnectionLines.Count - 1; i >= 0; i--)
+        // {
+        //     existingConnectionLines[i].GetComponent<ConnectionReferences>().RemoveConnectionComponent();
+        // }
+        for (int i = existingSystemComponents.Count - 1; i >= 0; i--)
+        {
+            existingSystemComponents[i].GetComponent<SystemComponent>().DeleteSystemComponent();
+        }
+        prefabNo = 0;
         if (File.Exists(filePath))
         {
-            existingConnectionLines = selectedObject.connectionReferencesList;
-            existingSystemComponents = dropZone.editableSystemComponents;
-
-            /// Delete all existing components upon loading, before populating from the saved file
-            for (int i = existingConnectionLines.Count - 1; i >= 0; i--)
-            {
-                existingConnectionLines[i].GetComponent<ConnectionReferences>().RemoveConnectionComponent();
-            }
-            for (int i = existingSystemComponents.Count - 1; i >= 0; i--)
-            {
-                existingSystemComponents[i].GetComponent<SystemComponent>().DeleteSystemComponent();
-            }
-            prefabNo = 0;
             ///////////////////////////////////////////////////////////////////////////////////////////
 
             string json = File.ReadAllText(filePath);
@@ -123,18 +124,20 @@ public class LoadScenario : MonoBehaviour
             }
 
             /// Must be run after the object instantiations, in order to connect them correctly
-            for (int i = 0; i < loadFromJSON.hasFirewall.Count; i++)
+            for (int i = 0; i < loadFromJSON.connectionLinePosition.Count; i++)
             {
                 line = (GameObject)Instantiate(connectionLinePrefab,
                                          loadFromJSON.connectionLinePosition[i],
                                          Quaternion.identity,
-                                         dropZone.transform.Find("Connections").gameObject.transform);
+                                         dropZone.transform.Find("Connections").transform);
+                line.transform.SetAsFirstSibling();
 
                 selectedObject.connectionReferencesList.Add(line);
                 lineReference = line.gameObject.GetComponent<ConnectionReferences>();
 
                 lineReference.referenceFromObject = GameObject.Find(loadFromJSON.referenceFromObjectName[i]);
                 lineReference.referenceToObject = GameObject.Find(loadFromJSON.referenceToObjectName[i]);
+                Debug.Log("Connected components: from : " + lineReference.referenceFromObject + "    to : " + lineReference.referenceToObject);
 
                 lineReference.referenceFromObject.GetComponent<SystemComponent>().connectedReferenceLines.Add(line);
                 lineReference.referenceToObject.GetComponent<SystemComponent>().connectedReferenceLines.Add(line);
@@ -181,6 +184,10 @@ public class LoadScenario : MonoBehaviour
 
             case "Server":
                 InstantiateObject(ServerPrefab);
+                break;
+
+            case "Computer":
+                InstantiateObject(ComputerPrefab);
                 break;
 
             case "System component":
@@ -264,5 +271,15 @@ public class LoadScenario : MonoBehaviour
     {
         pos = new Vector2(300, 650);
         InstantiateObject(ServerPrefab);
+    }
+
+
+    /// <summary>
+    /// Need separate function for each prefab type in order to link the functions to separate buttons
+    /// </summary>
+    public void InstantiateComputerButton()
+    {
+        pos = new Vector2(300, 650);
+        InstantiateObject(ComputerPrefab);
     }
 }

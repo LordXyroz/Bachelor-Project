@@ -92,7 +92,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         if (this.systemComponent.connectedReferenceLines != null)
         {
-            Debug.Log("Calling Update firewall");
             foreach (GameObject connection in systemComponent.connectedReferenceLines)
             {
                 referenceLineMenu.UpdateFirewall(connection);

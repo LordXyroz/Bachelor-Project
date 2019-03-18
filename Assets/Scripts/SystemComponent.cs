@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -8,7 +9,8 @@ using UnityEngine;
 /// 
 
 /// TODO
-/// Loading does not succesfully delete old objects before loading, causing it to break
+/// Loading does not succesfully delete old objects before loading(+), causing it to break
+/// Losing references between lines and components if loading when a connection exists in the scene
 
 
 public class SystemComponent : MonoBehaviour
@@ -159,23 +161,12 @@ public class SystemComponent : MonoBehaviour
 
     public void DeleteSystemComponent()
     {
-        foreach (GameObject line in connectedReferenceLines)
+        foreach (GameObject line in connectedReferenceLines.ToList())
         {
-            if (line.GetComponent<ConnectionReferences>().referenceFromObject == this.gameObject)
-            {
-                connectedSystemCommponent = line.GetComponent<ConnectionReferences>().referenceToObject;
-            }
-            else if (line.GetComponent<ConnectionReferences>().referenceToObject == this.gameObject)
-            {
-                connectedSystemCommponent = line.GetComponent<ConnectionReferences>().referenceFromObject;
-            }
-
-            systemComponent = connectedSystemCommponent.GetComponent<SystemComponent>();
-            systemComponent.connectedReferenceLines.Remove(line);
-            selectedObject.connectionReferencesList.Remove(line);
-            Destroy(line);
+            line.GetComponent<ConnectionReferences>().RemoveConnectionComponent();
         }
         dropZone.editableSystemComponents.Remove(this.gameObject);
+        connectedReferenceLines = null;
         Destroy(this.gameObject);
     }
 

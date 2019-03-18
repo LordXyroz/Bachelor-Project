@@ -171,9 +171,10 @@ public class SelectedObject : MonoBehaviour
         if (toNew.GetComponent<SystemComponent>() != null
             && fromOld.GetComponent<SystemComponent>() != null)
         {
-            GameObject connectionLineClone = Instantiate(connectionLine, canvas.transform);
-            connectionLineClone.transform.position = fromOld.transform.position;
-            connectionLineClone.transform.SetParent(GameObject.Find("Connections").transform);
+            GameObject connectionLineClone = Instantiate(connectionLine,
+                                                         fromOld.transform.position,
+                                                         Quaternion.identity,
+                                                         GameObject.Find("Connections").transform);
             connectionLineClone.transform.SetAsFirstSibling();
 
             connectionReferences = connectionLineClone.GetComponent<ConnectionReferences>();
