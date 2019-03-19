@@ -1693,7 +1693,7 @@ RectTransform:
   m_Children:
   - {fileID: 357386925}
   m_Father: {fileID: 1586334870}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1740,12 +1740,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2800000, guid: e0f91e6569da4934a48d85bf8d3063f0, type: 3}
-        m_MethodName: 
+      - m_Target: {fileID: 1586334871}
+        m_MethodName: ScenarioCreator
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2106,8 +2106,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1196456004}
   - {fileID: 1693267188}
+  - {fileID: 1196456004}
   - {fileID: 885422079}
   - {fileID: 1709568233}
   m_Father: {fileID: 320288936}
@@ -2162,7 +2162,7 @@ RectTransform:
   m_Children:
   - {fileID: 1747256566}
   m_Father: {fileID: 1586334870}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

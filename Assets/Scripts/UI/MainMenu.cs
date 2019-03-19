@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
     
     public void ScenarioCreator()
     {
-        // Load scenario creator
+        SceneManager.LoadScene("DragAndDropScene");
     }
 
     // Quitting the application
