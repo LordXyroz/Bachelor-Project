@@ -4,11 +4,18 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Static class used for observer saving events from attacker and defender.
+/// </summary>
 public static class LogSaving
 {
     static StreamWriter attackerWriter;
     static StreamWriter defenderWriter;
 
+    /// <summary>
+    /// Static constructor.
+    /// Creates files in the /Logs/ folder, and creates the folder if it doesn't exist.
+    /// </summary>
     static LogSaving()
     {
         AppDomain.CurrentDomain.ProcessExit += new EventHandler(Destructor);
@@ -25,12 +32,23 @@ public static class LogSaving
         defenderWriter.WriteLine("Event:");
     }
 
+    /// <summary>
+    /// Delegate since C# doesn't have destructors for static classes.
+    /// Makes sure the files are closed.
+    /// </summary>
+    /// <param name="sender">unused</param>
+    /// <param name="e">unused</param>
     public static void Destructor(object sender, EventArgs e)
     {
         attackerWriter.Close();
         defenderWriter.Close();
     }
     
+    /// <summary>
+    /// Overloaded function.
+    /// Calls base function before adding extra info.
+    /// </summary>
+    /// <param name="message">Message containing relevant info</param>
     public static void Save(AnalyzeMessage message)
     {
         Save((Message) message);
@@ -47,6 +65,11 @@ public static class LogSaving
         FlushWriters();
     }
 
+    /// <summary>
+    /// Overloaded function.
+    /// Calls base function before adding extra info.
+    /// </summary>
+    /// <param name="message">Message containing relevant info</param>
     public static void Save(AnalyzeResponeMessage message)
     {
         Save((Message) message);
@@ -67,6 +90,11 @@ public static class LogSaving
         FlushWriters();
     }
 
+    /// <summary>
+    /// Overloaded function.
+    /// Calls base function before adding extra info.
+    /// </summary>
+    /// <param name="message">Message containing relevant info</param>
     public static void Save(AttackMessage message)
     {
         Save((Message) message);
@@ -82,6 +110,11 @@ public static class LogSaving
         FlushWriters();
     }
 
+    /// <summary>
+    /// Overloaded function.
+    /// Calls base function before adding extra info.
+    /// </summary>
+    /// <param name="message">Message containing relevant info</param>
     public static void Save(DefenseMessage message)
     {
         Save((Message) message);
@@ -97,6 +130,11 @@ public static class LogSaving
         FlushWriters();
     }
 
+    /// <summary>
+    /// Overloaded function.
+    /// Calls base function before adding extra info.
+    /// </summary>
+    /// <param name="message">Message containing relevant info</param>
     public static void Save(DiscoverMessage message)
     {
         Save((Message) message);
@@ -109,6 +147,11 @@ public static class LogSaving
         FlushWriters();
     }
 
+    /// <summary>
+    /// Overloaded function.
+    /// Calls base function before adding extra info.
+    /// </summary>
+    /// <param name="message">Message containing relevant info</param>
     public static void Save(DiscoverResponseMessage message)
     {
         Save((Message) message);
@@ -131,6 +174,11 @@ public static class LogSaving
         FlushWriters();
     }
     
+    /// <summary>
+    /// Base function for saving events from the message class.
+    /// Saves events on different files based on attacker or defender event.
+    /// </summary>
+    /// <param name="message">Base message class containing relevant info</param>
     public static void Save(Message message)
     {
         if (message.targetName == "Attacker" ||
@@ -161,6 +209,11 @@ public static class LogSaving
         FlushWriters();
     }
 
+    /// <summary>
+    /// Overloaded function.
+    /// Calls base function before adding extra info.
+    /// </summary>
+    /// <param name="message">Message containing relevant info</param>
     public static void Save(ProbeResponseMessage message)
     {
         Save((Message) message);
@@ -181,6 +234,11 @@ public static class LogSaving
         FlushWriters();
     }
 
+    /// <summary>
+    /// Overloaded function.
+    /// Calls base function before adding extra info.
+    /// </summary>
+    /// <param name="message">Message containing relevant info</param>
     public static void Save(SuccessMessage message)
     {
         Save((Message) message);
@@ -197,6 +255,9 @@ public static class LogSaving
         FlushWriters();
     }
 
+    /// <summary>
+    /// Flushes writers to make sure things are written to the file.
+    /// </summary>
     public static void FlushWriters()
     {
         attackerWriter.Flush();
