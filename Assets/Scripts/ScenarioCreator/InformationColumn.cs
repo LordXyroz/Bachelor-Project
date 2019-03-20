@@ -25,7 +25,7 @@ public class InformationColumn : MonoBehaviour
     }
 
 
-    public void PopulateInformationColumn(string name, List<string> vulnerabilities, int security, bool entryPoint)
+    public void PopulateInformationColumn(string name, List<AttackTypes> vulnerabilities, int security, bool entryPoint)
     {
         currentObjectName.text = name;
         vulnerabilityHeader.text = "Vulnerabilities";
@@ -38,9 +38,9 @@ public class InformationColumn : MonoBehaviour
         }
         else
         {
-            foreach (string vulnerability in vulnerabilities)
+            foreach (var vulnerability in vulnerabilities)
             {
-                currentVulnerabilities.text += vulnerability + "\n";
+                currentVulnerabilities.text += VulnerabilityLogic.GetAttackString(vulnerability) + "\n";
             }
         }
     }

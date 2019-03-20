@@ -17,7 +17,7 @@ public class SystemComponent : MonoBehaviour
 {
     [Header("Attributes for this object/node")]
     public int securityLevel;
-    public List<string> componentVulnerabilities = new List<string>();
+    public List<AttackTypes> componentVulnerabilities = new List<AttackTypes>();
     public string componentType;   // Must match the prefab name
     public string componentName;
     public bool isEntryPoint;
@@ -190,7 +190,7 @@ public class SystemComponent : MonoBehaviour
     }
 
 
-    public void UpdateComponentVulnerabilityInformation(int security, List<string> vulnerabilities)
+    public void UpdateComponentVulnerabilityInformation(int security, List<AttackTypes> vulnerabilities)
     {
         securityLevel = security;
         componentVulnerabilities = vulnerabilities;

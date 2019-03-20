@@ -47,5 +47,5 @@ public class Save
 [System.Serializable]
 public class VulnerabilityWrapper
 {
-    public List<string> vulnerabilityWrapperList = new List<string>();
+    public List<AttackTypes> vulnerabilityWrapperList = new List<AttackTypes>();
 }

@@ -108,7 +108,7 @@ public class LoadScenario : MonoBehaviour
                 targetComponent.securityLevel = loadFromJSON.systemComponentSecurityLevelsList[i];
                 targetComponent.componentName = loadFromJSON.systemComponentNamesList[i];
 
-                foreach (string vulnerability in vulnerabilityWrapper.vulnerabilityWrapperList)
+                foreach (var vulnerability in vulnerabilityWrapper.vulnerabilityWrapperList)
                 {
                     targetComponent.componentVulnerabilities.Add(vulnerability);
                 }
