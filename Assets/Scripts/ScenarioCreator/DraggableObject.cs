@@ -73,13 +73,6 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             }
         }
 
-        /// if the object is not dragged from a dropzone and is a system component, make a clone of it.
-        if (this.transform.parent.gameObject.GetComponent<DropZone>() == null && GetComponent<Image>() != null)
-        {
-            Image systemComponentClone = (Image)Instantiate(systemComponentImage, parentToReturnTo);
-            systemComponentClone.color = originalColor;
-        }
-
         offset = (Vector2)this.transform.position - eventData.position;
         GetComponent<CanvasGroup>().blocksRaycasts = false;
     }
@@ -107,19 +100,8 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         this.transform.SetParent(parentToReturnTo);
 
-        /// Setting up the area for the drop zone, deleting objects dropped outside of the drop zone
-        //GameObject dropZone = GameObject.Find("SystemSetupScreen");
-        // RectTransform setupScreen = dropZone.GetComponent<RectTransform>();
-
-        //objectPosition = this.transform.position;
-        //float width = setupScreen.rect.width;
-        //float height = setupScreen.rect.height;
-        //float objectWidth = this.GetComponent<RectTransform>().rect.width;
-        //float objectHeight = this.GetComponent<RectTransform>().rect.height;
-
         /// Delete the object if it is placed outside of the editing screen field
-        if (eventData.pointerCurrentRaycast.gameObject == null
-            || !eventData.pointerCurrentRaycast.gameObject.name.Equals("DropzoneBackgroundButton"))
+        if (!dropZone.GetComponent<BoxCollider2D>().bounds.Contains(eventData.position))
         {
             if (this.transform.parent.gameObject.GetComponent<DropZone>() == null)
             {
@@ -131,10 +113,5 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 selectedObject.DeleteSelectedObject();
             }
         }
-    }
-
-    void OnBecameInvisible()
-    {
-        selectedObject.DeleteSelectedObject();
     }
 }

@@ -213,6 +213,7 @@ public class LoadScenario : MonoBehaviour
             Debug.Log("Or so help me lord I will...");
 
         target.name = target.name + prefabNo++;
+        target.GetComponent<DraggableObject>().parentToReturnTo = dropZone.transform;
         dropZone.editableSystemComponents.Add(target);
     }
 

@@ -5,11 +5,16 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// Script placed on the dropzone (SystemSetupScreen) in order to make objects editable
 /// </summary>
-
-
 public class DropZone : MonoBehaviour, IDropHandler
 {
     public List<GameObject> editableSystemComponents = new List<GameObject>();
+
+
+    public void Start()
+    {
+        this.gameObject.GetComponent<BoxCollider2D>().size = this.gameObject.GetComponent<RectTransform>().rect.size;
+    }
+
 
     public void OnDrop(PointerEventData eventData)
     {
