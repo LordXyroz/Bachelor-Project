@@ -171,6 +171,13 @@ public static class MessagingManager
                     break;
                 }
 
+            case MessageTypes.Game.SaveFile:
+                {
+                    if (_NetworkingManager.cb != null)
+                        _NetworkingManager.cb.OnSaveFile((SaveFileMessage) message);
+                    break;
+                }
+
             case MessageTypes.Logging.Log:
                 {
                     var objects = Object.FindObjectsOfType<MonoBehaviour>().OfType<ILogging>();

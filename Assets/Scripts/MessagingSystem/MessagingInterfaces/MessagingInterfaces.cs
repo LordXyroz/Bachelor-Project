@@ -80,6 +80,11 @@
         void OnProbeResponse(ProbeResponseMessage message);
     }
 
+    public interface ISaveFile
+    {
+        void OnSaveFile(SaveFileMessage message);
+    }
+
     public interface IStartGame
     {
         void OnStartGame();

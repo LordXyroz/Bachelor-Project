@@ -68,6 +68,8 @@ namespace MessageTypes
         public const ushort AnalyzeResponse = offset + 9;
         public const ushort Probe = offset + 10;
         public const ushort ProbeResponse = offset + 11;
+
+        public const ushort SaveFile = offset + 12;
     }
 
     /// <summary>

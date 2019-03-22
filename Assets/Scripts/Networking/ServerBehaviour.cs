@@ -241,10 +241,10 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
         for (int i = 0; i < m_connections.Length; ++i)
         {
-            DataStreamReader strm;
+            
             NetworkEvent.Type cmd;
             /// Pop all events for the connection
-            while ((cmd = m_ServerDriver.PopEventForConnection(m_connections[i], out strm)) != NetworkEvent.Type.Empty)
+            while ((cmd = m_ServerDriver.PopEventForConnection(m_connections[i], out DataStreamReader strm)) != NetworkEvent.Type.Empty)
             {
                 if (cmd == NetworkEvent.Type.Connect)
                 {
@@ -352,14 +352,18 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
     public void BroadcastMessage(dynamic message, int index)
     {
-        var str = JsonUtility.ToJson(message);
-        str = str + "|" + message.GetType();
+        string str = JsonUtility.ToJson(message);
+        str = str + "|" + message.GetType() + "\0\0\0\0\0\0\0\0";
 
-        var writer = new DataStreamWriter(1024, Allocator.Temp);
+
+        var writer = new DataStreamWriter(str.Length, Allocator.Temp);
         writer.Write(Encoding.ASCII.GetBytes(str));
+
+        if (message.messageType == MessageTypes.Game.SaveFile)
+            Debug.Log("---LOG---: Length of package in writer: " + writer.Length);
         
         m_ServerDriver.Send(m_connections[index], writer);
-
+        
         writer.Dispose();
     }
 
@@ -406,6 +410,8 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
         var msg = new ConnectMessage(name, hostName, MessageTypes.Network.ConnectAck, nm.userName, attackName, defendName);
         BroadcastMessage(msg);
+
+        BroadcastMessage(new SaveFileMessage(name, hostName, MessageTypes.Game.SaveFile, nm.saveFile), index);
     }
 
     public void OnChatMessage(ChatMessage message)
@@ -424,6 +430,11 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
         if (message.swapMsg == ClientBehaviour.SwapMsgType.Acknowledge)
             nm.FindSwapNames(sender, target);
+    }
+
+    public void SendSaveFile(int index)
+    {
+        
     }
 
     #region IDisposable

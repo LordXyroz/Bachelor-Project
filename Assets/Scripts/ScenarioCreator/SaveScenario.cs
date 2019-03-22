@@ -40,6 +40,11 @@ public class SaveScenario : MonoBehaviour
     {
         directoryPath = Application.dataPath + "/Savefiles";
 
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
         canvas = GetComponentInParent<Canvas>();
         fileExistsPopup = canvas.transform.GetComponentInChildren<SavefileExistsPopup>(true);
     }

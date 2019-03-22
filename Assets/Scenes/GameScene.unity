@@ -5079,6 +5079,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2057724370973650319, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}
+      propertyPath: vulnerabilities.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2057724370973650319, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
+      propertyPath: availableDefenses.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2057724370973650319, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
       propertyPath: children.Array.data[0]
       value: 
       objectReference: {fileID: 1903982385}
@@ -5096,6 +5106,16 @@ PrefabInstance:
         type: 3}
       propertyPath: uiScript
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2057724370973650319, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
+      propertyPath: vulnerabilities.Array.data[3]
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 2057724370973650319, guid: c0f97a1f645c2474295c58860f9276b8,
+        type: 3}
+      propertyPath: availableDefenses.Array.data[4]
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 1881532719766092036, guid: c0f97a1f645c2474295c58860f9276b8,
         type: 3}

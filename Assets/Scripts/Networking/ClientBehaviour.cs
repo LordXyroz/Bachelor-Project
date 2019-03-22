@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
-public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconnectClient, IDisconect, IStartGame, IDisposable
+public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconnectClient, IDisconect, IStartGame, IDisposable, ISaveFile
 {
     private NetworkingManager nm;
 
@@ -59,6 +59,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         /// Set values to default.
         connect = false;
         m_ClientDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
+
         m_clientToServerConnection = default;
         m_clientWantsConnection = false;
     }
@@ -478,7 +479,6 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
                 Debug.Log("Could not update connection when not set yet: " + e);
             }
         }
-           
 
         NetworkEvent.Type cmd;
         /// Process all events on the connection. If the connection is invalid it will return Empty immediately
@@ -618,6 +618,12 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         GameObject.Find("Canvas").SetActive(false);
 
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
+    }
+
+    public void OnSaveFile(SaveFileMessage message)
+    {
+        Debug.Log("Json string of file: \n" + message.fileString);
+        nm.saveFile = JsonUtility.FromJson<Save>(message.fileString);
     }
 
     #region IDisposable Support

@@ -14,5 +14,6 @@ public enum AttackTypes
     XSS,
     Remote_Code_Exec,
     Mis_Config_Systems,
-    Disable_Log
+    Disable_Log,
+    DOS
 }

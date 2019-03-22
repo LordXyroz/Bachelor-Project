@@ -17,5 +17,6 @@ public enum DefenseTypes
     Off_Site_Logging,
     Use_Safe_API,
     Enforce_PW_Policy,
-    Encrypt_Data
+    Encrypt_Data,
+    Load_Balance
 }

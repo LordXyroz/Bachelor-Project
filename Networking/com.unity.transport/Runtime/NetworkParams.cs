@@ -27,7 +27,7 @@ namespace Unity.Networking.Transport
         /// <summary>The default disconnect timeout attempts value. This value can be overridden using the <see cref="NetworkConfigParameter"/></summary>
         public const int DisconnectTimeoutMS = 30 * 1000;
 
-        public const int MTU = 1400;
+        public const int MTU = 64 * 1024;
     }
 
     /// <summary>

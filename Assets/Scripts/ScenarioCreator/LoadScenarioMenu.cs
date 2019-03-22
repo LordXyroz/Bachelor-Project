@@ -14,9 +14,13 @@ public class LoadScenarioMenu : MonoBehaviour
     private TMP_Dropdown scenarioDropdown;
     private string file;
 
+    private string _SaveFileDirectory;
+
 
     void Start()
     {
+        _SaveFileDirectory = Application.dataPath + "/Savefiles";
+
         canvas = FindObjectOfType<Canvas>();
         saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
         loadScenario = FindObjectOfType<LoadScenario>();
@@ -39,7 +43,7 @@ public class LoadScenarioMenu : MonoBehaviour
     private void PopulatescenarioDropdown(TMP_Dropdown dropdown)
     {
         List<string> loadfiles = new List<string>();
-        string[] info = Directory.GetFiles(loadScenario.directoryPath, "*.json");
+        string[] info = Directory.GetFiles(_SaveFileDirectory, "*.json");
 
         foreach (string f in info)
         {
@@ -56,10 +60,17 @@ public class LoadScenarioMenu : MonoBehaviour
     public void LoadScenario()
     {
         file = scenarioDropdown.options[scenarioDropdown.value].text;
-        string filepath = Path.Combine(loadScenario.directoryPath, file);
-        loadScenario.fileName = file;
-        saveMenu.filename = file;
-        loadScenario.LoadGame(filepath);
+        string filepath = Path.Combine(_SaveFileDirectory, file);
+        if (loadScenario != null)
+        {
+            loadScenario.fileName = file;
+            saveMenu.filename = file;
+            loadScenario.LoadGame(filepath);
+        }
+        else
+        {
+            FindObjectOfType<NetworkingManager>().LoadSaveFile(filepath);
+        }
     }
 }
 

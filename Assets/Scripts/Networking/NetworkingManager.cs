@@ -55,6 +55,11 @@ public class NetworkingManager : MonoBehaviour
 
     public PlayerManager.PlayerType playerType;
 
+    [Header("Savefile variables")]
+    [SerializeField]
+    public Save saveFile;
+    public GameObject loadMenu;
+
     /// <summary>
     /// When starting the scene default values will be set here in Start.
     /// </summary>
@@ -213,31 +218,8 @@ public class NetworkingManager : MonoBehaviour
                     /// Player may not start hosting while looking for connection as a client.
                     return;
                 }
-                
-                sb = new ServerBehaviour();
-                playerType = PlayerManager.PlayerType.Observer;
 
-                lobbyScrollField.SetActive(false);
-
-                /// Changing view:
-                chatField.SetActive(true);
-                connectionField.SetActive(false);
-                GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
-                GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
-
-                /// Set username of host on top of screen for everyone to see.
-                Text T = GameObject.Find("HostText").GetComponent<Text>();
-                T.text = userName + "'s lobby";
-                
-                /// Set to false as host no client has joined a lobby before it starts.
-                for (int i = 0; i < attackerNames.Count; i++)
-                {
-                    attackerNames[i].SetActive(false);
-                }
-                for (int i = 0; i < defenderNames.Count; i++)
-                {
-                    defenderNames[i].SetActive(false);
-                }
+                loadMenu.SetActive(true);
             }
             else
             {
@@ -845,5 +827,43 @@ public class NetworkingManager : MonoBehaviour
         }
 
         lobbyScrollField.SetActive(false);
+    }
+
+    public void LoadSaveFile(string path)
+    {
+        if (System.IO.File.Exists(path))
+        {
+            string json = System.IO.File.ReadAllText(path);
+            
+
+            saveFile = JsonUtility.FromJson<Save>(json);
+
+            loadMenu.SetActive(false);
+
+            sb = new ServerBehaviour();
+            playerType = PlayerManager.PlayerType.Observer;
+
+            lobbyScrollField.SetActive(false);
+
+            /// Changing view:
+            chatField.SetActive(true);
+            connectionField.SetActive(false);
+            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
+            GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
+
+            /// Set username of host on top of screen for everyone to see.
+            Text T = GameObject.Find("HostText").GetComponent<Text>();
+            T.text = userName + "'s lobby";
+
+            /// Set to false as host no client has joined a lobby before it starts.
+            for (int i = 0; i < attackerNames.Count; i++)
+            {
+                attackerNames[i].SetActive(false);
+            }
+            for (int i = 0; i < defenderNames.Count; i++)
+            {
+                defenderNames[i].SetActive(false);
+            }
+        }
     }
 }
