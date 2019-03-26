@@ -834,7 +834,6 @@ public class NetworkingManager : MonoBehaviour
         if (System.IO.File.Exists(path))
         {
             string json = System.IO.File.ReadAllText(path);
-            
 
             saveFile = JsonUtility.FromJson<Save>(json);
 

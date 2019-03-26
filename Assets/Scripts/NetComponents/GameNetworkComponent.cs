@@ -37,14 +37,14 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     [Header("Observer Related")]
     private bool attackerSelected = false;
     private bool defenderSelected = false;
-
+    
     /// <summary>
     /// Sets up the OnClick of the button attached to this object.
     /// </summary>
     public void Start()
     {
         uiScript = FindObjectOfType<PlayerManager>().GetUIScript();
-
+        
         RectTransform rectTransform = GetComponent<RectTransform>();
         Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
 
@@ -67,6 +67,79 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         }
 
         networking = FindObjectOfType<NetworkingManager>();
+    }
+
+    public void InitComponent()
+    {
+        availableDefenses = new List<DefenseTypes>();
+        foreach (var v in vulnerabilities)
+            foreach (var d in VulnerabilityLogic.GetDefenses(v))
+                availableDefenses.Add(d);
+
+        // Todo: Find a simple way of traversing graph
+    }
+
+    public void InitConnectionLine(ConnectionReferences connection, GameObject line)
+    {
+        var lineToEnd = line.transform.Find("LineToEnd").GetComponent<RectTransform>().transform;
+        var lineFromStart = line.transform.Find("LineFromStart").GetComponent<RectTransform>().transform;
+
+        var startPos = connection.referenceFromObject.transform.position;
+        var endPos = connection.referenceToObject.transform.position;
+
+        float XPosDiff = Mathf.Abs(startPos.x - endPos.x) / 100;        //100 pixels per unit
+        float YPosDiff = Mathf.Abs(startPos.y - endPos.y) / 100;        //100 pixels per unit
+
+
+        /// connection to the right
+        if (startPos.x < endPos.x)
+        {
+            /// connection down
+            if (startPos.y > endPos.y)
+            {
+                lineToEnd.localScale = new Vector3(XPosDiff, 0.05f, 1.0f);
+                lineFromStart.localScale = new Vector3(0.05f, YPosDiff, 1.0f);
+                line.transform.rotation = Quaternion.identity;
+
+                lineFromStart.position = new Vector3(startPos.x, endPos.y + YPosDiff * 50);
+                lineToEnd.position = new Vector3(lineFromStart.position.x + XPosDiff * 50, endPos.y);
+            }
+            ///connection up
+            else
+            {
+                lineFromStart.localScale = new Vector3(0.05f, XPosDiff, 1.0f);
+                lineToEnd.localScale = new Vector3(YPosDiff, 0.05f, 1.0f);
+                line.transform.rotation = Quaternion.Euler(0, 0, 90);
+
+                lineFromStart.position = new Vector3(startPos.x + XPosDiff * 50, startPos.y);
+                lineToEnd.position = new Vector3(lineFromStart.position.x + XPosDiff * 50, endPos.y - YPosDiff * 50);
+            }
+        }
+        /// connection to the left
+        else
+        {
+
+            /// connection down
+            if (startPos.y > endPos.y)
+            {
+                lineFromStart.localScale = new Vector3(0.05f, XPosDiff, 1.0f);
+                lineToEnd.localScale = new Vector3(YPosDiff, 0.05f, 1.0f);
+                line.transform.rotation = Quaternion.Euler(0, 0, 270);
+
+                lineFromStart.position = new Vector3(startPos.x - XPosDiff * 50, startPos.y);
+                lineToEnd.position = new Vector3(lineFromStart.position.x - XPosDiff * 50, endPos.y + YPosDiff * 50);
+            }
+            ///connection up
+            else
+            {
+                lineFromStart.localScale = new Vector3(XPosDiff, 0.05f, 1.0f);
+                lineToEnd.localScale = new Vector3(0.05f, YPosDiff, 1.0f);
+                line.transform.rotation = Quaternion.Euler(0, 0, -180);
+
+                lineFromStart.position = new Vector3(startPos.x - XPosDiff * 50, startPos.y);
+                lineToEnd.position = new Vector3(lineFromStart.position.x - XPosDiff * 50, endPos.y - YPosDiff * 50);
+            }
+        }
     }
 
     /// <summary>
