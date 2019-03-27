@@ -122,7 +122,7 @@ public class DefenderUI : BaseUI
             if (child.CompareTag("VulnBox"))
                 Destroy(child.gameObject);
 
-        targetText.text = info.component.name;
+        targetText.text = info.displayName;
         probeText.text = (info.beenProbed) ? "Yes" : "No";
         analyzeText.text = (info.beenAnalyzed) ? "Yes" : "No";
 

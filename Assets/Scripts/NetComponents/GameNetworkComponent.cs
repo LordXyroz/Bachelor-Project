@@ -23,6 +23,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     public int difficulty = 1;
     private NetworkingManager networking;
     public bool rootNode = false;
+    public string displayName;
 
     [SerializeField]
     private GameObject uiElement;
@@ -245,7 +246,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
                 return;
 
-            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
+            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list, displayName));
         }
         else if (message.targetName == name)
         {
@@ -261,7 +262,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
                 return;
 
-            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
+            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list, displayName));
 
         }
     }

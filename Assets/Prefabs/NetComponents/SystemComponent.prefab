@@ -367,7 +367,7 @@ GameObject:
   - component: {fileID: 3089827598630090378}
   m_Layer: 5
   m_Name: SystemComponent
-  m_TagString: Untagged
+  m_TagString: Node
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -429,6 +429,8 @@ MonoBehaviour:
   availableDefenses: 
   implementedDefenses: 
   difficulty: 1
+  rootNode: 0
+  displayName: 
   uiElement: {fileID: 8148082364338162467}
   uiButton: {fileID: 6098250519963573669}
   uiScript: {fileID: 0}

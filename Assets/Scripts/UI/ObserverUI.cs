@@ -104,7 +104,7 @@ public class ObserverUI : BaseUI
             if (child.CompareTag("VulnBox"))
                 Destroy(child.gameObject);
 
-        targetText.text = info.component.name;
+        targetText.text = info.displayName;
 
         difficultyText.text = (info.difficulty == -1) ? "Unknown" : info.difficulty.ToString();
         nodesText.text = (info.numOfChildren == -1) ? "Unknown" : info.numOfChildren.ToString();

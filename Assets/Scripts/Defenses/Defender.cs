@@ -58,7 +58,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     {
         foreach (var o in FindObjectsOfType<GameNetworkComponent>())
         {
-            info.Add(new NodeInfo(o.gameObject));
+            info.Add(new NodeInfo(o.gameObject, o.displayName));
         }
         networking = FindObjectOfType<NetworkingManager>();
     }

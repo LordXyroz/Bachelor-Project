@@ -9,8 +9,9 @@ using UnityEngine;
 public class DiscoverResponseMessage : Message
 {
     public List<string> discovered;
+    public string displayName;
 
-    public DiscoverResponseMessage(string target, string sender, ushort type, List<string> response)
+    public DiscoverResponseMessage(string target, string sender, ushort type, List<string> response, string dispName)
         : base(target, sender, type)
     {
         targetName = target;
@@ -18,5 +19,6 @@ public class DiscoverResponseMessage : Message
         messageType = type;
     
         discovered = response;
+        displayName = dispName;
     }
 }

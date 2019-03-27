@@ -58,11 +58,10 @@ public class Observer : MonoBehaviour, ILogging, IError
     /// <param name="go">The game object (with attached GameNetworkComponent) to update from</param>
     public void UpdateNode(GameObject go)
     {
-
         ObserverNodeInfo node = nodes.FirstOrDefault(x => x.component.name == go.name);
         if (node == null)
         {
-            node = new ObserverNodeInfo(go);
+            node = new ObserverNodeInfo(go, go.GetComponent<GameNetworkComponent>().displayName);
             nodes.Add(node);
         }
 

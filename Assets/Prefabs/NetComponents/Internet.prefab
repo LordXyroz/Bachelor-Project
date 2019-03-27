@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 2438745253084002813}
   m_Layer: 5
   m_Name: Internet
-  m_TagString: Untagged
+  m_TagString: Node
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -311,6 +311,8 @@ MonoBehaviour:
   availableDefenses: 
   implementedDefenses: 
   difficulty: 1
+  rootNode: 0
+  displayName: 
   uiElement: {fileID: 9048145985919505942}
   uiButton: {fileID: 3745437311378608608}
   uiScript: {fileID: 0}

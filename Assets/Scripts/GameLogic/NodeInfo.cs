@@ -8,6 +8,7 @@ using System.Collections.Generic;
 public class NodeInfo
 {
     public GameObject component;
+    public string displayName;
 
     public List<AttackTypes> vulnerabilities;
 
@@ -25,10 +26,11 @@ public class NodeInfo
     /// Sets up initial values for a newly discovered node.
     /// </summary>
     /// <param name="target">The node that's been discovered</param>
-    public NodeInfo(GameObject target)
+    public NodeInfo(GameObject target, string dispName)
     {
         component = target;
-        
+        displayName = dispName;
+
         vulnerabilities = new List<AttackTypes>();
 
         beenProbed = false;

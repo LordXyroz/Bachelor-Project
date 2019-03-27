@@ -55,7 +55,7 @@ public class SystemComponent : MonoBehaviour
             securityLevel = 1;
         }
 
-        if (componentName == null)
+        if (componentName == "")
         {
             componentName = componentType;
         }

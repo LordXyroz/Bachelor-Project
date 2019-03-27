@@ -157,6 +157,7 @@ public class PlayerManager : MonoBehaviour
             component.difficulty = scenarioData.systemComponentSecurityLevelsList[i];
             component.vulnerabilities = wrapper.vulnerabilityWrapperList;
             component.rootNode = scenarioData.isEntryPointList[i];
+            component.displayName = scenarioData.systemComponentNamesList[i];
             compList.Add(component);
 
             component.InitComponent();
