@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using UnityEngine.UI;
 
 /// <summary>
 /// Keeps the references to the connected GameObjects
@@ -23,7 +23,8 @@ public class ConnectionReferences : MonoBehaviour
 
     public void Update()
     {
-        if (referenceFromObject.activeSelf && referenceToObject.activeSelf)
+        if (referenceFromObject.GetComponentInChildren<Button>(true).gameObject.activeSelf && 
+            referenceToObject.GetComponentInChildren<Button>(true).gameObject.activeSelf)
         {
             lineFromStart.SetActive(true);
             lineToEnd.SetActive(true);
