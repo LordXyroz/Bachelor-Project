@@ -32,6 +32,8 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     [SerializeField]
     private BaseUI uiScript;
 
+    public GameObject selectionBox;
+
     [Header("Network depth")]
     public int graphDepth;
     public List<GameNetworkComponent> children;

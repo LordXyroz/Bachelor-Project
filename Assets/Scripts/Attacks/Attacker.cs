@@ -148,9 +148,14 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (!workInProgress)
         {
             if (target != null)
+            {
                 networking.SendMessage(new Message(target.name, "", MessageTypes.Logging.Targeting));
+                target.GetComponent<GameNetworkComponent>().selectionBox.SetActive(false);
+            }
 
             target = go;
+
+            target.GetComponent<GameNetworkComponent>().selectionBox.SetActive(true);
 
             NodeInfo i = info.Find(x => x.component.name == go.name);
             if (i != null)
@@ -168,7 +173,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (!workInProgress)
         {
             if (target != null)
+            {
                 networking.SendMessage(new Message(target.name, "", MessageTypes.Logging.Targeting));
+                target.GetComponent<GameNetworkComponent>().selectionBox.SetActive(false);
+            }
             target = null;
         }
     }

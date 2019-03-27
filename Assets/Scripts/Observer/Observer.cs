@@ -15,6 +15,8 @@ public class Observer : MonoBehaviour, ILogging, IError
     [SerializeField]
     private List<ObserverNodeInfo> nodes = new List<ObserverNodeInfo>();
 
+    private GameObject target;
+
     /// <summary>
     /// Builds the nodes list with info.
     /// </summary>
@@ -58,14 +60,21 @@ public class Observer : MonoBehaviour, ILogging, IError
     /// <param name="go">The game object (with attached GameNetworkComponent) to update from</param>
     public void UpdateNode(GameObject go)
     {
+        if (target != null)
+            target.GetComponent<GameNetworkComponent>().selectionBox.SetActive(false);
+
+        target = go;
+
+        target.GetComponent<GameNetworkComponent>().selectionBox.SetActive(true);
+
         ObserverNodeInfo node = nodes.FirstOrDefault(x => x.component.name == go.name);
         if (node == null)
         {
-            node = new ObserverNodeInfo(go, go.GetComponent<GameNetworkComponent>().displayName);
+            node = new ObserverNodeInfo(target, target.GetComponent<GameNetworkComponent>().displayName);
             nodes.Add(node);
         }
 
-        var component = go.GetComponent<GameNetworkComponent>();
+        var component = target.GetComponent<GameNetworkComponent>();
 
         node.difficulty = component.difficulty;
         node.numOfChildren = component.children.Count;
@@ -81,6 +90,13 @@ public class Observer : MonoBehaviour, ILogging, IError
         node.beenAnalyzed = true;
 
         uiScript.PopulateInfoPanel(node);
+    }
+
+    public void ClearTarget()
+    {
+        if (target != null) 
+            target.GetComponent<GameNetworkComponent>().selectionBox.SetActive(false);
+        target = null;
     }
 
     /// <summary>

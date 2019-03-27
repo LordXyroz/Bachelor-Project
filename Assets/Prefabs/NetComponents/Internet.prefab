@@ -59,7 +59,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -316,6 +316,7 @@ MonoBehaviour:
   uiElement: {fileID: 9048145985919505942}
   uiButton: {fileID: 3745437311378608608}
   uiScript: {fileID: 0}
+  selectionBox: {fileID: 6421525998260924880}
   graphDepth: 0
   children: []
 --- !u!114 &2438745253084002813
