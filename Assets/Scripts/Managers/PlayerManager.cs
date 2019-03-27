@@ -156,7 +156,7 @@ public class PlayerManager : MonoBehaviour
 
             component.difficulty = scenarioData.systemComponentSecurityLevelsList[i];
             component.vulnerabilities = wrapper.vulnerabilityWrapperList;
-            component.graphDepth = (scenarioData.isEntryPointList[i]) ? 0 : int.MaxValue;
+            component.rootNode = scenarioData.isEntryPointList[i];
             compList.Add(component);
 
             component.InitComponent();
@@ -174,7 +174,11 @@ public class PlayerManager : MonoBehaviour
             reference.referenceFromObject.GetComponent<GameNetworkComponent>()
                     .children
                     .Add(reference.referenceToObject.GetComponent<GameNetworkComponent>());
-            
+
+            reference.referenceToObject.GetComponent<GameNetworkComponent>()
+                    .children
+                    .Add(reference.referenceFromObject.GetComponent<GameNetworkComponent>());
+
             reference.hasFirewall = scenarioData.hasFirewall[i];
             reference.transform.position = scenarioData.firewallPositionsList[i];
             reference.referenceFromObject
@@ -209,22 +213,6 @@ public class PlayerManager : MonoBehaviour
                 {
                     firewall.SetActive(false);
                 }
-            }
-        }
-
-        var rootNodes = compList.FindAll(x => x.graphDepth == 0);
-
-        TraverseAndSetDepth(rootNodes, rootNodes[0].graphDepth);
-    }
-
-    private void TraverseAndSetDepth(List<GameNetworkComponent> nodes, int depth)
-    {
-        foreach (var n in nodes)
-        {
-            if (n.graphDepth > depth)
-            {
-                n.graphDepth = depth;
-                TraverseAndSetDepth(n.children, n.graphDepth + 1);
             }
         }
     }

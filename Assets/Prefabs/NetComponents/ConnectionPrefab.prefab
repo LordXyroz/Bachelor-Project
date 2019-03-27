@@ -138,6 +138,9 @@ MonoBehaviour:
   hasFirewall: 0
   referenceFromObject: {fileID: 0}
   referenceToObject: {fileID: 0}
+  lineFromStart: {fileID: 1233773393782900270}
+  lineToEnd: {fileID: 1233773393529174358}
+  firewall: {fileID: 1729980429526517478}
 --- !u!225 &6678967591499923603
 CanvasGroup:
   m_ObjectHideFlags: 0

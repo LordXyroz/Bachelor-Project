@@ -22,6 +22,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     [Range(1f, 5f)]
     public int difficulty = 1;
     private NetworkingManager networking;
+    public bool rootNode = false;
 
     [SerializeField]
     private GameObject uiElement;
@@ -74,7 +75,8 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         availableDefenses = new List<DefenseTypes>();
         foreach (var v in vulnerabilities)
             foreach (var d in VulnerabilityLogic.GetDefenses(v))
-                availableDefenses.Add(d);
+                if (!availableDefenses.Contains(d))
+                    availableDefenses.Add(d);
 
         // Todo: Find a simple way of traversing graph
     }
@@ -230,39 +232,37 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     /// <param name="message">Message containing relevant info to be handled by the function.</param>
     public void OnDiscover(DiscoverMessage message)
     {
-        if (message.depth == graphDepth)
+        List<string> list = new List<string>();
+
+        if (message.targetName == "" && rootNode)
         {
-            List<string> list = new List<string>();
-
-            if (message.targetName == "")
+            if (!uiElement.activeSelf)
             {
-                if (!uiElement.activeSelf)
-                {
-                    uiElement.SetActive(true);
-                    list.Add(name);
-                }
-
-                if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
-                    return;
-
-                networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
+                uiElement.SetActive(true);
+                list.Add(name);
             }
-            else if (message.targetName == name)
+
+            if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
+                return;
+
+            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
+        }
+        else if (message.targetName == name)
+        {
+            foreach (var child in children)
             {
-                foreach (var child in children)
+                if (!child.uiElement.activeSelf && (Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f))))
                 {
-                    if (!child.uiElement.activeSelf && (Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f))))
-                    {
-                        list.Add(child.name);
-                        child.uiElement.SetActive(true);
-                    }
+                    list.Add(child.name);
+                    child.uiElement.SetActive(true);
                 }
-
-                if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
-                    return;
-
-                networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
             }
+
+            if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
+                return;
+
+            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list));
+
         }
     }
 
