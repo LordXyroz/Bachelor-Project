@@ -26,7 +26,6 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public GameObject chatField;
     public GameObject connectionField;
-    public GameObject gameField;
 
     public GameObject lobbyScrollField;
     public GameObject lobbyButton;
@@ -102,9 +101,6 @@ public class NetworkingManager : MonoBehaviour
         chatField = GameObject.Find("ChatField");
         chatField.SetActive(false);
 
-        gameField = GameObject.Find("GameField");
-        gameField.SetActive(false);
-
         lobbyScrollField = GameObject.Find("LobbyScrollField");
         lobbyButton = (GameObject)Resources.Load("Prefabs/LobbyButton", typeof(GameObject));
 
@@ -132,17 +128,12 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void ExitGame()
     {
-        /// If client is trying to swap with another player when exiting game, the swapping should be stopped.
-        DeclineSwap();
+        if (cb != null)
+            cb.Dispose();
+        if (sb != null)
+            sb.Dispose();
 
-        /// Stop connection.
-        DisconnectFromServer();
-
-        /// Close game view:
-        gameField.SetActive(false);
-        /// Open connection view:
-        connectionField.SetActive(true);
-        SceneManager.UnloadSceneAsync("TestScene");
+        SceneManager.LoadScene("MenuScene");
     }
 
     /// <summary>
