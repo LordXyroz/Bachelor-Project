@@ -7047,6 +7047,11 @@ PrefabInstance:
       propertyPath: loadMenu
       value: 
       objectReference: {fileID: 1035939531}
+    - target: {fileID: 5207904404883101433, guid: 9fa4873265426094baf8fe2e01b892e3,
+        type: 3}
+      propertyPath: matchmakingCanvas
+      value: 
+      objectReference: {fileID: 1776835373}
     - target: {fileID: 5207904404883101432, guid: 9fa4873265426094baf8fe2e01b892e3,
         type: 3}
       propertyPath: m_LocalPosition.x

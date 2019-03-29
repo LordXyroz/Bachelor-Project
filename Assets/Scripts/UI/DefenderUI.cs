@@ -37,6 +37,8 @@ public class DefenderUI : BaseUI
             go.GetComponent<Button>().onClick.AddListener(EnableInfoPanel);
             go.AddComponent<PointerHandler>().tooltipInfo = FindObjectOfType<Defender>().defensePrefabs[(int)d - 1].GetComponent<Defense>().description;
         }
+
+        quitButton.onClick.AddListener(FindObjectOfType<NetworkingManager>().DisconnectFromServer);
     }
 
     /// <summary>

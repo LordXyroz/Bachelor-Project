@@ -58,7 +58,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         throw new Exception("No network adapters with an IPv4 address in the system!");
     }
 
-
     /// <summary>
     /// Stop listening for incoming connections as the lobby is full.
     /// </summary>
@@ -70,7 +69,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
             cancellationTokenSource.Cancel();
         }
     }
-   
     
     /// <summary>
     /// Listen to a port and give message to clients that want to join.
@@ -211,7 +209,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
     }
     
     /// <summary>
-    /// FixedUpdate is a function called ca. 50 times per second. Used to see for events through the network.
+    /// FixedUpdate is a function called ca. 20 times per second. Used to see for events through the network.
     /// If any messages is sent in the server behaviour will accordingly answer by sending a message back, and give some message to all other clients aswell.
     /// </summary>
     public void FixedUpdate()
@@ -301,7 +299,8 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
     { 
         BroadcastMessage(new Message("Client", nm.userName, MessageTypes.Game.Start));
 
-        GameObject.Find("Canvas").SetActive(false);
+        nm.matchmakingCanvas.SetActive(false);
+        nm.inGame = true;
 
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
@@ -313,17 +312,12 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         connectionNames.Remove(connectionNames.Find(x => x.name == name));
         nm.FindPlayerForRemoval(name);
 
-        Debug.Log("Server - Disconnecting client named " + name);
-
         BroadcastMessage(new DiscClientMessage("Client", nm.userName, MessageTypes.Network.ClientDisconnect, name), index);
 
         m_ServerDriver.Disconnect(m_connections[index]);
+
         /// This connection no longer exists.
-        Debug.Log("---LOG---: Connections before - " + m_connections.Length);
-
         m_connections.RemoveAtSwapBack(index);
-
-        Debug.Log("---LOG---: Connections after - " + m_connections.Length);
 
         for (int j = 0; j < m_connections.Length; j++)
         {
@@ -332,6 +326,13 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
         cancellationTokenSource = new CancellationTokenSource();
         cancellationToken = cancellationTokenSource.Token;
+
+        if (nm.inGame)
+        {
+            SceneManager.UnloadSceneAsync("GameScene");
+            nm.matchmakingCanvas.SetActive(true);
+            nm.inGame = false;
+        }
 
         findConnections = Task.Factory.StartNew(() => FindConnections(), cancellationToken);
     }
@@ -446,23 +447,26 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         {
             if (disposing)
             {
-                
-                
+                // Empty
             }
             Debug.Log("Running Dispose");
-            //cancellationTokenSource.Dispose();
 
             for (int i = m_connections.Length - 1; i >= 0; i--)
-                DisconnectClient(i);
+                BroadcastMessage(new Message("Client", nm.userName, MessageTypes.Network.Disconnect));
 
             // All jobs must be completed before we can dispose the data they use
             m_ServerDriver.ScheduleUpdate().Complete();
-            //m_connections.Clear();
-            //m_updateHandle.Complete();
+
             m_ServerDriver.Dispose();
             m_connections.Dispose();
 
             disposedValue = true;
+            if (nm.inGame)
+            {
+                SceneManager.UnloadSceneAsync("GameScene");
+                nm.matchmakingCanvas.SetActive(true);
+                nm.inGame = false;
+            }
         }
     }
     

@@ -2837,6 +2837,7 @@ MonoBehaviour:
   tooltipObject: {fileID: 1616511936}
   tooltipFrameTransform: {fileID: 1616511937}
   tooltipText: {fileID: 1478323733}
+  quitButton: {fileID: 1766607264}
   infoPanelObject: {fileID: 544391182}
   infoPanelArea: {fileID: 1471468189}
   targetText: {fileID: 975789374}
@@ -4758,6 +4759,7 @@ MonoBehaviour:
   tooltipObject: {fileID: 1469483919}
   tooltipFrameTransform: {fileID: 1469483920}
   tooltipText: {fileID: 1101069048}
+  quitButton: {fileID: 352064390}
   logPanelObject: {fileID: 1856665196}
   logPanelArea: {fileID: 1646112704}
   logPrefab: {fileID: 3075230854965635254, guid: 2e2d038ea1cf3bf42b3d4bff5292eef4,
@@ -6380,6 +6382,7 @@ MonoBehaviour:
   tooltipObject: {fileID: 1547699697}
   tooltipFrameTransform: {fileID: 1547699698}
   tooltipText: {fileID: 877511878}
+  quitButton: {fileID: 1389000606}
   infoPanelObject: {fileID: 800745642}
   infoPanelArea: {fileID: 55232487}
   targetText: {fileID: 2085718857}
