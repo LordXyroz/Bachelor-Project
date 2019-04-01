@@ -8,10 +8,6 @@ using UnityEngine;
 /// </summary>
 /// 
 
-/// TODO
-/// Loading does not succesfully delete old objects before loading(+), causing it to break
-/// Losing references between lines and components if loading when a connection exists in the scene
-
 
 public class SystemComponent : MonoBehaviour
 {
