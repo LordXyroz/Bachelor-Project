@@ -16,6 +16,7 @@ public class SaveMenu : MonoBehaviour
     private TMP_InputField inputFilename;
     public int currentDropdownValue;
     private SaveScenario saveScenario;
+    private SaveError saveErrorMessage;
 
     [Header("The stats for attacker and defender")]
     public int maxLevelOfStat = 3;
@@ -68,45 +69,55 @@ public class SaveMenu : MonoBehaviour
 
     public void SaveButtonPressed()
     {
-        //attackerResources = int.Parse(attackerResourcesInput.text);
-
-        try
+        if (inputFilename.text != "")
         {
-            attackerResources = int.Parse(attackerResourcesInput.text);
-        }
-        catch (FormatException)
-        {
-            Console.WriteLine("{0}: Bad Format for attacker resources", attackerResources);
-        }
-        catch (OverflowException)
-        {
-            Console.WriteLine("{0}: Overflow for attacker resources", attackerResources);
-        }
 
-        try
-        {
-            defenderResources = int.Parse(defenderResourcesInput.text);
+            //attackerResources = int.Parse(attackerResourcesInput.text);
+
+            try
+            {
+                attackerResources = int.Parse(attackerResourcesInput.text);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("{0}: Bad Format for attacker resources", attackerResources);
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine("{0}: Overflow for attacker resources", attackerResources);
+            }
+
+            try
+            {
+                defenderResources = int.Parse(defenderResourcesInput.text);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("{0}: Bad Format for defender resources", defenderResources);
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine("{0}: Overflow for defender resources", defenderResources);
+            }
+
+
+            currentDropdownValue = attackerAttackLevelDropdown.value;
+            filename = inputFilename.text;
+
+            attackerAttackLevel = attackerAttackLevelDropdown.value + 1;
+            attackerDiscoveryLevel = attackerDiscoveryLevelDropdown.value + 1;
+            attackerAnalysisLevel = attackerAnalysisLevelDropdown.value + 1;
+            defenderDefenseLevel = defenderDefenseLevelDropdown.value + 1;
+            defenderDiscoveryLevel = defenderDiscoveryLevelDropdown.value + 1;
+
+            saveScenario.SaveCurrentScenario();
         }
-        catch (FormatException)
+        else
         {
-            Console.WriteLine("{0}: Bad Format for defender resources", defenderResources);
+            saveErrorMessage = GetComponentInParent<Canvas>().transform.GetComponentInChildren<SaveError>(true);
+            saveErrorMessage.gameObject.SetActive(true);
+            saveErrorMessage.ChangeErrorMessage("Save file name cannot be empty. ");
         }
-        catch (OverflowException)
-        {
-            Console.WriteLine("{0}: Overflow for defender resources", defenderResources);
-        }
-
-
-        currentDropdownValue = attackerAttackLevelDropdown.value;
-        filename = inputFilename.text;
-
-        attackerAttackLevel = attackerAttackLevelDropdown.value + 1;
-        attackerDiscoveryLevel = attackerDiscoveryLevelDropdown.value + 1;
-        attackerAnalysisLevel = attackerAnalysisLevelDropdown.value + 1;
-        defenderDefenseLevel = defenderDefenseLevelDropdown.value + 1;
-        defenderDiscoveryLevel = defenderDiscoveryLevelDropdown.value + 1;
-
-        saveScenario.SaveCurrentScenario();
     }
 
     private void PopulateSaveMenu(List<TMP_Dropdown> dropdownList)

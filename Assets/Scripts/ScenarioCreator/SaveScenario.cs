@@ -20,8 +20,10 @@ public class SaveScenario : MonoBehaviour
     public string fileName;
     private string directoryPath;
     private string filePath;
+    private bool entryPointExists;
     private SaveMenu saveMenu;
     private SavefileExistsPopup fileExistsPopup;
+    private SaveError saveErrorMessage;
 
     [SerializeField]
     private Save save;
@@ -38,6 +40,7 @@ public class SaveScenario : MonoBehaviour
 
     private void Start()
     {
+        entryPointExists = false;
         directoryPath = Application.dataPath + "/Savefiles";
 
         if (!Directory.Exists(directoryPath))
@@ -57,78 +60,95 @@ public class SaveScenario : MonoBehaviour
 
         if (!systemComponentsToSave.Count.Equals(0))
         {
-
-            save = new Save();
-            saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
-            selectedObject = FindObjectOfType<SelectedObject>();
-
-            if (saveMenu.filename != null)
+            entryPointExists = false;
+            foreach (GameObject component in systemComponentsToSave)
             {
-                fileName = saveMenu.filename;
+                if (component.GetComponent<SystemComponent>().isEntryPoint)
+                    entryPointExists = true;
             }
-            filePath = Path.Combine(directoryPath, saveMenu.filename);
-            if (!filePath.EndsWith(".json"))
+            if (entryPointExists)
             {
-                filePath += ".json";
-            }
-            save.attackerAttackLevel = saveMenu.attackerAttackLevel;
-            save.attackerAnalysisLevel = saveMenu.attackerAnalysisLevel;
-            save.attackerDiscoveryLevel = saveMenu.attackerDiscoveryLevel;
-            save.attackerResources = saveMenu.attackerResources;
+                save = new Save();
+                saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
+                selectedObject = FindObjectOfType<SelectedObject>();
 
-            save.defenderDefenceLevel = saveMenu.defenderDefenseLevel;
-            save.defenderDiscoveryLevel = saveMenu.defenderDiscoveryLevel;
-            save.defenderResources = saveMenu.defenderResources;
-
-            foreach (GameObject targetGameObject in systemComponentsToSave)
-            {
-                VulnerabilityWrapper vulnerabilityWrapper = new VulnerabilityWrapper();
-
-                GameObject target = targetGameObject.gameObject;
-                SystemComponent targetComponent = target.GetComponent<SystemComponent>();
-                if (target != null)
+                if (saveMenu.filename != null)
                 {
-                    save.systemComponentNamesList.Add(targetComponent.componentName);
-                    save.systemComponentPositionsList.Add(target.transform.position);
-                    save.systemComponentTypesList.Add(targetComponent.componentType);
-                    save.systemComponentSecurityLevelsList.Add(targetComponent.securityLevel);
-                    save.isEntryPointList.Add(targetComponent.isEntryPoint);
-
-                    foreach (var vulnerability in targetComponent.componentVulnerabilities)
-                    {
-                        vulnerabilityWrapper.vulnerabilityWrapperList.Add(vulnerability);
-                    }
-                    save.systemComponentVulnerabilyWrappersList.Add(vulnerabilityWrapper);
-
-                    /// Empty objects intended for later development cycles
-                    save.OSList.Add(targetComponent.OS);
-                    save.subnetList.Add(targetComponent.subnet);
-                    save.configPresentList.Add(targetComponent.configPresent);
-                    save.keypairList.Add(targetComponent.keypair);
-                    save.floatingIPList.Add(targetComponent.floatingIP);
-                    save.usersList.Add(targetComponent.user);
-                    ///////////////////////////////////////////////////////
+                    fileName = saveMenu.filename;
                 }
+                filePath = Path.Combine(directoryPath, saveMenu.filename);
+                if (!filePath.EndsWith(".json"))
+                {
+                    filePath += ".json";
+                }
+                save.attackerAttackLevel = saveMenu.attackerAttackLevel;
+                save.attackerAnalysisLevel = saveMenu.attackerAnalysisLevel;
+                save.attackerDiscoveryLevel = saveMenu.attackerDiscoveryLevel;
+                save.attackerResources = saveMenu.attackerResources;
 
+                save.defenderDefenceLevel = saveMenu.defenderDefenseLevel;
+                save.defenderDiscoveryLevel = saveMenu.defenderDiscoveryLevel;
+                save.defenderResources = saveMenu.defenderResources;
+
+                foreach (GameObject targetGameObject in systemComponentsToSave)
+                {
+                    VulnerabilityWrapper vulnerabilityWrapper = new VulnerabilityWrapper();
+
+                    GameObject target = targetGameObject.gameObject;
+                    SystemComponent targetComponent = target.GetComponent<SystemComponent>();
+                    if (target != null)
+                    {
+                        save.systemComponentNamesList.Add(targetComponent.componentName);
+                        save.systemComponentPositionsList.Add(target.transform.position);
+                        save.systemComponentTypesList.Add(targetComponent.componentType);
+                        save.systemComponentSecurityLevelsList.Add(targetComponent.securityLevel);
+                        save.isEntryPointList.Add(targetComponent.isEntryPoint);
+
+                        foreach (var vulnerability in targetComponent.componentVulnerabilities)
+                        {
+                            vulnerabilityWrapper.vulnerabilityWrapperList.Add(vulnerability);
+                        }
+                        save.systemComponentVulnerabilyWrappersList.Add(vulnerabilityWrapper);
+
+                        /// Empty objects intended for later development cycles
+                        save.OSList.Add(targetComponent.OS);
+                        save.subnetList.Add(targetComponent.subnet);
+                        save.configPresentList.Add(targetComponent.configPresent);
+                        save.keypairList.Add(targetComponent.keypair);
+                        save.floatingIPList.Add(targetComponent.floatingIP);
+                        save.usersList.Add(targetComponent.user);
+                        ///////////////////////////////////////////////////////
+                    }
+
+                }
+                referenceLines = selectedObject.connectionReferencesList;
+                foreach (GameObject line in referenceLines)
+                {
+                    save.connectionLinePosition.Add(line.transform.position);
+                    lineReference = line.gameObject.GetComponent<ConnectionReferences>();
+
+                    save.referenceFromObject.Add(lineReference.referenceFromObject);
+                    save.referenceToObject.Add(lineReference.referenceToObject);
+                    save.referenceFromObjectName.Add(lineReference.referenceFromObject.name);
+                    save.referenceToObjectName.Add(lineReference.referenceToObject.name);
+                    save.hasFirewall.Add(lineReference.hasFirewall);
+                    save.firewallPositionsList.Add(lineReference.transform.position);
+                }
+                return save;
             }
-            referenceLines = selectedObject.connectionReferencesList;
-            foreach (GameObject line in referenceLines)
+            else
             {
-                save.connectionLinePosition.Add(line.transform.position);
-                lineReference = line.gameObject.GetComponent<ConnectionReferences>();
-
-                save.referenceFromObject.Add(lineReference.referenceFromObject);
-                save.referenceToObject.Add(lineReference.referenceToObject);
-                save.referenceFromObjectName.Add(lineReference.referenceFromObject.name);
-                save.referenceToObjectName.Add(lineReference.referenceToObject.name);
-                save.hasFirewall.Add(lineReference.hasFirewall);
-                save.firewallPositionsList.Add(lineReference.transform.position);
+                saveErrorMessage = canvas.transform.GetComponentInChildren<SaveError>(true);
+                saveErrorMessage.gameObject.SetActive(true);
+                saveErrorMessage.ChangeErrorMessage("Missing entry point. There must be at least 1 entry point. ");
+                return null;
             }
-            return save;
         }
         else
         {
-            Debug.LogWarning("Nothing to save");
+            saveErrorMessage = canvas.transform.GetComponentInChildren<SaveError>(true);
+            saveErrorMessage.gameObject.SetActive(true);
+            saveErrorMessage.ChangeErrorMessage("Nothing to save ");
             return null;
         }
     }
