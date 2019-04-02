@@ -37,6 +37,9 @@ public abstract class BaseUI : MonoBehaviour
     protected const float refHeight = 1080;
     protected const float refWidth = 1920;
 
+    [Header("Top panel")]
+    public Button quitButton;
+
     /// <summary>
     /// To be implemented by sub classes
     /// </summary>
@@ -177,4 +180,5 @@ public abstract class BaseUI : MonoBehaviour
     {
         tooltipObject.SetActive(false);
     }
+    
 }

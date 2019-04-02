@@ -143,11 +143,11 @@ public class ObserverUI : BaseUI
     }
 
     /// <summary>
-    /// Unused
+    /// 
     /// </summary>
     public override void Start()
     {
-        //throw new System.NotImplementedException();
+        quitButton.onClick.AddListener(FindObjectOfType<NetworkingManager>().DisconnectFromServer); ;
     }
 
     /// <summary>

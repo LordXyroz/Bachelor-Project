@@ -37,6 +37,8 @@ public class AttackerUI : BaseUI
             go.GetComponent<Button>().onClick.AddListener(EnableInfoPanel);
             go.AddComponent<PointerHandler>().tooltipInfo = FindObjectOfType<Attacker>().attackPrefabs[(int)a - 1].GetComponent<Attack>().description;
         }
+
+        quitButton.onClick.AddListener(FindObjectOfType<NetworkingManager>().DisconnectFromServer);
     }
 
     /// <summary>

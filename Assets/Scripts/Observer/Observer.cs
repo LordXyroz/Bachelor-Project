@@ -25,6 +25,7 @@ public class Observer : MonoBehaviour, ILogging, IError
         foreach (var o in GameObject.FindGameObjectsWithTag("Node"))
             UpdateNode(o);
 
+        ClearTarget();
         uiScript.EnableLogPanel();
     }
 

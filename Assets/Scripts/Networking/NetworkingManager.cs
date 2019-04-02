@@ -24,9 +24,9 @@ public class NetworkingManager : MonoBehaviour
     /// <summary>
     /// Many different UI elements that are worked on througout the gameflow
     /// </summary>
+    [Header("UI")]
     public GameObject chatField;
     public GameObject connectionField;
-    public GameObject gameField;
 
     public GameObject lobbyScrollField;
     public GameObject lobbyButton;
@@ -38,10 +38,13 @@ public class NetworkingManager : MonoBehaviour
     public GameObject stopJoinButton;
     public GameObject startGameButton;
 
+    public GameObject matchmakingCanvas;
+
 
     /// <summary>
     /// List of names is used to see name of players currently in the lobby.
     /// </summary>
+    [Header("Lists")]
     public List<GameObject> attackerNames;
     public List<GameObject> defenderNames;
     public List<GameObject> messageList;
@@ -50,10 +53,13 @@ public class NetworkingManager : MonoBehaviour
     /// <summary>
     /// There are two different behaviours a player can have, hosting a game or joining a game someone else is hosting:
     /// </summary>
+    [Header("Behaviours")]
     public ClientBehaviour cb;
     public ServerBehaviour sb;
 
+    [Header("Variables")]
     public PlayerManager.PlayerType playerType;
+    public bool inGame = false;
 
     [Header("Savefile variables")]
     [SerializeField]
@@ -102,9 +108,6 @@ public class NetworkingManager : MonoBehaviour
         chatField = GameObject.Find("ChatField");
         chatField.SetActive(false);
 
-        gameField = GameObject.Find("GameField");
-        gameField.SetActive(false);
-
         lobbyScrollField = GameObject.Find("LobbyScrollField");
         lobbyButton = (GameObject)Resources.Load("Prefabs/LobbyButton", typeof(GameObject));
 
@@ -122,7 +125,8 @@ public class NetworkingManager : MonoBehaviour
     /// This will start the gameplay scene when all clients in a lobby is ready.
     /// </summary>
     public void StartGame()
-    {   
+    {
+        inGame = true;
         if (playerType == PlayerManager.PlayerType.Observer)
             sb.StartGame();
     }
@@ -132,17 +136,12 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void ExitGame()
     {
-        /// If client is trying to swap with another player when exiting game, the swapping should be stopped.
-        DeclineSwap();
+        if (cb != null)
+            cb.Dispose();
+        if (sb != null)
+            sb.Dispose();
 
-        /// Stop connection.
-        DisconnectFromServer();
-
-        /// Close game view:
-        gameField.SetActive(false);
-        /// Open connection view:
-        connectionField.SetActive(true);
-        SceneManager.UnloadSceneAsync("TestScene");
+        SceneManager.LoadScene("MenuScene");
     }
 
     /// <summary>
@@ -160,11 +159,6 @@ public class NetworkingManager : MonoBehaviour
         {
             cb.StopConnecting();
 
-
-            //cb.m_clientToServerConnection.Disconnect(cb.m_ClientDriver);
-            cb.m_clientToServerConnection = default;
-            cb.m_ClientDriver.Dispose();
-            cb = null;
             playerType = default;
         }*/
     }
@@ -266,19 +260,13 @@ public class NetworkingManager : MonoBehaviour
     /// </summary>
     public void DisconnectFromServer()
     {
-        // StartCoroutine(Disconnect());
-        Debug.Log("Disconnecting");
-        /// When player disconnects/exits game, the player may start over with different playerType.(Observer, defender/attacker)
-
-        //yield return new WaitForSeconds(0.01f);
+        matchmakingCanvas.SetActive(true);
         lobbyScrollField.SetActive(true);
 
         if (playerType == PlayerManager.PlayerType.Observer)
         {
             if (sb == null)
             {
-                /// Already no connection:
-                //yield return null;
                 return;
             }
             /// Disconnect clients from server:
@@ -296,6 +284,7 @@ public class NetworkingManager : MonoBehaviour
 
                 }
             }
+
             sb.StopListening();
             sb.Dispose();
 
@@ -321,12 +310,8 @@ public class NetworkingManager : MonoBehaviour
         {
             if (cb == null)
             {
-                /// Already no connection:
-                //yield return null;
                 return;
             }
-
-            Debug.Log("client disconnect");
 
             /// Delete past chat:
             for (int i = 1; i < messageList.Count; i++)
@@ -344,106 +329,9 @@ public class NetworkingManager : MonoBehaviour
                 b.transform.Find("Text").GetComponent<Text>().text = "";
 
             cb.Dispose();
-
-            /// Disconnect client from host.
-            //yield return new WaitForSeconds(1);
         }
 
         playerType = default;
-        //Debug.Log("Right before GC.Collect()");
-        //System.GC.Collect(System.GC.MaxGeneration, System.GCCollectionMode.Forced);
-    }
-
-    /// <summary>
-    /// WaitForConnection is used for clients that needs to wait a moment for the client behaviour to be set before trying to connect to host.
-    /// </summary>
-    /// <returns></returns>
-    private IEnumerator Disconnect()
-    {
-        Debug.Log("Disconnecting");
-        /// When player disconnects/exits game, the player may start over with different playerType.(Observer, defender/attacker)
-        
-        yield return new WaitForSeconds(0.01f);
-        lobbyScrollField.SetActive(true);
-
-        if (playerType == PlayerManager.PlayerType.Observer)
-        {
-            if (sb == null)
-            {
-                /// Already no connection:
-                yield return null;
-            }
-            /// Disconnect clients from server:
-            if (sb.m_ServerDriver.IsCreated)
-            {
-                sb.m_ServerDriver.ScheduleUpdate().Complete();
-                
-                if (sb.m_connections.IsCreated)
-                {
-                    sb.BroadcastMessage(new Message("Client", userName, MessageTypes.Network.Disconnect));
-
-                    Thread.Sleep(100);
-                    for (int i = 0; i < sb.m_connections.Length; i++)
-                        sb.m_ServerDriver.Disconnect(sb.m_connections[i]);
-                    
-                }
-            }
-            sb.StopListening();
-            sb.Dispose();
-
-            /// Delete chat when exiting lobby:
-            for (int i = 0; i < messageList.Count; i++)
-            {
-                messageList[i].gameObject.GetComponent<Text>().text = "";
-            }
-
-
-            /// Change connection text:
-            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
-            GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.red;
-            
-            /// Change view to not be in a lobby:
-            chatField.SetActive(false);
-            connectionField.SetActive(true);
-
-            /// Make it possible for them to start game if they choose to be host:
-            startGameButton.SetActive(true);
-        }
-        else if (playerType == PlayerManager.PlayerType.Attacker || playerType == PlayerManager.PlayerType.Defender)
-        {
-            if (cb == null)
-            {
-                /// Already no connection:
-                yield return null;
-            }
-
-            Debug.Log("client disconnect");
-
-            /// Delete past chat:
-            for (int i = 1; i < messageList.Count; i++)
-            {
-                messageList[i].GetComponent<Text>().text = "";
-            }
-
-            /// Delete chat text as client is disconnecting from lobby.
-            cb.Disconnect();
-
-            foreach (var a in attackerNames)
-                a.transform.Find("Text").GetComponent<Text>().text = "";
-
-            foreach (var b in defenderNames)
-                b.transform.Find("Text").GetComponent<Text>().text = "";
-
-            cb = null;
-            
-
-            /// Disconnect client from host.
-            yield return new WaitForSeconds(1);
-        }
-
-        playerType = default;
-        //Debug.Log("Right before GC.Collect()");
-        //System.GC.Collect(System.GC.MaxGeneration, System.GCCollectionMode.Forced);
     }
 
     /// <summary>
@@ -797,7 +685,6 @@ public class NetworkingManager : MonoBehaviour
             }
         }
     }
-    
     
     /// <summary>
     /// GetMessage will receive message collected through the server/client script.

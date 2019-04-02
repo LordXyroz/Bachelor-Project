@@ -54,6 +54,15 @@ public class SystemComponentMenu : MonoBehaviour
     }
 
 
+    private void OnEnable()
+    {
+
+        isEntryPointToggle = GetComponentInChildren<Toggle>(true);
+        if (selectedObject)
+            isEntryPointToggle.isOn = selectedObject.selected.gameObject.transform.GetComponent<SystemComponent>().isEntryPoint;
+    }
+
+
     private void ToggleValueChanged(Toggle entryPoint)
     {
         selectedObject.selected.gameObject.GetComponent<SystemComponent>().isEntryPoint = entryPoint.isOn;

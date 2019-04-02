@@ -100,8 +100,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         }
         throw new Exception("No network adapters with an IPv4 address in the system!");
     }
-
-    public void FindHostTest(string ip, out string serverName)
+    
+    /*public void FindHostTest(string ip, out string serverName)
     {
         serverName = "";
         
@@ -206,7 +206,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         {
             listener.Close();
         }
-    }
+    }*/
 
     public void FindHostTest2(string ip, out string serverName)
     {
@@ -294,7 +294,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         }
     }
 
-
+    
     /// <summary>
     /// Tries to connect to a computer with the ip given as parameter. If possible, global variable 'ServerEndPoint' will be set.
     /// </summary>
@@ -395,8 +395,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         // Disconnect client from host:
         m_clientToServerConnection.Disconnect(m_ClientDriver);
         m_ClientDriver.Disconnect(m_clientToServerConnection);
-        ServerEndPoint = default;
-        m_clientToServerConnection = default;
+
         results.Clear();
 
         /// Change connectionText according to connection status:
@@ -464,7 +463,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         return results;
     }
 
-    IEnumerator WaitForHost()
+    private IEnumerator WaitForHost()
     {
         /// Text visible to the client that shows the connection status.(Offline/Connecting/Online)
         Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
@@ -650,7 +649,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     }
     
     /// <summary>
-    /// FixedUpdate is a function called ca. 50 times per second. Used to see for events through the network.
+    /// FixedUpdate is a function called ca. 20 times per second. Used to see for events through the network.
     /// If any messages is sent in, and will according to event happened send message through the network.
     /// </summary>
     public void FixedUpdate( MonoBehaviour monoBehaviour)
@@ -677,49 +676,56 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
 
         NetworkEvent.Type cmd;
         /// Process all events on the connection. If the connection is invalid it will return Empty immediately
-        while ((cmd = m_clientToServerConnection.PopEvent(m_ClientDriver, out DataStreamReader strm)) != NetworkEvent.Type.Empty)
+        try
         {
-            if (cmd == NetworkEvent.Type.Connect)
+            while ((cmd = m_clientToServerConnection.PopEvent(m_ClientDriver, out DataStreamReader strm)) != NetworkEvent.Type.Empty)
             {
-                SendMessage(new ConnectMessage("Server", nm.userName, MessageTypes.Network.Connect, "", "", ""));
-            }
-            else if (cmd == NetworkEvent.Type.Data)
-            {
-                // If data received says that client is connected to server, we are connected!
-                var readerCtx = default(DataStreamReader.Context);
-                /// Read message sent from client and respond to that:
-                byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
-                string data = Encoding.ASCII.GetString(bytes);
-                
-                if (data.Contains("<Scenario>"))
+                if (cmd == NetworkEvent.Type.Connect)
                 {
-                    data = data.Substring(0, data.Length - 10);
-                    Debug.Log("Client - got scenario: " + data);
+                    SendMessage(new ConnectMessage("Server", nm.userName, MessageTypes.Network.Connect, "", "", ""));
                 }
-                else if (data.Contains("|"))
+                else if (cmd == NetworkEvent.Type.Data)
                 {
-                    /// This is using message
-                    
-                    var str = data.Split('|');
-                    var type = Type.GetType(str[1]);
-                    dynamic msg = JsonUtility.FromJson(str[0], type);
+                    // If data received says that client is connected to server, we are connected!
+                    var readerCtx = default(DataStreamReader.Context);
+                    /// Read message sent from client and respond to that:
+                    byte[] bytes = strm.ReadBytesAsArray(ref readerCtx, strm.Length);
+                    string data = Encoding.ASCII.GetString(bytes);
 
-                    MessagingManager.BroadcastMessage((Message) msg);
+                    if (data.Contains("<Scenario>"))
+                    {
+                        data = data.Substring(0, data.Length - 10);
+                        Debug.Log("Client - got scenario: " + data);
+                    }
+                    else if (data.Contains("|"))
+                    {
+                        /// This is using message
+
+                        var str = data.Split('|');
+                        var type = Type.GetType(str[1]);
+                        dynamic msg = JsonUtility.FromJson(str[0], type);
+
+                        MessagingManager.BroadcastMessage((Message)msg);
+                    }
+                }
+                else if (cmd == NetworkEvent.Type.Disconnect)
+                {
+                    Debug.Log("Client - Disconnecting");
+
+                    Disconnect();
                 }
             }
-            else if (cmd == NetworkEvent.Type.Disconnect)
-            {
-                Debug.Log("Client - Disconnecting");
-
-                Disconnect();
-            }
+        }
+        catch (NullReferenceException e)
+        {
+            Debug.Log(e.Message + ", Name: " + e.TargetSite.Name);
         }
     }
 
     /// <summary>
     /// Moves every text in chatField one step up for the new message to be put at bottom.
     /// </summary>
-    void MoveChatBox()
+    private void MoveChatBox()
     {
         GameObject.Find("MessageText5").GetComponent<Text>().text = GameObject.Find("MessageText4").GetComponent<Text>().text;
         GameObject.Find("MessageText4").GetComponent<Text>().text = GameObject.Find("MessageText3").GetComponent<Text>().text;
@@ -727,6 +733,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         GameObject.Find("MessageText2").GetComponent<Text>().text = GameObject.Find("MessageText1").GetComponent<Text>().text;
     }
 
+    #region Interface functions
     public void OnPing(Message message, int index)
     {
         // Debug.Log("Ping ack!");
@@ -800,17 +807,34 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
 
     public void OnClientDisconnect(DiscClientMessage message)
     {
+        if (nm.inGame)
+        {
+            SceneManager.UnloadSceneAsync("GameScene");
+            nm.matchmakingCanvas.SetActive(true);
+            nm.inGame = false;
+        }
+
         nm.FindPlayerForRemoval(message.disconnectingClient);
     }
 
     public void OnDisconnect()
     {
+        if (nm.inGame)
+        {
+            SceneManager.UnloadSceneAsync("GameScene");
+            nm.matchmakingCanvas.SetActive(true);
+            nm.inGame = false;
+        }
+
         nm.DisconnectFromServer();
     }
 
     public void OnStartGame()
     {
         GameObject.Find("Canvas").SetActive(false);
+
+        nm.inGame = true;
+        GameObject.FindObjectOfType<AudioManager>().PlayGameplayBGM(true, 0.05f);
 
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
@@ -833,19 +857,33 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
 
             }
             Debug.Log("Running client Dispose");
-            //cancellationTokenSource.Dispose();
 
             m_ClientDriver.ScheduleUpdate().Complete();
+            m_clientToServerConnection.Disconnect(m_ClientDriver);
             m_clientToServerConnection = default;
             m_ClientDriver.Dispose();
             m_ClientDriver = default;
-
+            
             ServerEndPoint = default;
 
-            setupHostIp.Dispose();
+            try
+            {
+                setupHostIp.Dispose();
+            }
+            catch (ObjectDisposedException e)
+            {
+                Debug.Log(e.Message);
+            }
 
             disposedValue = true;
-        }
+
+            if (nm.inGame)
+            {
+                SceneManager.UnloadSceneAsync("GameScene");
+                nm.matchmakingCanvas.SetActive(true);
+                nm.inGame = false;
+            }
+            }
     }
     
     ~ClientBehaviour()
@@ -858,5 +896,6 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+    #endregion
     #endregion
 }

@@ -23,8 +23,14 @@ public class ConnectionReferences : MonoBehaviour
 
     public void Update()
     {
-        if (referenceFromObject.GetComponentInChildren<Button>(true).gameObject.activeSelf && 
-            referenceToObject.GetComponentInChildren<Button>(true).gameObject.activeSelf)
+        var fromBtn = referenceFromObject.GetComponentInChildren<Button>(true);
+        var toBtn = referenceToObject.GetComponentInChildren<Button>(true);
+
+        if (fromBtn == null || toBtn == null)
+            return;
+
+        if (fromBtn.gameObject.activeSelf && 
+            toBtn.gameObject.activeSelf)
         {
             lineFromStart.SetActive(true);
             lineToEnd.SetActive(true);

@@ -68,19 +68,18 @@ public class LoadScenario : MonoBehaviour
         existingConnectionLines = selectedObject.connectionReferencesList;
         existingSystemComponents = dropZone.editableSystemComponents;
 
-        /// Delete all existing components upon loading, before populating from the saved file
-        // for (int i = existingConnectionLines.Count - 1; i >= 0; i--)
-        // {
-        //     existingConnectionLines[i].GetComponent<ConnectionReferences>().RemoveConnectionComponent();
-        // }
+        //---------------------------------------------- TODO -------------------------------------------------
+        // Loading does not succesfully delete old objects before loading(?), causing it to break
+        //    - Losing references between lines and components if loading when a connection exists in the scene
         for (int i = existingSystemComponents.Count - 1; i >= 0; i--)
         {
             existingSystemComponents[i].GetComponent<SystemComponent>().DeleteSystemComponent();
         }
         prefabNo = 0;
+        //-----------------------------------------------------------------------------------------------------
+
         if (File.Exists(filePath))
         {
-            ///////////////////////////////////////////////////////////////////////////////////////////
 
             string json = File.ReadAllText(filePath);
             loadFromJSON = JsonUtility.FromJson<Save>(json);

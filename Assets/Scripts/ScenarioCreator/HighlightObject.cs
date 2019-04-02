@@ -72,7 +72,8 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             foreach (Image img in images)   // Connection lines
             {
-                img.color = Color.red;
+                if (img.name != "Firewall")
+                    img.color = Color.red;
                 img.transform.parent.SetAsLastSibling();
             }
         }
