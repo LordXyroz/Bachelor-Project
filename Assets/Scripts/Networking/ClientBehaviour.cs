@@ -638,6 +638,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         GameObject.Find("Canvas").SetActive(false);
 
         nm.inGame = true;
+        GameObject.FindObjectOfType<AudioManager>().PlayGameplayBGM(true, 0.05f);
+
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 

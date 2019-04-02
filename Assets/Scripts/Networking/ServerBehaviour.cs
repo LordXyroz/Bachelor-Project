@@ -302,6 +302,8 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         nm.matchmakingCanvas.SetActive(false);
         nm.inGame = true;
 
+        GameObject.FindObjectOfType<AudioManager>().PlayGameplayBGM(true, 0.05f);
+
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 
