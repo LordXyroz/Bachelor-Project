@@ -156,7 +156,7 @@ public class NetworkingManager : MonoBehaviour
             return;
         }
 
-        if (cb != null)
+        /*if (cb != null)
         {
             cb.StopConnecting();
 
@@ -166,7 +166,7 @@ public class NetworkingManager : MonoBehaviour
             cb.m_ClientDriver.Dispose();
             cb = null;
             playerType = default;
-        }
+        }*/
     }
 
     /// <summary>
@@ -218,6 +218,13 @@ public class NetworkingManager : MonoBehaviour
                     /// Player may not start hosting while looking for connection as a client.
                     return;
                 }
+
+                /// Make HostText available:
+                chatField.SetActive(true);
+                /// Set username of host on top of screen for everyone to see.
+                Text T = GameObject.Find("HostText").GetComponent<Text>();
+                T.text = userName + "'s lobby";
+                chatField.SetActive(false);
 
                 loadMenu.SetActive(true);
             }
@@ -299,13 +306,13 @@ public class NetworkingManager : MonoBehaviour
             }
 
 
+            connectionField.SetActive(true);
             /// Change connection text:
             GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
             GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.red;
 
             /// Change view to not be in a lobby:
             chatField.SetActive(false);
-            connectionField.SetActive(true);
 
             /// Make it possible for them to start game if they choose to be host:
             startGameButton.SetActive(true);
@@ -850,9 +857,8 @@ public class NetworkingManager : MonoBehaviour
             GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
             GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
 
-            /// Set username of host on top of screen for everyone to see.
-            Text T = GameObject.Find("HostText").GetComponent<Text>();
-            T.text = userName + "'s lobby";
+            //Text T = GameObject.Find("HostText").GetComponent<Text>();
+            //T.text = userName + "'s lobby";
 
             /// Set to false as host no client has joined a lobby before it starts.
             for (int i = 0; i < attackerNames.Count; i++)

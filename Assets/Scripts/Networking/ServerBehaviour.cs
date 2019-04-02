@@ -71,7 +71,147 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         }
     }
    
-    
+
+    public void FindConnectionsTest(string serverName)
+    {
+        string data;
+
+        /// Check if we were already canceled for some reason.
+        cancellationToken.ThrowIfCancellationRequested();
+
+        /// Set the Listener on port 11000.
+        Int32 port = 13000;
+        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+        IPAddress localAddr = null;
+        for (int i = 0; i < ipHostInfo.AddressList.Length; i++)
+        {
+            if (ipHostInfo.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
+            {
+                localAddr = ipHostInfo.AddressList[i];
+            }
+        }
+
+        IPEndPoint localEndPoint = new IPEndPoint(localAddr, port);
+
+        
+        UdpClient listener = new UdpClient(port);
+
+        Debug.Log("Waiting for broadcast");
+        Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp); /// For sending message to client.
+        try
+        {
+            byte[] bytes = listener.Receive(ref localEndPoint);
+            
+            Debug.Log("Client ip: " + Encoding.ASCII.GetString(bytes, 0, bytes.Length));
+            string ip = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+            
+            /// Send message to client:
+
+            IPAddress broadcast = IPAddress.Parse(ip);
+            Debug.Log("serverName: " + serverName);
+            
+            byte[] sendbuf = Encoding.ASCII.GetBytes(serverName);
+            IPEndPoint ep = new IPEndPoint(broadcast, 13500);
+
+            s.SendTo(sendbuf, ep);
+        }
+        catch (SocketException e)
+        {
+            Debug.Log(e);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+        }
+        finally
+        {
+            s.Close();
+            listener.Close();
+        }
+    }
+
+
+    public void FindConnectionsTest2(string serverName)
+    {
+        string data = "";
+        
+        byte[] bytes = new Byte[1024];
+        
+        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+        
+        IPAddress localAddr = null;
+        for (int i = 0; i < ipHostInfo.AddressList.Length; i++)
+        {
+            if (ipHostInfo.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
+            {
+                localAddr = ipHostInfo.AddressList[i];
+                break;
+            }
+        }
+        IPEndPoint localEndPoint = new IPEndPoint(localAddr, 11000);
+
+
+
+        /// Create a TCP/IP socket.  
+        Socket listener = new Socket(localAddr.AddressFamily,
+            SocketType.Stream, ProtocolType.Tcp);
+
+        /// Bind the socket to the local endpoint and   
+        /// listen for incoming connections.  
+        try
+        {
+            /// Check if we were already canceled for some reason.
+            cancellationToken.ThrowIfCancellationRequested();
+
+            listener.Bind(localEndPoint);
+            listener.Listen(10);
+
+            /// Start listening for connections.  
+            while (true)
+            {
+                /// Program is suspended while waiting for an incoming connection.  
+                Socket server = listener.Accept();
+                data = null;
+
+                
+                /// An incoming connection needs to be processed.  
+                while (true)
+                {
+                    int bytesRec = server.Receive(bytes);
+                    data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                    if (data.IndexOf("<EOF>") > -1)
+                    {
+                        break;
+                    }
+                }
+
+                /// Send lobby information to client:
+                byte[] msg = Encoding.ASCII.GetBytes(serverName);
+
+                server.Send(msg);
+                server.Shutdown(SocketShutdown.Both);
+                server.Close();
+            }
+
+        }
+        catch (OperationCanceledException e)
+        {
+            Debug.Log("Canceled task: " + e);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+        }
+        finally
+        {
+            cancellationTokenSource.Dispose();
+            server.Stop();
+        }
+    }
+
+
+
+
     /// <summary>
     /// Listen to a port and give message to clients that want to join.
     /// </summary>
@@ -95,6 +235,8 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
                 }
             }
             
+
+
             /// TcpListener server = new TcpListener(port);
             server = new TcpListener(localAddr, port);
 
@@ -184,8 +326,9 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         
         connectionNames = new List<(string name, int connectionNumber)> { };
         m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
-
-        findConnections = Task.Factory.StartNew(() => FindConnections(), cancellationToken);
+        
+        string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
+        findConnections = Task.Factory.StartNew(() => FindConnectionsTest2(serverName), cancellationToken);
         
         // Create the server driver, bind it to a port and start listening for incoming connections
         m_ServerDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
@@ -329,11 +472,12 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         {
             connectionNames[j] = (connectionNames[j].name, j);
         }
-
+        
         cancellationTokenSource = new CancellationTokenSource();
         cancellationToken = cancellationTokenSource.Token;
 
-        findConnections = Task.Factory.StartNew(() => FindConnections(), cancellationToken);
+        string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
+        findConnections = Task.Factory.StartNew(() => FindConnectionsTest2(serverName), cancellationToken);
     }
 
     public void BroadcastMessage(dynamic message)
