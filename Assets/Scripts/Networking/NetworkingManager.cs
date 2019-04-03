@@ -137,7 +137,10 @@ public class NetworkingManager : MonoBehaviour
     public void ExitGame()
     {
         if (cb != null)
+        {
+            StopConnecting();
             cb.Dispose();
+        }
         if (sb != null)
             sb.Dispose();
 
@@ -155,12 +158,19 @@ public class NetworkingManager : MonoBehaviour
             return;
         }
 
-        /*if (cb != null)
+        if (cb != null)
         {
-            cb.StopConnecting();
+            cb.StopConnecting(this);
+
+            /// Set the view correct:
+            GameObject.Find("ConnectionText").GetComponent<Text>().text = "Offline";
+            GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.red;
+
+            stopJoinButton.SetActive(false);
+            joinButton.SetActive(true);
 
             playerType = default;
-        }*/
+        }
     }
 
     /// <summary>

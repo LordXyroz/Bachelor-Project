@@ -100,113 +100,6 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         }
         throw new Exception("No network adapters with an IPv4 address in the system!");
     }
-    
-    /*public void FindHostTest(string ip, out string serverName)
-    {
-        serverName = "";
-        
-
-        /// Used to get ip address:
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress localAddr = null;
-        for (int i = 0; i < ipHostInfo.AddressList.Length; i++)
-        {
-            if (ipHostInfo.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
-            {
-                localAddr = ipHostInfo.AddressList[i];
-            }
-        }
-
-
-        /// Send message to host:
-        Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        try
-        {
-            Debug.Log("First try catch");
-            if (cancellationToken.IsCancellationRequested)
-            {
-                /// Cancel task.
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-
-
-            IPAddress broadcast = IPAddress.Parse(ip);
-
-            byte[] sendbuf = Encoding.ASCII.GetBytes(localAddr.ToString());
-            IPEndPoint ep = new IPEndPoint(broadcast, 13000);
-
-            Debug.Log("Sending message to host");
-            s.SendTo(sendbuf, ep);
-            
-        }
-        catch (OperationCanceledException e)
-        {
-            Debug.Log("Canceled task: " + e);
-            s.Close();
-            cancellationToken.ThrowIfCancellationRequested();
-            return;
-        }
-        catch (SocketException e)
-        {
-            Debug.Log(e);
-            s.Close();
-            cancellationToken.ThrowIfCancellationRequested();
-            return;
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-            s.Close();
-            cancellationToken.ThrowIfCancellationRequested();
-            return;
-        }
-        finally
-        {
-            s.Close();
-        }
-
-
-        /// Get lobbyName from host:
-        IPEndPoint localEndPoint = new IPEndPoint(localAddr, 13500);
-        UdpClient listener = new UdpClient(13500);
-        try
-        {
-            Debug.Log("Second try catch");
-            if (cancellationToken.IsCancellationRequested)
-            {
-                /// Cancel task.
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-
-            byte[] bytes = listener.Receive(ref localEndPoint);
-
-            serverName = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
-            Debug.Log("Received message: " + serverName);
-            ServerName = serverName;
-            if (serverName != "" && serverName != null)
-            {
-                Debug.Log("Setting serverendpoint: " + ip);
-                ServerEndPoint = new IPEndPoint(IPAddress.Parse(ip), 9000);
-            }
-        }
-        catch (OperationCanceledException e)
-        {
-            Debug.Log("Canceled task: " + e);
-            cancellationToken.ThrowIfCancellationRequested();
-        }
-        catch (SocketException e)
-        {
-            Debug.Log(e);
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-        }
-        finally
-        {
-            listener.Close();
-        }
-    }*/
 
     public void FindHostTest2(string ip, out string serverName)
     {
@@ -255,7 +148,6 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
                 // Receive the response from the remote device.  
                 int bytesRec = client.Receive(bytes);
                 serverName = Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                Debug.Log("server response: " + serverName);
 
                 if (serverName != "" && serverName != null)
                 {
@@ -370,12 +262,14 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     /// <summary>
     /// If the client is looking for host but not finding one, the client can still stop the connecting.
     /// </summary>
-    public void StopConnecting()
+    public void StopConnecting(MonoBehaviour myMonoBehaviour)
     {
         if (setupHostIp == null)
         {
             return;
         }
+        myMonoBehaviour.StopAllCoroutines();
+
         /// Cancel task.
         if (!setupHostIp.IsCompleted && !setupHostIp.IsCanceled)
         {
@@ -859,7 +753,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
             Debug.Log("Running client Dispose");
 
             m_ClientDriver.ScheduleUpdate().Complete();
-            m_clientToServerConnection.Disconnect(m_ClientDriver);
+            //m_clientToServerConnection.Disconnect(m_ClientDriver);
             m_clientToServerConnection = default;
             m_ClientDriver.Dispose();
             m_ClientDriver = default;
@@ -868,9 +762,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
 
             try
             {
+                setupHostIp.Wait();
                 setupHostIp.Dispose();
             }
-            catch (ObjectDisposedException e)
+            catch (Exception e)
             {
                 Debug.Log(e.Message);
             }
@@ -883,7 +778,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
                 nm.matchmakingCanvas.SetActive(true);
                 nm.inGame = false;
             }
-            }
+        }
     }
     
     ~ClientBehaviour()

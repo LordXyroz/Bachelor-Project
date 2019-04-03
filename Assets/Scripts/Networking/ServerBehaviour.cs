@@ -71,65 +71,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
     }
    
 
-    /*public void FindConnectionsTest(string serverName)
-    {
-        string data;
-
-        /// Check if we were already canceled for some reason.
-        cancellationToken.ThrowIfCancellationRequested();
-
-        /// Set the Listener on port 11000.
-        Int32 port = 13000;
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress localAddr = null;
-        for (int i = 0; i < ipHostInfo.AddressList.Length; i++)
-        {
-            if (ipHostInfo.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
-            {
-                localAddr = ipHostInfo.AddressList[i];
-            }
-        }
-
-        IPEndPoint localEndPoint = new IPEndPoint(localAddr, port);
-
-        
-        UdpClient listener = new UdpClient(port);
-
-        Debug.Log("Waiting for broadcast");
-        Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp); /// For sending message to client.
-        try
-        {
-            byte[] bytes = listener.Receive(ref localEndPoint);
-            
-            Debug.Log("Client ip: " + Encoding.ASCII.GetString(bytes, 0, bytes.Length));
-            string ip = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
-            
-            /// Send message to client:
-
-            IPAddress broadcast = IPAddress.Parse(ip);
-            Debug.Log("serverName: " + serverName);
-            
-            byte[] sendbuf = Encoding.ASCII.GetBytes(serverName);
-            IPEndPoint ep = new IPEndPoint(broadcast, 13500);
-
-            s.SendTo(sendbuf, ep);
-        }
-        catch (SocketException e)
-        {
-            Debug.Log(e);
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-        }
-        finally
-        {
-            s.Close();
-            listener.Close();
-        }
-    }*/
-
-
     public void FindConnectionsTest2(string serverName)
     {
         string data = "";
