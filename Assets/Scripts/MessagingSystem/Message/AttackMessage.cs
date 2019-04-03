@@ -10,11 +10,13 @@ public class AttackMessage : Message
 {
     public AttackTypes attack;
     public float probability;
+    public float randVal;
 
-    public AttackMessage(string target, string sender, ushort type, AttackTypes attackType, float prob) 
+    public AttackMessage(string target, string sender, ushort type, AttackTypes attackType, float prob, float rand) 
         : base(target, sender, type)
     {
         attack = attackType;
         probability = prob;
+        randVal = rand;
     }
 }

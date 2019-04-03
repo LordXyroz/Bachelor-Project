@@ -289,17 +289,28 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         
         int currentDepth = -1;
         string targetName = "";
+        List<float> randValues = new List<float>();
+
         if (target == null)
         {
             currentDepth = 0;
+            randValues.Add(Random.Range(0f, 1f));
         }
         else
         {
             currentDepth = target.GetComponent<GameNetworkComponent>().graphDepth;
             targetName = target.GetComponent<GameNetworkComponent>().name;
+
+            int count = info.Find(x => x.component.name == target.name).numOfChildren;
+
+            if (count <= 0)
+                count = 99;
+
+            for (int i = 0; i < count; i++)
+                randValues.Add(Random.Range(0f, 1f));
         }
         
-        networking.SendMessage(new DiscoverMessage(targetName, name, MessageTypes.Game.Discover, currentDepth, discoverProbability));
+        networking.SendMessage(new DiscoverMessage(targetName, name, MessageTypes.Game.Discover, currentDepth, discoverProbability, randValues));
     }
 
     /// <summary>
@@ -310,8 +321,17 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     {
         analyzeInProgress = false;
         analyzeTimer = 0f;
-        
-        networking.SendMessage(new AnalyzeMessage(target.name, name, MessageTypes.Game.Analyze, analyzeProbability));
+
+        List<float> randValues = new List<float>();
+        int count = info.Find(x => x.component.name == target.name).numOfVulnerabilities;
+
+        if (count <= 0)
+            count = 99;
+
+        for (int i = 0; i < count; i++)
+            randValues.Add(Random.Range(0f, 1f));
+
+        networking.SendMessage(new AnalyzeMessage(target.name, name, MessageTypes.Game.Analyze, analyzeProbability, randValues));
     }
 
     /// <summary>

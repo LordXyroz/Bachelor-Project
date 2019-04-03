@@ -9,10 +9,14 @@ using UnityEngine;
 public class DefenseMessage : Message
 {
     public DefenseTypes defense;
+    public float probability;
+    public float randVal;
 
-    public DefenseMessage(string target, string sender, ushort type, DefenseTypes defenseEnum)
+    public DefenseMessage(string target, string sender, ushort type, DefenseTypes defenseEnum, float prob, float rand)
         : base(target, sender, type)
     {
         defense = defenseEnum;
+        probability = prob;
+        randVal = rand;
     }
 }

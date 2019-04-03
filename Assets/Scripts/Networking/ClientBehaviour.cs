@@ -523,7 +523,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
             var str = JsonUtility.ToJson(msg);
             str = str + "|" + msg.GetType();
             
-            var writer = new DataStreamWriter(1024, Allocator.Temp);
+            var writer = new DataStreamWriter(str.Length, Allocator.Temp);
 
             writer.Write(Encoding.ASCII.GetBytes(str));
             m_ClientDriver.Send(m_clientToServerConnection, writer);

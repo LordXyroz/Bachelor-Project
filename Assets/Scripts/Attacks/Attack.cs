@@ -71,7 +71,10 @@ public class Attack : MonoBehaviour, IAttackResponse
     public void Effect()
     {
         triggered = true;
-        networking.SendMessage(new AttackMessage(target.name, name, MessageTypes.Game.Attack, attackType, probability));
+
+        var rand = Random.Range(0f, 1f);
+
+        networking.SendMessage(new AttackMessage(target.name, name, MessageTypes.Game.Attack, attackType, probability, rand));
     }
 
     /// <summary>

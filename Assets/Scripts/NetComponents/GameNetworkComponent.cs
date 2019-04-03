@@ -175,7 +175,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                                 isVulnerable = false;
                         }
                       
-                        if (!(Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f))))
+                        if (!(message.randVal <= message.probability - (0.8f * (difficulty / 5f - 0.2f))))
                             isVulnerable = false;
                     }
                 }
@@ -204,7 +204,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         {
             if (message.defense != DefenseTypes.zero)
             {
-                if (availableDefenses.Remove(message.defense))
+                if (availableDefenses.Remove(message.defense) && message.randVal <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
                 {
                     implementedDefenses.Add(message.defense);
 
@@ -252,13 +252,15 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         }
         else if (message.targetName == name)
         {
+            int count = 0;
             foreach (var child in children)
             {
-                if (!child.uiElement.activeSelf && (Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f))))
+                if (!child.uiElement.activeSelf && message.randValues[count] <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
                 {
                     list.Add(child.name);
                     child.uiElement.SetActive(true);
                 }
+                count++;
             }
 
             if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
@@ -282,11 +284,13 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         if (message.targetName == name)
         {
             List<AttackTypes> vulnList = new List<AttackTypes>();
+            int count = 0;
+
             foreach (var vuln in vulnerabilities)
             {
                 bool vulnerable = false;
 
-                if (Random.Range(0f, 1f) <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
+                if (message.randValues[count] <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
                     vulnerable = true;
 
                 foreach (var def in implementedDefenses)
@@ -296,6 +300,8 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 }
                 if (vulnerable)
                     vulnList.Add(vuln);
+
+                count++;
             }
 
             if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())

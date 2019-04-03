@@ -70,7 +70,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         }
     }
    
-
     public void FindConnectionsTest2(string serverName)
     {
         string data = "";
@@ -148,9 +147,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
             server.Stop();
         }
     }
-
-
-
     
     /// <summary>
     /// Listen to a port and give message to clients that want to join.
@@ -430,7 +426,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         var str = JsonUtility.ToJson(message);
         str = str + "|" + message.GetType();
         
-        var writer = new DataStreamWriter(1024, Allocator.Temp);
+        var writer = new DataStreamWriter(str.Length, Allocator.Temp);
         writer.Write(Encoding.ASCII.GetBytes(str));
 
         for (int i = 0; i < m_connections.Length; i++)
@@ -442,14 +438,11 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
     public void BroadcastMessage(dynamic message, int index)
     {
         string str = JsonUtility.ToJson(message);
-        str = str + "|" + message.GetType() + "\0\0\0\0\0\0\0\0";
+        str = str + "|" + message.GetType();
 
 
         var writer = new DataStreamWriter(str.Length, Allocator.Temp);
         writer.Write(Encoding.ASCII.GetBytes(str));
-
-        if (message.messageType == MessageTypes.Game.SaveFile)
-            Debug.Log("---LOG---: Length of package in writer: " + writer.Length);
         
         m_ServerDriver.Send(m_connections[index], writer);
         
@@ -461,7 +454,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         var str = JsonUtility.ToJson(message);
         str = str + "|" + message.GetType();
 
-        var writer = new DataStreamWriter(1024, Allocator.Temp);
+        var writer = new DataStreamWriter(str.Length, Allocator.Temp);
         writer.Write(Encoding.ASCII.GetBytes(str));
 
         for (int i = 0; i < m_connections.Length; i++)
@@ -478,7 +471,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
         str = str + "|" + msg.GetType();
         
-        var writer = new DataStreamWriter(256, Allocator.Temp);
+        var writer = new DataStreamWriter(str.Length, Allocator.Temp);
 
         writer.Write(Encoding.ASCII.GetBytes(str));
         m_ServerDriver.Send(m_connections[index], writer);
@@ -519,11 +512,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
         if (message.swapMsg == ClientBehaviour.SwapMsgType.Acknowledge)
             nm.FindSwapNames(sender, target);
-    }
-
-    public void SendSaveFile(int index)
-    {
-        
     }
 
     #region IDisposable

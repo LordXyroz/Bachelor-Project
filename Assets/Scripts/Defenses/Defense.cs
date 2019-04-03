@@ -68,7 +68,10 @@ public class Defense : MonoBehaviour, IDefenseResponse
     public void Effect()
     {
         triggered = true;
-        networking.SendMessage(new DefenseMessage(target.name, name, MessageTypes.Game.Defense, defenseType));
+
+        var rand = Random.Range(0f, 1f);
+
+        networking.SendMessage(new DefenseMessage(target.name, name, MessageTypes.Game.Defense, defenseType, probability, rand));
     }
 
     /// <summary>
