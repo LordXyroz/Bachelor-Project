@@ -234,8 +234,16 @@ public class NetworkingManager : MonoBehaviour
             }
             else
             {
-                /// Add client behaviour and try to find a host.
+                /// Make list of available hosts ready for use:
+                RemoveLobbies();
+
+                if (cb != null)
+                {
+                    cb.Dispose();
+                }
                 
+
+                /// Add client behaviour and try to find a host.
                 cb = new ClientBehaviour();
 
                 lobbyScrollField.SetActive(true);
