@@ -100,8 +100,13 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         }
         throw new Exception("No network adapters with an IPv4 address in the system!");
     }
-
-    public void FindHostTest2(string ip, out string serverName)
+    
+    /// <summary>
+    /// Tries to connect to a computer with the ip given as parameter. If possible, global variable 'ServerEndPoint' will be set.
+    /// </summary>
+    /// <param name="ip"></param>
+    /// <param name="serverName"></param>
+    public void FindHost(string ip, out string serverName)
     {
         serverName = "";
 
@@ -185,80 +190,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
             Debug.Log(e);
         }
     }
-
     
-    /// <summary>
-    /// Tries to connect to a computer with the ip given as parameter. If possible, global variable 'ServerEndPoint' will be set.
-    /// </summary>
-    /// <param name="ip"></param>
-    public void FindHost(string ip, out string serverName)
-    {
-        string message = "Connecting";
-        serverName = "";
-
-        try
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                /// Cancel task.
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-            /// Create a TcpClient.
-            Int32 port = 13000;
-            TcpClient client = new TcpClient(ip, port);
-
-            /// Translate the passed message into ASCII and store it as a Byte array.
-            Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
-            
-            /// Get a client stream for reading and writing.
-            NetworkStream stream = client.GetStream();
-
-            /// Send the message to the connected TcpServer. 
-            stream.Write(data, 0, data.Length);
-            
-            /// Buffer to store the response bytes.
-            data = new Byte[256];
-            
-            String responseData = String.Empty;
-
-            /// Read the first batch of the TcpServer response bytes.
-            while (true)
-            {
-                Int32 bytes = stream.Read(data, 0, data.Length);
-                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-                responseData = responseData.Trim();
-                Debug.Log("response data: " + responseData);
-                if (responseData != "")
-                    break;
-            }
-            
-            ServerName = responseData;
-            serverName = responseData;
-
-            ServerEndPoint = new IPEndPoint(IPAddress.Parse(ip), 9000);
-            /// Close everything.
-            stream.Close();
-            client.Close();
-        }
-        catch (ArgumentNullException e)
-        {
-            Debug.Log("ArgumentNullException:" + e);
-        }
-        catch (SocketException e)
-        {
-            /// Client will get socket exception when trying to ask other computers if they are hosting or not, and they don't answer yes.
-            Debug.Log("\nSocketException for ip: " + ip + "\n\nException msg: " + e);
-        }
-        catch (OperationCanceledException e)
-        {
-            Debug.Log("Canceled task: " + e);
-        }
-        finally
-        {
-            cancellationTokenSource.Dispose();
-        }
-    }
-
     /// <summary>
     /// If the client is looking for host but not finding one, the client can still stop the connecting.
     /// </summary>
@@ -395,7 +327,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
             
 
             /// Get IP of host that wants to serve a match
-            setupHostIp = Task.Factory.StartNew(() => FindHostTest2(ips[i], out serverName), cancellationToken);
+            setupHostIp = Task.Factory.StartNew(() => FindHost(ips[i], out serverName), cancellationToken);
             
             yield return new WaitForSeconds(0.25f);
 
