@@ -29,10 +29,12 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     private int analyzeUpgradeDuration = 10;
     private float analyzeUpgradeTimer = 0f;
     private bool analyzeUpgrading = false;
+    private int analyzeUpgradeCost = 10;
 
     private int analyzeDuration = 10;
     private float analyzeTimer = 0f;
     private bool analyzeInProgress = false;
+    private int analyzeCost = 10;
 
     [Header("Defense variables")]
     [SerializeField]
@@ -43,14 +45,16 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     private int defenseUpgradeDuration = 10;
     private float defenseUpgradeTimer = 0f;
     private bool defenseUpgrading = false;
+    private int defenseUpgradeCost = 10;
 
     [Header("Probing variables")]
     private int probeDuration = 3;
     private float probeTimer = 0f;
     private bool probeInProgress = false;
+    private int probeCost = 3;
 
     [Header("General variables")]
-    [SerializeField]
+    public int resources = 100;
     private bool workInProgress = false;
     private NetworkingManager networking;
 
@@ -103,11 +107,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         if (defenseUpgradeTimer >= defenseUpgradeDuration)
             UpgradeDefense();
 
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            target = GameObject.Find("GoogleAPI");
-            StartDefense(0);
-        }
+        uiScript.UpdateResources(resources);
     }
 
     /// <summary>
@@ -157,13 +157,15 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     /// </summary>
     public void StartAnalyze()
     {
-        if (!workInProgress)
+        if (!workInProgress && resources >= analyzeCost)
         {
             if (target == null)
                 return;
 
             workInProgress = true;
             analyzeInProgress = true;
+
+            resources -= analyzeCost;
 
             string msg = "Started analyzing on: " + target.name;
 
@@ -188,8 +190,19 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
             workInProgress = true;
 
             var go = Instantiate(defensePrefabs[id]);
+
+            if (resources < go.GetComponent<Defense>().cost)
+            {
+                Destroy(go);
+                workInProgress = false;
+
+                uiScript.ToggleProgressbar(false, "", "");
+                return;
+            }
+
             go.GetComponent<Defense>().target = target;
             go.GetComponent<Defense>().probability = defenseProbability;
+            resources -= go.GetComponent<Defense>().cost;
 
             string msg = "Started implementing defense: " + go.GetComponent<Defense>().defenseType + ", on: " + target.name;
 
@@ -202,7 +215,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     /// </summary>
     public void StartProbe()
     {
-        if (!workInProgress)
+        if (!workInProgress && resources >= probeCost)
         {
             if (target == null)
                 return;
@@ -212,6 +225,8 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
             workInProgress = true;
             probeInProgress = true;
+
+            resources -= probeCost;
 
             string msg = "Started probing: " + target.name;
 
@@ -372,10 +387,12 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         if (analyzeLevel >= 3)
             return;
 
-        if (!workInProgress)
+        if (!workInProgress && resources >= analyzeUpgradeCost)
         {
             workInProgress = true;
             analyzeUpgrading = true;
+
+            resources -= analyzeUpgradeCost;
 
             uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Analysis");
         }
@@ -390,10 +407,12 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         if (defenseLevel >= 3)
             return;
 
-        if (!workInProgress)
+        if (!workInProgress && resources >= defenseUpgradeCost)
         {
             workInProgress = true;
             defenseUpgrading = true;
+
+            resources -= defenseUpgradeCost;
 
             uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Defenses");
         }

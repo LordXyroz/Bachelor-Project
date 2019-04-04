@@ -32,10 +32,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private int discoverUpgradeDuration = 10;
     private float discoverUpgradeTimer = 0f;
     private bool discoverUpgrading = false;
+    private int discoverUpgradeCost = 10;
 
     private int discoverDuration = 3;
     private float discoverTimer = 0f;
     private bool discoverInProgress = false;
+    private int discoverCost = 10;
 
     [Header("Analysis variables")]
     [SerializeField]
@@ -46,15 +48,19 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private int analyzeUpgradeDuration = 10;
     private float analyzeUpgradeTimer = 0f;
     private bool analyzeUpgrading = false;
+    private int analyzeUpgradeCost = 10;
 
     private int analyzeDuration = 10;
     private float analyzeTimer = 0f;
     private bool analyzeInProgress = false;
+    private int analyzeCost = 10;
+
 
     [Header("Probing variables")]
     private int probeDuration = 3;
     private float probeTimer = 0f;
     private bool probeInProgress = false;
+    private int probeCost = 3;
 
     [Header("Attack variables")]
     [SerializeField]
@@ -65,8 +71,10 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private int attackUpgradeDuration = 10;
     private float attackUpgradeTimer = 0f;
     private bool attackUpgrading = false;
+    private int attackUpgradeCost = 10;
 
     [Header("General variables")]
+    public int resources = 100;
     private bool workInProgress = false;
     private NetworkingManager networking;
 
@@ -137,6 +145,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         if (discoverUpgradeTimer >= discoverUpgradeDuration)
             UpgradeDiscover();
+
+        uiScript.UpdateResources(resources);
     }
 
     /// <summary>
@@ -186,13 +196,15 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// </summary>
     public void StartDiscover()
     {
-        if (!workInProgress)
+        if (!workInProgress && resources >= discoverCost)
         {
             if (uiScript.popupWindowObject.activeSelf)
                 return;
 
             workInProgress = true;
             discoverInProgress = true;
+
+            resources -= discoverCost;
 
             string msg = "Started discovering" + ((target != null) ? " on: "  + target.name : "");
 
@@ -208,7 +220,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// </summary>
     public void StartAnalyze()
     {
-        if (!workInProgress)
+        if (!workInProgress && resources >= analyzeCost)
         {
             if (target == null)
                 return;
@@ -218,6 +230,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             workInProgress = true;
             analyzeInProgress = true;
+
+            resources -= analyzeCost;
 
             string msg = "Started analyzing on: " + target.name;
 
@@ -245,8 +259,20 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             workInProgress = true;
 
             var go = Instantiate(attackPrefabs[id]);
+
+            if (resources < go.GetComponent<Attack>().cost)
+            {
+                Destroy(go);
+                workInProgress = false;
+
+                uiScript.ToggleProgressbar(false, "", "");
+                return;
+            }
+
             go.GetComponent<Attack>().target = target;
             go.GetComponent<Attack>().probability = attackProbability;
+
+            resources -= go.GetComponent<Attack>().cost;
 
             string msg = "Started attack of type: " + go.GetComponent<Attack>().attackType + ", on: " + target.name;
 
@@ -259,7 +285,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// </summary>
     public void StartProbing()
     {
-        if (!workInProgress)
+        if (!workInProgress && resources >= probeCost)
         {
             if (target == null)
                 return;
@@ -269,6 +295,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             workInProgress = true;
             probeInProgress = true;
+
+            resources -= probeCost;
 
             string msg = "Started probing: " + target.name;
 
@@ -509,10 +537,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (attackLevel >= 3)
             return;
         
-        if (!workInProgress)
+        if (!workInProgress && resources >= attackUpgradeCost)
         {
             workInProgress = true;
             attackUpgrading = true;
+
+            resources -= attackUpgradeCost;
 
             uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Attacks");
         }
@@ -527,10 +557,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (analyzeLevel >= 3)
             return;
 
-        if (!workInProgress)
+        if (!workInProgress && resources >= analyzeUpgradeCost)
         {
             workInProgress = true;
             analyzeUpgrading = true;
+
+            resources -= analyzeUpgradeCost;
 
             uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Analysis");
         }
@@ -545,10 +577,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (discoverLevel >= 3)
             return;
 
-        if (!workInProgress)
+        if (!workInProgress && resources >= discoverUpgradeCost)
         {
             workInProgress = true;
             discoverUpgrading = true;
+
+            resources -= discoverUpgradeCost;
 
             uiScript.ToggleProgressbar(true, "Upgrade", "Upgrading Discovery");
         }

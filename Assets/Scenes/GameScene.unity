@@ -12428,7 +12428,7 @@ MonoBehaviour:
   defenseLevel: 1
   defenseProbability: 0.6
   defenseUpgradeDuration: 10
-  workInProgress: 0
+  resources: 100
 --- !u!4 &1187280286
 Transform:
   m_ObjectHideFlags: 0
@@ -16226,6 +16226,7 @@ MonoBehaviour:
   attackLevel: 1
   attackProbability: 0.6
   attackUpgradeDuration: 10
+  resources: 100
 --- !u!4 &1480980485
 Transform:
   m_ObjectHideFlags: 0
