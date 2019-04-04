@@ -69,8 +69,12 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
             cancellationTokenSource.Cancel();
         }
     }
-   
-    public void FindConnectionsTest2(string serverName)
+    
+    /// <summary>
+    /// Listen to a port and give message to clients that want to join.
+    /// </summary>
+    /// <param name="serverName"></param>
+    public void FindConnections(string serverName)
     {
         string data = "";
         
@@ -149,108 +153,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
     }
     
     /// <summary>
-    /// Listen to a port and give message to clients that want to join.
-    /// </summary>
-    public void FindConnections()
-    {
-        server = null;
-        try
-        {
-            /// Check if we were already canceled for some reason.
-            cancellationToken.ThrowIfCancellationRequested();
-
-            /// Set the TcpListener on port 13000.
-            Int32 port = 13000;
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress localAddr = null;
-            for (int i = 0; i < ipHostInfo.AddressList.Length; i++)
-            {
-                if (ipHostInfo.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
-                {
-                    localAddr = ipHostInfo.AddressList[i];
-                }
-            }
-            
-
-
-            /// TcpListener server = new TcpListener(port);
-            server = new TcpListener(localAddr, port);
-
-            /// Start listening for client requests.
-            server.Start();
-
-            /// Buffer for reading data
-            Byte[] bytes = new Byte[256];
-
-            /// Enter the listening loop.
-            while (server != null)
-            {
-
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    Debug.Log("Canceling tcplistener, cancellation");
-                    /// Clean up.
-                    server.Stop();
-                    server = null;
-
-                    /// Cancel task.
-                    cancellationToken.ThrowIfCancellationRequested();
-                }
-
-                if (m_connections.IsCreated)
-                {
-                    /// Lobby is full:
-                    if (m_connections.Length == 2) /// 2 is total amount of clients
-                    {
-                        Debug.Log("Canceling tcplistener, server full");
-                        server.Stop();
-                        return;
-                    }
-                }
-
-                /// Perform a blocking call to accept requests.
-                TcpClient client = server.AcceptTcpClient();
-                
-                /// Get a stream object for reading and writing
-                NetworkStream stream = client.GetStream();
-
-                int i;
-
-                /// Loop to receive all the data sent by the client.
-                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
-                {
-                    string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
-                    Debug.Log(serverName);
-                    byte[] msg = Encoding.ASCII.GetBytes(serverName);
-
-                    /// Send back a response.
-                    stream.Write(msg, 0, msg.Length);
-                }
-
-                /// Shutdown and end connection
-                client.Close();
-            }
-
-        }
-        catch (SocketException e)
-        {
-            /// When host wants to close connection there will be sent a block call to WSACancelBlockingCall causing an wanted exception. Debug for testing.
-            /// Debug.Log("SocketException: " + e);
-        }
-        catch (OperationCanceledException e)
-        {
-            Debug.Log("Canceled task: " + e);
-        }
-        finally
-        {
-            cancellationTokenSource.Dispose();
-
-            /// Stop listening for new clients.
-            server.Stop();
-        }
-    }
-
-    /// <summary>
     /// Server behaviour constructor to set up basic settings for having a server behaviour in the game.
     /// </summary>
     public ServerBehaviour()
@@ -264,7 +166,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
         
         string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
-        findConnections = Task.Factory.StartNew(() => FindConnectionsTest2(serverName), cancellationToken);
+        findConnections = Task.Factory.StartNew(() => FindConnections(serverName), cancellationToken);
         
         // Create the server driver, bind it to a port and start listening for incoming connections
         m_ServerDriver = new UdpCNetworkDriver(new INetworkParameter[0]);
@@ -418,7 +320,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         }
 
         string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
-        findConnections = Task.Factory.StartNew(() => FindConnectionsTest2(serverName), cancellationToken);
+        findConnections = Task.Factory.StartNew(() => FindConnections(serverName), cancellationToken);
     }
 
     public void BroadcastMessage(dynamic message)
