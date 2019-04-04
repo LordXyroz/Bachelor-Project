@@ -91,7 +91,7 @@ public class LoadScenario : MonoBehaviour
             saveMenu.attackerResources = loadFromJSON.attackerResources;
 
             saveMenu.defenderDefenseLevel = loadFromJSON.defenderDefenceLevel;
-            saveMenu.defenderDiscoveryLevel = loadFromJSON.defenderDiscoveryLevel;
+            saveMenu.defenderDiscoveryLevel = loadFromJSON.defenderAnalysisLevel;
             saveMenu.defenderResources = loadFromJSON.defenderResources;
 
             for (int i = 0; i < loadFromJSON.systemComponentPositionsList.Count; i++)

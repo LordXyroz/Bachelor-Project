@@ -21,10 +21,8 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     private DefenderUI uiScript;
 
     [Header("Analysis variables")]
-    [SerializeField]
-    private int analyzeLevel = 1;
-    [SerializeField]
-    private float analyzeProbability = 0.6f;
+    public int analyzeLevel = 1;
+    public float analyzeProbability = 0.6f;
     [SerializeField]
     private int analyzeUpgradeDuration = 10;
     private float analyzeUpgradeTimer = 0f;
@@ -37,10 +35,8 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     private int analyzeCost = 10;
 
     [Header("Defense variables")]
-    [SerializeField]
-    private int defenseLevel = 1;
-    [SerializeField]
-    private float defenseProbability = 0.6f;
+    public int defenseLevel = 1;
+    public float defenseProbability = 0.6f;
     [SerializeField]
     private int defenseUpgradeDuration = 10;
     private float defenseUpgradeTimer = 0f;
@@ -106,8 +102,8 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
         if (defenseUpgradeTimer >= defenseUpgradeDuration)
             UpgradeDefense();
-
-        uiScript.UpdateResources(resources);
+        
+        uiScript.UpdateStats(resources, defenseLevel, analyzeLevel);
     }
 
     /// <summary>
@@ -434,7 +430,6 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Success!", "Analysis now upgraded to level: " + analyzeLevel);
-        uiScript.UpdateStats(0, defenseLevel, analyzeLevel);
         workInProgress = false;
     }
 
@@ -454,7 +449,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Success!", "Defenses now upgraded to level: " + defenseLevel);
-        uiScript.UpdateStats(0, defenseLevel, analyzeLevel);
+        uiScript.UpdateStats(resources, defenseLevel, analyzeLevel);
         workInProgress = false;
     }
 }

@@ -36,7 +36,7 @@ public class Save
     public int attackerResources;
 
     public int defenderDefenceLevel;
-    public int defenderDiscoveryLevel;
+    public int defenderAnalysisLevel;
     public int defenderResources;
 }
 

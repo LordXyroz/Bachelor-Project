@@ -180,9 +180,5 @@ public abstract class BaseUI : MonoBehaviour
     {
         tooltipObject.SetActive(false);
     }
-
-    public void UpdateResources(int res)
-    {
-        statsResourcesText.text = res.ToString();
-    }
+    
 }

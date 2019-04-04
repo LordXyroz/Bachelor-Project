@@ -24,10 +24,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private AttackerUI uiScript;
 
     [Header("Discovery variables")]
-    [SerializeField]
-    private int discoverLevel = 1;
-    [SerializeField]
-    private float discoverProbability = 0.8f;
+    public int discoverLevel = 1;
+    public float discoverProbability = 0.8f;
     [SerializeField]
     private int discoverUpgradeDuration = 10;
     private float discoverUpgradeTimer = 0f;
@@ -40,10 +38,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private int discoverCost = 10;
 
     [Header("Analysis variables")]
-    [SerializeField]
-    private int analyzeLevel = 1;
-    [SerializeField]
-    private float analyzeProbability = 0.7f;
+    public int analyzeLevel = 1;
+    public float analyzeProbability = 0.7f;
     [SerializeField]
     private int analyzeUpgradeDuration = 10;
     private float analyzeUpgradeTimer = 0f;
@@ -63,10 +59,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private int probeCost = 3;
 
     [Header("Attack variables")]
-    [SerializeField]
-    private int attackLevel = 1;
-    [SerializeField]
-    private float attackProbability = 0.6f;
+    public int attackLevel = 1;
+    public float attackProbability = 0.6f;
     [SerializeField]
     private int attackUpgradeDuration = 10;
     private float attackUpgradeTimer = 0f;
@@ -146,7 +140,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (discoverUpgradeTimer >= discoverUpgradeDuration)
             UpgradeDiscover();
 
-        uiScript.UpdateResources(resources);
+        uiScript.UpdateStats(resources, attackLevel, analyzeLevel, discoverLevel);
     }
 
     /// <summary>
@@ -604,7 +598,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Success!", "Attacks now upgraded to level: " + attackLevel);
-        uiScript.UpdateStats(0, attackLevel, analyzeLevel, discoverLevel);
+        uiScript.UpdateStats(resources, attackLevel, analyzeLevel, discoverLevel);
         workInProgress = false;
     }
 
@@ -624,7 +618,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Success!", "Analysis now upgraded to level: " + analyzeLevel);
-        uiScript.UpdateStats(0, attackLevel, analyzeLevel, discoverLevel);
+        uiScript.UpdateStats(resources, attackLevel, analyzeLevel, discoverLevel);
         workInProgress = false;
     }
 
@@ -644,7 +638,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         uiScript.ToggleProgressbar(false, "", "");
         uiScript.TogglePopupWindow(true, "Success!", "Discovery now upgraded to level: " + discoverLevel);
-        uiScript.UpdateStats(0, attackLevel, analyzeLevel, discoverLevel);
+        uiScript.UpdateStats(resources, attackLevel, analyzeLevel, discoverLevel);
         workInProgress = false;
     }
 

@@ -81,14 +81,44 @@ public class SaveScenario : MonoBehaviour
                 {
                     filePath += ".json";
                 }
-                save.attackerAttackLevel = saveMenu.attackerAttackLevel;
-                save.attackerAnalysisLevel = saveMenu.attackerAnalysisLevel;
-                save.attackerDiscoveryLevel = saveMenu.attackerDiscoveryLevel;
-                save.attackerResources = saveMenu.attackerResources;
 
-                save.defenderDefenceLevel = saveMenu.defenderDefenseLevel;
-                save.defenderDiscoveryLevel = saveMenu.defenderDiscoveryLevel;
-                save.defenderResources = saveMenu.defenderResources;
+                /// Attacker stats
+                if (saveMenu.attackerAttackLevel >= 1 && saveMenu.attackerAttackLevel <= 3)
+                    save.attackerAttackLevel = saveMenu.attackerAttackLevel;
+                else
+                    save.attackerAttackLevel = 1;
+
+                if (saveMenu.attackerAnalysisLevel >= 1 && saveMenu.attackerAnalysisLevel <= 3)
+                    save.attackerAnalysisLevel = saveMenu.attackerAnalysisLevel;
+                else
+                    save.attackerAnalysisLevel = 1;
+
+                if (saveMenu.attackerDiscoveryLevel >= 1 && saveMenu.attackerDiscoveryLevel <= 3)
+                    save.attackerDiscoveryLevel = saveMenu.attackerDiscoveryLevel;
+                else
+                    save.attackerDiscoveryLevel = 1;
+
+                if (saveMenu.attackerResources >= systemComponentsToSave.Count * 30 && saveMenu.attackerResources <= systemComponentsToSave.Count * 100)
+                    save.attackerResources = saveMenu.attackerResources;
+                else
+                    save.attackerResources = systemComponentsToSave.Count * 100;
+
+                /// Defender stats
+                if (saveMenu.defenderDefenseLevel >= 1 && saveMenu.defenderDefenseLevel <= 3)
+                    save.defenderDefenceLevel = saveMenu.defenderDefenseLevel;
+                else
+                    save.defenderDefenceLevel = 1;
+
+                if (saveMenu.defenderDiscoveryLevel >= 1 && saveMenu.defenderDiscoveryLevel <= 3)
+                    save.defenderAnalysisLevel = saveMenu.defenderDiscoveryLevel;
+                else
+                    save.defenderAnalysisLevel = 1;
+
+                if (saveMenu.defenderResources >= systemComponentsToSave.Count * 20 && saveMenu.defenderResources <= systemComponentsToSave.Count * 80)
+                    save.defenderResources = saveMenu.defenderResources;
+                else
+                    save.defenderResources = systemComponentsToSave.Count * 80;
+
 
                 foreach (GameObject targetGameObject in systemComponentsToSave)
                 {

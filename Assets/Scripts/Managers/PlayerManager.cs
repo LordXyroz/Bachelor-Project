@@ -114,6 +114,34 @@ public class PlayerManager : MonoBehaviour
         var scenarioData = FindObjectOfType<NetworkingManager>().saveFile;
         var compList = new List<GameNetworkComponent>();
 
+        switch (playerType)
+        {
+            case PlayerType.Attacker:
+                var attacker = FindObjectOfType<Attacker>();
+
+                attacker.resources = scenarioData.attackerResources;
+                attacker.analyzeLevel = scenarioData.attackerAnalysisLevel;
+                attacker.attackLevel = scenarioData.attackerAttackLevel;
+                attacker.discoverLevel = scenarioData.attackerDiscoveryLevel;
+
+                attacker.analyzeProbability = 0.6f + ((attacker.analyzeLevel - 1) * 0.32f);
+                attacker.attackProbability = 0.6f + ((attacker.attackLevel - 1) * 0.32f);
+                attacker.discoverProbability = 0.8f + ((attacker.discoverLevel - 1) * 0.32f);
+
+                break;
+            case PlayerType.Defender:
+                var defender = FindObjectOfType<Defender>();
+
+                defender.resources = scenarioData.defenderResources;
+                defender.analyzeLevel = scenarioData.defenderAnalysisLevel;
+                defender.defenseLevel = scenarioData.defenderDefenceLevel;
+
+                defender.analyzeProbability = 0.6f + ((defender.analyzeLevel - 1) * 0.32f);
+                defender.defenseProbability = 0.6f + ((defender.defenseLevel - 1) * 0.32f);
+
+                break;
+        }
+
         for (int i = 0; i < scenarioData.systemComponentPositionsList.Count; i++)
         {
             VulnerabilityWrapper wrapper = scenarioData.systemComponentVulnerabilyWrappersList[i];
