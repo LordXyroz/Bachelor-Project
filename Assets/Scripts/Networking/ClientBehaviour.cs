@@ -774,6 +774,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
 
             if (nm.inGame)
             {
+                GameObject.FindObjectOfType<AudioManager>().PlayMenuBGM(true, 0.05f);
                 SceneManager.UnloadSceneAsync("GameScene");
                 nm.matchmakingCanvas.SetActive(true);
                 nm.inGame = false;

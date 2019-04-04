@@ -58,6 +58,8 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
 
         DontDestroyOnLoad(gameObject);
+
+        PlayMenuBGM(true, 0.05f);
     }
 
     // Update is called once per frame

@@ -532,13 +532,14 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
             // All jobs must be completed before we can dispose the data they use
             m_ServerDriver.ScheduleUpdate().Complete();
-
+            
             m_ServerDriver.Dispose();
             m_connections.Dispose();
 
             disposedValue = true;
             if (nm.inGame)
             {
+                GameObject.FindObjectOfType<AudioManager>().PlayMenuBGM(true, 0.05f);
                 SceneManager.UnloadSceneAsync("GameScene");
                 nm.matchmakingCanvas.SetActive(true);
                 nm.inGame = false;

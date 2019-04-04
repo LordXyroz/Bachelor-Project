@@ -15,5 +15,5 @@ public enum AttackTypes
     Remote_Code_Exec,
     Mis_Config_Systems,
     Disable_Log,
-    DOS
+    DOS,
 }

@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1026103235
+CRC: 3884546153
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e47d41fb4d3f6ba287e54f2baa8f3bfe
+    Hash: ecb356c187f8500dcd39a0bded62f557
   TypeTreeHash:
     serializedVersion: 2
     Hash: 324c35993f096608345936e95a06e93d
@@ -36,11 +36,8 @@ ClassTypes:
 - Class: 224
   Script: {instanceID: 0}
 Assets:
-- Assets/Resources/DefenseStrings.xml
 - Assets/Resources/Sprites/UIFrameMask.png
 - Assets/Resources/Sprites/Progressbar.png
 - Assets/Resources/Prefabs/LobbyButton.prefab
-- Assets/Resources/AttackStrings.xml
 - Assets/Resources/VulnerabilityLogic.xml
-- Assets/Resources/vulnerabilitypairings.xml
 Dependencies: []
