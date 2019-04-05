@@ -119,6 +119,11 @@ public class SaveScenario : MonoBehaviour
                 else
                     save.defenderResources = systemComponentsToSave.Count * 80;
 
+                /// Game stats
+                if (saveMenu.gameTimeInMinuttes > 0)
+                    save.gameTimeInMinuttes = saveMenu.gameTimeInMinuttes;
+                else
+                    save.gameTimeInMinuttes = 30;   // Default 30min
 
                 foreach (GameObject targetGameObject in systemComponentsToSave)
                 {
@@ -183,7 +188,9 @@ public class SaveScenario : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Save the current scenario to a JSON file
+    /// </summary>
     public void SaveCurrentScenario()
     {
         save = CreateSaveScenarioObject();
@@ -199,7 +206,6 @@ public class SaveScenario : MonoBehaviour
             }
             else
             {
-                //Debug.Log("There already exist a file: " + filePath);
                 if (overrideFile)
                 {
                     overrideFile = false;

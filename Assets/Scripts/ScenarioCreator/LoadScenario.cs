@@ -94,6 +94,8 @@ public class LoadScenario : MonoBehaviour
             saveMenu.defenderDiscoveryLevel = loadFromJSON.defenderAnalysisLevel;
             saveMenu.defenderResources = loadFromJSON.defenderResources;
 
+            saveMenu.gameTimeInMinuttes = loadFromJSON.gameTimeInMinuttes;
+
             for (int i = 0; i < loadFromJSON.systemComponentPositionsList.Count; i++)
             {
                 VulnerabilityWrapper vulnerabilityWrapper = loadFromJSON.systemComponentVulnerabilyWrappersList[i];

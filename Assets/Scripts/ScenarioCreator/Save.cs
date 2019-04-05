@@ -38,6 +38,9 @@ public class Save
     public int defenderDefenceLevel;
     public int defenderAnalysisLevel;
     public int defenderResources;
+
+    [Header("Gameplay stats")]
+    public int gameTimeInMinuttes;
 }
 
 

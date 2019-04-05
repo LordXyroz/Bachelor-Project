@@ -29,6 +29,9 @@ public class SaveMenu : MonoBehaviour
     public int defenderDiscoveryLevel;
     public int defenderResources;
 
+    [Header("Game stats")]
+    public int gameTimeInMinuttes;
+
     [Header("Getting the save data from the running instance")]
     private TMP_Dropdown attackerAttackLevelDropdown;
     private TMP_Dropdown attackerDiscoveryLevelDropdown;
@@ -38,6 +41,8 @@ public class SaveMenu : MonoBehaviour
     private TMP_Dropdown defenderDefenseLevelDropdown;
     private TMP_Dropdown defenderDiscoveryLevelDropdown;
     private TMP_InputField defenderResourcesInput;
+
+    private TMP_InputField gameTimeInput;
     private List<TMP_Dropdown> dropdownList = new List<TMP_Dropdown>();
 
 
@@ -57,6 +62,8 @@ public class SaveMenu : MonoBehaviour
         defenderDiscoveryLevelDropdown = this.gameObject.transform.Find("DefenderDiscoveryLevel").GetComponentInChildren<TMP_Dropdown>();
         defenderResourcesInput = this.gameObject.transform.Find("DefenderResources").GetComponentInChildren<TMP_InputField>();
 
+        gameTimeInput = this.gameObject.transform.Find("GameTime").GetComponentInChildren<TMP_InputField>();
+
         dropdownList.Add(attackerAttackLevelDropdown);
         dropdownList.Add(attackerDiscoveryLevelDropdown);
         dropdownList.Add(attackerAnalysisLevelDropdown);
@@ -71,9 +78,6 @@ public class SaveMenu : MonoBehaviour
     {
         if (inputFilename.text != "")
         {
-
-            //attackerResources = int.Parse(attackerResourcesInput.text);
-
             try
             {
                 attackerResources = int.Parse(attackerResourcesInput.text);
@@ -98,6 +102,19 @@ public class SaveMenu : MonoBehaviour
             catch (OverflowException)
             {
                 Console.WriteLine("{0}: Overflow for defender resources", defenderResources);
+            }
+
+            try
+            {
+                gameTimeInMinuttes = int.Parse(gameTimeInput.text);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("{0}: Bad Format for gameplay time", gameTimeInMinuttes);
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine("{0}: Overflow for gameplay time", gameTimeInMinuttes);
             }
 
 
@@ -129,6 +146,7 @@ public class SaveMenu : MonoBehaviour
 
         attackerResourcesInput.text = attackerResources.ToString();
         defenderResourcesInput.text = defenderResources.ToString();
+        gameTimeInput.text = gameTimeInMinuttes.ToString();
 
         foreach (TMP_Dropdown dropdown in dropdownList)
         {
