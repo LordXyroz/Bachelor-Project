@@ -39,6 +39,9 @@ public class AttackerUI : BaseUI
         }
 
         quitButton.onClick.AddListener(FindObjectOfType<NetworkingManager>().DisconnectFromServer);
+
+        finishScreenButton.onClick.AddListener(FindObjectOfType<NetworkingManager>().DisconnectFromServer);
+        finishScreenButton.onClick.AddListener(FinishGame);
     }
 
     /// <summary>

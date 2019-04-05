@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public abstract class BaseUI : MonoBehaviour
 {
@@ -39,6 +40,11 @@ public abstract class BaseUI : MonoBehaviour
 
     [Header("Top panel")]
     public Button quitButton;
+    public Text timeText;
+
+    [Header("Finish screen")]
+    public GameObject finishScreenObject;
+    public Button finishScreenButton;
 
     /// <summary>
     /// To be implemented by sub classes
@@ -158,6 +164,15 @@ public abstract class BaseUI : MonoBehaviour
     }
 
     /// <summary>
+    /// Sets the time value in the top panel
+    /// </summary>
+    /// <param name="value">Time in seconds</param>
+    public void UpdateTime(float value)
+    {
+        timeText.text = "Time: " + ((int)(value / 60)).ToString() + "." + ((int)(value % 60)).ToString();
+    }
+
+    /// <summary>
     /// Disables the OnClick menu
     /// </summary>
     public void DisableOnClickMenu()
@@ -181,4 +196,13 @@ public abstract class BaseUI : MonoBehaviour
         tooltipObject.SetActive(false);
     }
     
+    public void FinishGame()
+    {
+        SceneManager.LoadScene("MenuScene");
+    }
+
+    public void ToggleFinishScreen()
+    {
+        finishScreenObject.SetActive(true);
+    }
 }

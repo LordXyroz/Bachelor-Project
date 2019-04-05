@@ -120,7 +120,7 @@ public class SaveScenario : MonoBehaviour
                     save.defenderResources = systemComponentsToSave.Count * 80;
 
                 /// Game stats
-                if (saveMenu.gameTimeInMinuttes > 0)
+                if (saveMenu.gameTimeInMinuttes >= 0)
                     save.gameTimeInMinuttes = saveMenu.gameTimeInMinuttes;
                 else
                     save.gameTimeInMinuttes = 30;   // Default 30min

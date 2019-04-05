@@ -20,6 +20,10 @@ public class PlayerManager : MonoBehaviour
     [SerializeField]
     private BaseUI uiScript;
 
+    private float timeInSeconds = 0;
+    private bool countDown = false;
+    private bool counting = true;
+
     [Header("GameObjects")]
     public GameObject attackerUI;
     public GameObject defenderUI;
@@ -40,7 +44,6 @@ public class PlayerManager : MonoBehaviour
     public GameObject connectionLinePrefab;
 
     private GameObject componentWindow;
-
     #endregion
 
     /// <summary>
@@ -91,6 +94,33 @@ public class PlayerManager : MonoBehaviour
         InitScenario();
     }
 
+    public void Update()
+    {
+        if (counting)
+        {
+            if (countDown)
+            {
+                timeInSeconds -= Time.deltaTime;
+
+                if (timeInSeconds <= 0)
+                    counting = false;
+            }
+            else
+            {
+                timeInSeconds += Time.deltaTime;
+
+                if (timeInSeconds >= 7200)
+                    counting = false;
+            }
+        }
+        else
+        {
+            uiScript.ToggleFinishScreen();
+        }
+
+        uiScript.UpdateTime(timeInSeconds);
+    }
+
     /// <summary>
     /// Gets which uiscript is active for the player
     /// </summary>
@@ -113,6 +143,9 @@ public class PlayerManager : MonoBehaviour
     {
         var scenarioData = FindObjectOfType<NetworkingManager>().saveFile;
         var compList = new List<GameNetworkComponent>();
+
+        timeInSeconds = scenarioData.gameTimeInMinuttes * 60;
+        countDown = (timeInSeconds > 0);
 
         switch (playerType)
         {

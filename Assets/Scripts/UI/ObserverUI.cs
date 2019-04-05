@@ -28,6 +28,25 @@ public class ObserverUI : BaseUI
     public GameObject numImplDefPrefab;
 
     /// <summary>
+    /// 
+    /// </summary>
+    public override void Start()
+    {
+        quitButton.onClick.AddListener(FindObjectOfType<NetworkingManager>().DisconnectFromServer);
+
+        finishScreenButton.onClick.AddListener(FindObjectOfType<NetworkingManager>().DisconnectFromServer);
+        finishScreenButton.onClick.AddListener(FinishGame);
+    }
+
+    /// <summary>
+    /// Unused
+    /// </summary>
+    public override void Update()
+    {
+        //throw new System.NotImplementedException();
+    }
+
+    /// <summary>
     /// Adds a log entry into the info panel for the observer
     /// </summary>
     /// <param name="msg">String to be displayed</param>
@@ -140,21 +159,5 @@ public class ObserverUI : BaseUI
         }
         
         EnableInfoPanel();
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public override void Start()
-    {
-        quitButton.onClick.AddListener(FindObjectOfType<NetworkingManager>().DisconnectFromServer); ;
-    }
-
-    /// <summary>
-    /// Unused
-    /// </summary>
-    public override void Update()
-    {
-        //throw new System.NotImplementedException();
     }
 }
