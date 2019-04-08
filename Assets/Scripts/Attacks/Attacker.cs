@@ -200,7 +200,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             resources -= discoverCost;
 
-            string msg = "Started discovering" + ((target != null) ? " on: "  + target.name : "");
+            string msg = "Started discovering" + 
+                ((target != null) ? " on: "  + info.Find(x => x.component.name == target.name).displayName : "");
 
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
@@ -227,7 +228,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             resources -= analyzeCost;
 
-            string msg = "Started analyzing on: " + target.name;
+            string msg = "Started analyzing on: " + info.Find(x => x.component.name == target.name).displayName;
 
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
@@ -268,7 +269,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             resources -= go.GetComponent<Attack>().cost;
 
-            string msg = "Started attack of type: " + go.GetComponent<Attack>().attackType + ", on: " + target.name;
+            string msg = "Started attack of type: " + go.GetComponent<Attack>().attackType + ", on: " 
+                + info.Find(x => x.component.name == target.name).displayName;
 
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
         }
@@ -296,7 +298,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             networking.SendMessage(new LoggingMessage(target.name, name, MessageTypes.Logging.Log, msg));
             uiScript.UpdateProgressbar(probeTimer, probeDuration);
-            uiScript.ToggleProgressbar(true, "Probe", "Probing " + target.name);
+            uiScript.ToggleProgressbar(true, "Probe", "Probing " + info.Find(x => x.component.name == target.name).displayName);
         }
     }
 

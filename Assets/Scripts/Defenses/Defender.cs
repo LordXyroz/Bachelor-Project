@@ -168,7 +168,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
             uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration);
-            uiScript.ToggleProgressbar(true, "Analyze", "Analyzing " + target.name);
+            uiScript.ToggleProgressbar(true, "Analyze", "Analyzing " + info.Find(x => x.component.name == target.name).displayName);
         }
     }
 
@@ -200,7 +200,8 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
             go.GetComponent<Defense>().probability = defenseProbability;
             resources -= go.GetComponent<Defense>().cost;
 
-            string msg = "Started implementing defense: " + go.GetComponent<Defense>().defenseType + ", on: " + target.name;
+            string msg = "Started implementing defense: " + go.GetComponent<Defense>().defenseType + ", on: " 
+                + info.Find(x => x.component.name == target.name).displayName;
 
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
         }
@@ -228,7 +229,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
             networking.SendMessage(new LoggingMessage(target.name, name, MessageTypes.Logging.Log, msg));
             uiScript.UpdateProgressbar(probeTimer, probeDuration);
-            uiScript.ToggleProgressbar(true, "Probe", "Probing " + target.name);
+            uiScript.ToggleProgressbar(true, "Probe", "Probing " + info.Find(x => x.component.name == target.name).displayName);
         }
     }
 
