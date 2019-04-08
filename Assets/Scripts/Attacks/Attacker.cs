@@ -398,7 +398,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             foreach (var entry in message.discovered)
             {
                 msg += entry + ", ";
-                info.Add(new NodeInfo(GameObject.Find(entry), message.displayName));
+                info.Add(new NodeInfo(GameObject.Find(entry)));
             }
             uiScript.TogglePopupWindow(true, "Success!", "New locations have been revealed!");
         }
@@ -506,7 +506,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
             uiScript.ToggleProgressbar(false, "", "");
-            uiScript.TogglePopupWindow(true, "Success!", "Info on " + message.senderName + " found!");
+            uiScript.TogglePopupWindow(true, "Success!", "Info on " + i.displayName + " found!");
             uiScript.PopulateInfoPanel(i);
         }
     }

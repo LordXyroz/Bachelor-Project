@@ -71,7 +71,7 @@ public class Observer : MonoBehaviour, ILogging, IError
         ObserverNodeInfo node = nodes.FirstOrDefault(x => x.component.name == go.name);
         if (node == null)
         {
-            node = new ObserverNodeInfo(target, target.GetComponent<GameNetworkComponent>().displayName);
+            node = new ObserverNodeInfo(target);
             nodes.Add(node);
         }
 

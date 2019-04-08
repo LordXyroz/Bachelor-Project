@@ -58,7 +58,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     {
         foreach (var o in FindObjectsOfType<GameNetworkComponent>())
         {
-            info.Add(new NodeInfo(o.gameObject, o.displayName));
+            info.Add(new NodeInfo(o.gameObject));
         }
         networking = FindObjectOfType<NetworkingManager>();
     }
@@ -370,7 +370,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
             uiScript.ToggleProgressbar(false, "", "");
-            uiScript.TogglePopupWindow(true, "Success!", "Info on " + message.senderName + " found!");
+            uiScript.TogglePopupWindow(true, "Success!", "Info on " + i.displayName + " found!");
             uiScript.PopulateInfoPanel(i);
         }
     }

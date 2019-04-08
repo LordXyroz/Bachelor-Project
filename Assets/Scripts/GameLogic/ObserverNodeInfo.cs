@@ -16,8 +16,8 @@ public class ObserverNodeInfo : NodeInfo
     /// Default constructor to init lists
     /// </summary>
     /// <param name="target">The node that's been discovered</param>
-    public ObserverNodeInfo(GameObject go, string dispName) 
-        : base(go, dispName)
+    public ObserverNodeInfo(GameObject go) 
+        : base(go)
     {
         availableDefenses = new List<DefenseTypes>();
         implementedDefenses = new List<DefenseTypes>();
