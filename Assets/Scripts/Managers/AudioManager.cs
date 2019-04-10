@@ -37,8 +37,14 @@ public class AudioManager : MonoBehaviour
     private float _bgmVolume = 0.0f;
     private float _efxVolume = 1.0f;
 
+    [SerializeField]
     private float _bgmMaxVolume = 1.0f;
     private float _efxMaxVolume = 1.0f;
+
+    public float BgmMaxVolume
+    {
+        get => _bgmMaxVolume;
+    }
 
     private FadeState _fade = FadeState.None;
 
@@ -82,7 +88,7 @@ public class AudioManager : MonoBehaviour
         }
         else if (_fade == FadeState.FadingIn)
         {
-            if (_bgmVolume <= _bgmMaxVolume)
+            if (_bgmVolume < _bgmMaxVolume)
             {
                 _bgmVolume += _fadeInSpeed * Time.deltaTime;
                 bgmSource.volume = _bgmVolume;
@@ -160,5 +166,9 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-
+    public void SetBGMVolume(float vol)
+    {
+        _bgmMaxVolume = vol;
+        bgmSource.volume = vol;
+    }
 }
