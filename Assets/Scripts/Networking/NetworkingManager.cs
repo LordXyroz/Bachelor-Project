@@ -29,7 +29,10 @@ public class NetworkingManager : MonoBehaviour
     public GameObject connectionField;
 
     public GameObject lobbyScrollField;
+    public GameObject lobbyScrollFrame;
     public GameObject lobbyButton;
+
+    public GameObject matchmakingObject;
 
     public GameObject hostText;
     public GameObject SwapLoadingScreen;
@@ -39,6 +42,7 @@ public class NetworkingManager : MonoBehaviour
     public GameObject startGameButton;
 
     public GameObject matchmakingCanvas;
+
 
 
     /// <summary>
@@ -105,10 +109,14 @@ public class NetworkingManager : MonoBehaviour
             }
         }
 
-        chatField = GameObject.Find("ChatField");
+        chatField = GameObject.Find("Lobby");
         chatField.SetActive(false);
 
         lobbyScrollField = GameObject.Find("LobbyScrollField");
+        lobbyScrollFrame = GameObject.Find("LobbyScrollFieldFrame");
+
+        matchmakingObject = GameObject.Find("MatchmakingObject");
+
         lobbyButton = (GameObject)Resources.Load("Prefabs/LobbyButton", typeof(GameObject));
 
         connectionField = GameObject.Find("ConnectionField");
@@ -247,6 +255,9 @@ public class NetworkingManager : MonoBehaviour
                 cb = new ClientBehaviour();
 
                 lobbyScrollField.SetActive(true);
+                lobbyScrollFrame.SetActive(true);
+
+                matchmakingObject.SetActive(true);
 
                 /// Make players able to stop trying to connect.
                 stopJoinButton.SetActive(true);
@@ -280,6 +291,9 @@ public class NetworkingManager : MonoBehaviour
     {
         matchmakingCanvas.SetActive(true);
         lobbyScrollField.SetActive(true);
+        lobbyScrollFrame.SetActive(true);
+
+        matchmakingObject.SetActive(true);
 
         if (playerType == PlayerManager.PlayerType.Observer)
         {
@@ -739,6 +753,8 @@ public class NetworkingManager : MonoBehaviour
         }
 
         lobbyScrollField.SetActive(false);
+        lobbyScrollFrame.SetActive(false);
+        matchmakingObject.SetActive(false);
     }
 
     public void LoadSaveFile(string path)
@@ -755,6 +771,8 @@ public class NetworkingManager : MonoBehaviour
             playerType = PlayerManager.PlayerType.Observer;
 
             lobbyScrollField.SetActive(false);
+            lobbyScrollFrame.SetActive(false);
+            matchmakingObject.SetActive(false);
 
             /// Changing view:
             chatField.SetActive(true);

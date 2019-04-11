@@ -387,6 +387,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
                 
                 nm.chatField.SetActive(true);
                 nm.lobbyScrollField.SetActive(false);
+                nm.lobbyScrollFrame.SetActive(false);
+
+                nm.matchmakingObject.SetActive(false);
+
                 nm.connectionField.SetActive(false);
                 GameObject.Find("HostText").GetComponent<Text>().text = ServerName;
 

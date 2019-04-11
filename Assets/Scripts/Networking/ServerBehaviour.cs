@@ -165,7 +165,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         connectionNames = new List<(string name, int connectionNumber)> { };
         m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
         
-        string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
+        string serverName = nm.hostText.GetComponent<Text>().text;
         findConnections = Task.Factory.StartNew(() => FindConnections(serverName), cancellationToken);
         
         // Create the server driver, bind it to a port and start listening for incoming connections
@@ -319,7 +319,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
             nm.inGame = false;
         }
 
-        string serverName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
+        string serverName = GameObject.Find("HostText").GetComponent<Text>().text;
         findConnections = Task.Factory.StartNew(() => FindConnections(serverName), cancellationToken);
     }
 
@@ -390,7 +390,7 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
         var attackName = nm.attackerNames[0].transform.Find("Text").GetComponent<Text>().text;
         var defendName = nm.defenderNames[0].transform.Find("Text").GetComponent<Text>().text;
-        var hostName = nm.chatField.transform.Find("HostText").GetComponent<Text>().text;
+        var hostName = GameObject.Find("HostText").GetComponent<Text>().text;
 
         var msg = new ConnectMessage(name, hostName, MessageTypes.Network.ConnectAck, nm.userName, attackName, defendName);
         BroadcastMessage(msg);
