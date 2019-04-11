@@ -66,7 +66,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             image.color = Color.red;
             systemComponent = this.gameObject.GetComponent<SystemComponent>();
-            informationColumn.PopulateInformationColumn(systemComponent.componentType, systemComponent.componentVulnerabilities, systemComponent.securityLevel, systemComponent.isEntryPoint);
         }
         else
         {
@@ -100,7 +99,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
             }
         }
         currentToolTipText.text = "";
-        informationColumn.ClearInformationColumn();
     }
 
 
@@ -121,6 +119,8 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
+                FindObjectOfType<MouseScript>().SelectObject(gameObject);
+
                 if (image != null)
                 {
                     objectSelect.SelectObject(this.gameObject, false, true);

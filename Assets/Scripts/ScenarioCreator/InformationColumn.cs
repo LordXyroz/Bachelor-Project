@@ -1,57 +1,77 @@
 ﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InformationColumn : MonoBehaviour
 {
 
-    private Canvas canvas;
-    private TMP_Text currentObjectName;
-    private TMP_Text securityLevel;
-    private TMP_Text isEntryPoint;
-    private TMP_Text vulnerabilityHeader;
-    private TMP_Text currentVulnerabilities;
+    [Header("Text items")]
+    [SerializeField]
+    private Text nameText;
+    [SerializeField]
+    private Text securityLevelText;
+    [SerializeField]
+    private Text entryPointText;
+
+    [Header("Objects")]
+    [SerializeField]
+    private GameObject infoAreaObject;
+    [SerializeField]
+    private GameObject vulnerabilityPrefab;
+
+    [Header("Lists")]
+    private List<GameObject> vulnerabilityObjects = new List<GameObject>();
 
 
     void Start()
     {
-        canvas = GetComponentInParent<Canvas>();
-        currentObjectName = canvas.transform.Find("InformationColumnRight").transform.Find("ComponentTypeText").GetComponent<TMP_Text>();
-        securityLevel = canvas.transform.Find("InformationColumnRight").transform.Find("SecurityLevelText").GetComponent<TMP_Text>();
-        isEntryPoint = canvas.transform.Find("InformationColumnRight").transform.Find("EntryPointText").GetComponent<TMP_Text>();
-        vulnerabilityHeader = canvas.transform.Find("InformationColumnRight").transform.Find("VulnerabilityListText").GetComponent<TMP_Text>();
-        currentVulnerabilities = canvas.transform.Find("InformationColumnRight").transform.Find("VulnerabilitiesText").GetComponent<TMP_Text>();
         ClearInformationColumn();
     }
 
 
     public void PopulateInformationColumn(string name, List<AttackTypes> vulnerabilities, int security, bool entryPoint)
     {
-        currentObjectName.text = name;
-        vulnerabilityHeader.text = "Vulnerabilities";
-        securityLevel.text = "Security level: " + security.ToString();
-        isEntryPoint.text = "Is entry point: \n" + entryPoint.ToString();
+        nameText.text = name;
+        securityLevelText.text = "Level: " + security.ToString();
+        entryPointText.text = (entryPoint ? "Yes" : "No");
+        
+        foreach (var v in vulnerabilities)
+        {
+            var go = Instantiate(vulnerabilityPrefab, infoAreaObject.transform);
+            go.GetComponentInChildren<Text>().text = VulnerabilityLogic.GetAttackString(v);
 
-        if (vulnerabilities.Count == 0)
-        {
-            currentVulnerabilities.text = "None";
+            vulnerabilityObjects.Add(go);
         }
-        else
+
+        infoAreaObject.SetActive(true);
+    }
+
+    public void PopulateInformationColumn(SystemComponent comp)
+    {
+        nameText.text = comp.componentName;
+        securityLevelText.text = "Level: " + comp.securityLevel.ToString();
+        entryPointText.text = (comp.isEntryPoint ? "Yes" : "No");
+
+        foreach (var v in comp.componentVulnerabilities)
         {
-            foreach (var vulnerability in vulnerabilities)
-            {
-                currentVulnerabilities.text += VulnerabilityLogic.GetAttackString(vulnerability) + "\n";
-            }
+            var go = Instantiate(vulnerabilityPrefab, infoAreaObject.transform);
+            go.GetComponentInChildren<Text>().text = VulnerabilityLogic.GetAttackString(v);
+
+            vulnerabilityObjects.Add(go);
         }
+
+        infoAreaObject.SetActive(true);
     }
 
 
     public void ClearInformationColumn()
     {
-        currentObjectName.text = "";
-        securityLevel.text = "";
-        vulnerabilityHeader.text = "";
-        isEntryPoint.text = "";
-        currentVulnerabilities.text = "";
+        infoAreaObject.SetActive(false);
+
+        for (int i = vulnerabilityObjects.Count - 1; i >= 0; i--)
+            Destroy(vulnerabilityObjects[i]);
+
+        vulnerabilityObjects.Clear();
     }
 }

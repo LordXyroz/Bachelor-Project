@@ -137,6 +137,7 @@ public class SelectedObject : MonoBehaviour
             }
             oldSelected = selected;
             selected = null;
+            
         }
 
         if (componentMenu.gameObject.activeInHierarchy)

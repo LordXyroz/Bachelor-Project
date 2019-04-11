@@ -17,6 +17,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private SystemComponent systemComponent;
     private SystemComponentMenu systemComponentMenu;
     private ReferenceLineMenu referenceLineMenu;
+    private InformationColumn informationColumn;
 
     [Header("Positioning objects")]
     public Vector2 spawnPosition;
@@ -39,6 +40,8 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         referenceLineMenu = canvas.transform.GetComponentInChildren<ReferenceLineMenu>(true);
         dropZone = FindObjectOfType<DropZone>();
 
+        informationColumn = FindObjectOfType<InformationColumn>();
+
         /// Only system components are draggable and start with one image object
         if (GetComponent<Image>() != null)
         {
@@ -54,7 +57,8 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         Cursor.visible = false;
         /// Only selectable if it is located in the SystemSetupScreen editor area
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
-        {
+        { 
+            FindObjectOfType<MouseScript>().SelectObject(gameObject);
             if (this.GetComponent<Image>() != null)
             {
                 if (systemComponentMenu.gameObject.activeInHierarchy)
