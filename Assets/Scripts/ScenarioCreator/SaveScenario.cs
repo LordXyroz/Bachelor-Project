@@ -125,12 +125,16 @@ public class SaveScenario : MonoBehaviour
                 else
                     save.gameTimeInMinuttes = 30;   // Default 30min
 
+                int count = 0;
                 foreach (GameObject targetGameObject in systemComponentsToSave)
                 {
                     VulnerabilityWrapper vulnerabilityWrapper = new VulnerabilityWrapper();
 
                     GameObject target = targetGameObject.gameObject;
+
                     SystemComponent targetComponent = target.GetComponent<SystemComponent>();
+                    target.name = targetComponent.componentType + "(Clone)" + count++;
+
                     if (target != null)
                     {
                         save.systemComponentNamesList.Add(targetComponent.componentName);

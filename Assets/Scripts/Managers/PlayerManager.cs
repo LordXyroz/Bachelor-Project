@@ -43,7 +43,9 @@ public class PlayerManager : MonoBehaviour
     public GameObject syscompPrefab;
     public GameObject connectionLinePrefab;
 
+    [Header("Other")]
     private GameObject componentWindow;
+    private readonly Vector3 offset = new Vector3(-164, -25, 0);
     #endregion
 
     /// <summary>
@@ -179,8 +181,8 @@ public class PlayerManager : MonoBehaviour
         {
             VulnerabilityWrapper wrapper = scenarioData.systemComponentVulnerabilyWrappersList[i];
 
-            Vector2 pos = scenarioData.systemComponentPositionsList[i];
-
+            Vector3 pos = scenarioData.systemComponentPositionsList[i] + offset;
+            
             GameObject obj = null;
             switch (scenarioData.systemComponentTypesList[i])
             {

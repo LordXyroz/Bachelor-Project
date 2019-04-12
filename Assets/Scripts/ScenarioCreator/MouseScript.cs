@@ -28,6 +28,7 @@ public class MouseScript : MonoBehaviour
             SystemComponent sysComp = currentSelection.GetComponent<SystemComponent>();
             if (sysComp != null)
             {
+                infoScript.ClearInformationColumn();
                 infoScript.PopulateInformationColumn(
                     sysComp.componentName,
                     sysComp.componentVulnerabilities,
