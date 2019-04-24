@@ -195,13 +195,23 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             if (uiScript.popupWindowObject.activeSelf)
                 return;
 
+            NodeInfo i = info.Find(x => x.component.name == target.name);
+            if (i != null)
+            {
+                if (i.exploitable && !i.exploited)
+                {
+                    uiScript.TogglePopupWindow(true, "Error", "Unable to discover on unexploited node!");
+                    return;
+                }
+            }
+
             workInProgress = true;
             discoverInProgress = true;
 
             resources -= discoverCost;
 
             string msg = "Started discovering" + 
-                ((target != null) ? " on: "  + info.Find(x => x.component.name == target.name).displayName : "");
+                ((target != null) ? " on: "  + i.displayName : "");
 
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
@@ -371,8 +381,6 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     }
 
     /// <summary>
-    /// TODO: Implement function
-    /// 
     /// From the IOnDiscoverResponse interface.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function.</param>
@@ -395,10 +403,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         else
         {
             msg += "discovered - ";
-            foreach (var entry in message.discovered)
+            for (int j = 0; j < message.discovered.Count; j++)
             {
-                msg += entry + ", ";
-                info.Add(new NodeInfo(GameObject.Find(entry)));
+                msg += message.discovered[j] + ", ";
+                info.Add(new NodeInfo(GameObject.Find(message.discovered[j])));
+                NodeInfo n = info.Find(x => x.component.name == message.discovered[j]);
+                n.exploitable = message.exploitables[j];
             }
             uiScript.TogglePopupWindow(true, "Success!", "New locations have been revealed!");
         }
@@ -406,7 +416,6 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
         
         uiScript.ToggleProgressbar(false, "", "");
-        //uiScript.PopulateInfoPanel(info.Find(x => x.component.name == message.senderName));
     }
 
     /// <summary>
@@ -474,6 +483,11 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     public void AttackResponse(SuccessMessage message)
     {
         workInProgress = false;
+
+        NodeInfo i = info.Find(x => x.component.name == message.senderName);
+        if (i != null)
+            if (message.success)
+                i.exploited = true;
 
         string msg = "Attack response: " + ((message.success) ? "Success" : "Failed");
 

@@ -18,6 +18,7 @@ public class NodeInfo
     public bool upToDate;
 
     public bool exploited;
+    public bool exploitable;
 
     public int numOfVulnerabilities;
     public int numOfChildren;

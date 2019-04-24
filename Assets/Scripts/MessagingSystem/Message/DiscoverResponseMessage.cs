@@ -10,8 +10,9 @@ public class DiscoverResponseMessage : Message
 {
     public List<string> discovered;
     public string displayName;
+    public List<bool> exploitables;
 
-    public DiscoverResponseMessage(string target, string sender, ushort type, List<string> response, string dispName)
+    public DiscoverResponseMessage(string target, string sender, ushort type, List<string> response, string dispName, List<bool> exploits)
         : base(target, sender, type)
     {
         targetName = target;
@@ -20,5 +21,6 @@ public class DiscoverResponseMessage : Message
     
         discovered = response;
         displayName = dispName;
+        exploitables = exploits;
     }
 }

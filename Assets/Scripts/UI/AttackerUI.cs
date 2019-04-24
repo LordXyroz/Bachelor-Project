@@ -12,6 +12,8 @@ public class AttackerUI : BaseUI
     public Text probeText;
     public Text analyzeText;
     public Text discoverText;
+    public Text exploitableText;
+    public Text exploitedText;
     public Text difficultyText;
     public Text nodesText;
     public Text numVulnText;
@@ -131,6 +133,11 @@ public class AttackerUI : BaseUI
         probeText.text = (info.beenProbed) ? "Yes" : "No";
         analyzeText.text = (info.beenAnalyzed) ? "Yes" : "No";
         discoverText.text = (info.beenDiscoveredOn) ? "Yes" : "No";
+
+        exploitableText.text = (info.exploitable) ? "Yes" : "No";
+        
+        exploitedText.transform.parent.gameObject.SetActive(info.exploitable);
+        exploitedText.text = (info.exploited) ? "Yes" : "No";
 
         difficultyText.text = (info.difficulty == -1) ? "Unknown" : info.difficulty.ToString();
         nodesText.text = (info.numOfChildren == -1) ? "Unknown" : info.numOfChildren.ToString();

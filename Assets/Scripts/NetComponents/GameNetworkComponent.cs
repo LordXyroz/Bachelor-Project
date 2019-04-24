@@ -236,6 +236,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     public void OnDiscover(DiscoverMessage message)
     {
         List<string> list = new List<string>();
+        List<bool> exploits = new List<bool>();
 
         if (message.targetName == "" && rootNode)
         {
@@ -243,12 +244,13 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             {
                 uiElement.SetActive(true);
                 list.Add(name);
+                exploits.Add(vulnerabilities.Count > 0);
             }
 
             if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
                 return;
 
-            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list, displayName));
+            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list, displayName, exploits));
         }
         else if (message.targetName == name)
         {
@@ -258,6 +260,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 if (!child.uiElement.activeSelf && message.randValues[count] <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
                 {
                     list.Add(child.name);
+                    exploits.Add(child.vulnerabilities.Count > 0);
                     child.uiElement.SetActive(true);
                 }
                 count++;
@@ -266,7 +269,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
                 return;
 
-            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list, displayName));
+            networking.SendMessage(new DiscoverResponseMessage(message.senderName, name, MessageTypes.Game.DiscoverResponse, list, displayName, exploits));
 
         }
     }
