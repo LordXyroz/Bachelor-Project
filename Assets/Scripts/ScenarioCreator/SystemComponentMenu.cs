@@ -112,6 +112,6 @@ public class SystemComponentMenu : MonoBehaviour
     public void OpenVulnerabilityMeny()
     {
         vulnerabilityMenu.gameObject.SetActive(true);
-        vulnerabilityMenu.PopulateVulnerabilityMenu(componentMenuName.text);
+        //vulnerabilityMenu.PopulateVulnerabilityMenu(componentMenuName.text);
     }
 }

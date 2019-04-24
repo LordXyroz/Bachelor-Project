@@ -17,6 +17,8 @@ public class NodeInfo
     public bool beenDiscoveredOn;
     public bool upToDate;
 
+    public bool exploited;
+
     public int numOfVulnerabilities;
     public int numOfChildren;
     public int difficulty;
@@ -37,6 +39,8 @@ public class NodeInfo
         beenAnalyzed = false;
         beenDiscoveredOn = false;
         upToDate = true;
+
+        exploited = false;
 
         numOfVulnerabilities = -1;
         numOfChildren = -1;

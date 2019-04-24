@@ -14,7 +14,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private ReferenceLineMenu referenceLineMenu;
     private RectTransform componentMenu;
     private SelectedObject objectSelect;
-    private TMP_Text currentToolTipText;
     private Canvas canvas;
     private DropZone dropZone;
     private SystemComponent systemComponent;
@@ -49,8 +48,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
             objectSelect = FindObjectOfType<SelectedObject>();
         }
         canvas = GetComponentInParent<Canvas>();
-        currentToolTipText = canvas.transform.Find("TooltipText").GetComponent<TMP_Text>();
-        currentToolTipText.text = "";
 
         informationColumn = canvas.GetComponentInChildren<InformationColumn>();
 
@@ -76,8 +73,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 img.transform.parent.SetAsLastSibling();
             }
         }
-        currentToolTipText.text = tooltipText;
-
     }
 
 
@@ -98,7 +93,6 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 objectSelect.selected.transform.SetAsLastSibling();
             }
         }
-        currentToolTipText.text = "";
     }
 
 
@@ -162,7 +156,7 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
                     {
                         newX = eventData.position.x + componentMenu.rect.width / 2;
                     }
-                    if (eventData.position.y + componentMenu.rect.height / 2 > height)
+                    if (eventData.position.y + componentMenu.rect.height > height)
                     {
                         newY = eventData.position.y - componentMenu.rect.height / 2;
                     }
