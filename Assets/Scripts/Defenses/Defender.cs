@@ -152,8 +152,14 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     /// </summary>
     public void StartAnalyze()
     {
-        if (!workInProgress && resources >= analyzeCost)
+        if (!workInProgress)
         {
+            if (resources < analyzeCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to analyze!");
+                return;
+            }
+
             if (target == null)
                 return;
 
@@ -190,7 +196,8 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
             {
                 Destroy(go);
                 workInProgress = false;
-
+                
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to defend!");
                 uiScript.ToggleProgressbar(false, "", "");
                 return;
             }
@@ -212,8 +219,14 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     /// </summary>
     public void StartProbe()
     {
-        if (!workInProgress && resources >= probeCost)
+        if (!workInProgress)
         {
+            if (resources < probeCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to probe!");
+                return;
+            }
+
             if (target == null)
                 return;
 
@@ -384,8 +397,14 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         if (analyzeLevel >= 3)
             return;
 
-        if (!workInProgress && resources >= analyzeUpgradeCost)
+        if (!workInProgress)
         {
+            if (resources < analyzeUpgradeCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to upgrade analysis!");
+                return;
+            }
+
             workInProgress = true;
             analyzeUpgrading = true;
 
@@ -404,8 +423,14 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         if (defenseLevel >= 3)
             return;
 
-        if (!workInProgress && resources >= defenseUpgradeCost)
+        if (!workInProgress)
         {
+            if (resources < defenseUpgradeCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to upgrade defenses!");
+                return;
+            }
+
             workInProgress = true;
             defenseUpgrading = true;
 

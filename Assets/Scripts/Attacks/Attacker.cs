@@ -189,18 +189,29 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// </summary>
     public void StartDiscover()
     {
-        if (!workInProgress && resources >= discoverCost)
+        if (!workInProgress)
         {
+            if (resources < discoverCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to discover!");
+                return;
+            }
+
             if (uiScript.popupWindowObject.activeSelf)
                 return;
 
-            NodeInfo i = info.Find(x => x.component.name == target.name);
-            if (i != null)
+            NodeInfo i = null;
+
+            if (target != null)
             {
-                if (i.exploitable && !i.exploited)
+                i = info.Find(x => x.component.name == target.name);
+                if (i != null)
                 {
-                    uiScript.TogglePopupWindow(true, "Error", "Unable to discover on unexploited node!");
-                    return;
+                    if (i.exploitable && !i.exploited)
+                    {
+                        uiScript.TogglePopupWindow(true, "Error", "Unable to discover on unexploited node!");
+                        return;
+                    }
                 }
             }
 
@@ -210,7 +221,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             resources -= discoverCost;
 
             string msg = "Started discovering" + 
-                ((target != null) ? " on: "  + i.displayName : "");
+                ((target != null && i != null) ? " on: "  + i.displayName : "");
 
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
@@ -224,8 +235,14 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// </summary>
     public void StartAnalyze()
     {
-        if (!workInProgress && resources >= analyzeCost)
+        if (!workInProgress)
         {
+            if (resources < analyzeCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to analyze!");
+                return;
+            }
+
             if (target == null)
                 return;
 
@@ -269,6 +286,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
                 Destroy(go);
                 workInProgress = false;
 
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to attack!");
                 uiScript.ToggleProgressbar(false, "", "");
                 return;
             }
@@ -291,8 +309,14 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     /// </summary>
     public void StartProbing()
     {
-        if (!workInProgress && resources >= probeCost)
+        if (!workInProgress)
         {
+            if (resources < probeCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to probe!");
+                return;
+            }
+
             if (target == null)
                 return;
 
@@ -547,8 +571,14 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (attackLevel >= 3)
             return;
         
-        if (!workInProgress && resources >= attackUpgradeCost)
+        if (!workInProgress)
         {
+            if (resources < attackUpgradeCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to upgrade attacks!");
+                return;
+            }
+
             workInProgress = true;
             attackUpgrading = true;
 
@@ -567,8 +597,14 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
         if (analyzeLevel >= 3)
             return;
 
-        if (!workInProgress && resources >= analyzeUpgradeCost)
+        if (!workInProgress)
         {
+            if (resources < analyzeUpgradeCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to upgrade analysis!");
+                return;
+            }
+
             workInProgress = true;
             analyzeUpgrading = true;
 
@@ -589,6 +625,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
         if (!workInProgress && resources >= discoverUpgradeCost)
         {
+            if (resources < discoverUpgradeCost)
+            {
+                uiScript.TogglePopupWindow(true, "Error", "Lacking funds to upgrade discovery!");
+                return;
+            }
+
             workInProgress = true;
             discoverUpgrading = true;
 
