@@ -10,9 +10,8 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 {
     [Header("Attack requirements")]
     public GameObject[] defensePrefabs;
-
-    [SerializeField]
-    private GameObject target;
+    
+    public GameObject target;
 
     [SerializeField]
     private List<NodeInfo> info = new List<NodeInfo>();
@@ -198,6 +197,7 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
 
             go.GetComponent<Defense>().target = target;
             go.GetComponent<Defense>().probability = defenseProbability;
+            go.GetComponent<Defense>().targetDisplayName = info.Find(x => x.component.name == target.name).displayName;
             resources -= go.GetComponent<Defense>().cost;
 
             string msg = "Started implementing defense: " + go.GetComponent<Defense>().defenseType + ", on: " 

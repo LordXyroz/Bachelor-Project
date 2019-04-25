@@ -31,6 +31,8 @@ public class Defense : MonoBehaviour, IDefenseResponse
     public GameObject target;
     [HideInInspector]
     public float probability;
+    [HideInInspector]
+    public string targetDisplayName;
 
     private float timer;
     private bool triggered = false;
@@ -41,7 +43,7 @@ public class Defense : MonoBehaviour, IDefenseResponse
     public void Start()
     {
         uiScript = FindObjectOfType<DefenderUI>();
-        uiScript.ToggleProgressbar(true, "Defending", description + " on: " + target.name);
+        uiScript.ToggleProgressbar(true, "Defending", description + " on: " + targetDisplayName);
         uiScript.UpdateProgressbar(timer, duration);
 
         networking = FindObjectOfType<NetworkingManager>();

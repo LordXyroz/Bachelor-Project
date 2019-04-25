@@ -31,6 +31,8 @@ public class Attack : MonoBehaviour, IAttackResponse
     public GameObject target;
     [HideInInspector]
     public float probability;
+    [HideInInspector]
+    public string targetDisplayName;
     
     private float timer = 0f;
     private bool triggered = false;
@@ -44,7 +46,7 @@ public class Attack : MonoBehaviour, IAttackResponse
     public void Start()
     {
         uiScript = FindObjectOfType<AttackerUI>();
-        uiScript.ToggleProgressbar(true, "Attacking", description + " on: " + target.name);
+        uiScript.ToggleProgressbar(true, "Attacking", description + " on: " + targetDisplayName);
         uiScript.UpdateProgressbar(timer, duration);
 
         networking = FindObjectOfType<NetworkingManager>();

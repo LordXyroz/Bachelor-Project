@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using MessagingInterfaces;
 
 /// <summary>
@@ -56,14 +57,15 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         {
             uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
             uiButton.onClick.AddListener(() => FindObjectOfType<Attacker>().SetTarget(gameObject));
-            uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
+            uiButton.gameObject.GetComponent<ClickHandler>().onRight = OnClick;
+
             uiElement.SetActive(false);
         }
         else if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Defender)
         {
             uiButton.onClick.AddListener(uiScript.DisablePopupWindow);
             uiButton.onClick.AddListener(() => FindObjectOfType<Defender>().SetTarget(gameObject));
-            uiButton.onClick.AddListener(() => uiScript.ToggleOnClickMenu(true, pos));
+            uiButton.gameObject.GetComponent<ClickHandler>().onRight = OnClick;
         }
         else if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
         {
@@ -143,6 +145,30 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
 
                 lineFromStart.position = new Vector3(startPos.x - XPosDiff * 50, startPos.y);
                 lineToEnd.position = new Vector3(lineFromStart.position.x - XPosDiff * 50, endPos.y - YPosDiff * 50);
+            }
+        }
+    }
+
+    public void OnClick()
+    {
+        PlayerManager.PlayerType player = FindObjectOfType<PlayerManager>().GetPlayerType();
+
+        if (player == PlayerManager.PlayerType.Attacker)
+        {
+            if (FindObjectOfType<Attacker>().target == gameObject)
+            {
+                RectTransform rectTransform = GetComponent<RectTransform>();
+                Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
+                uiScript.ToggleOnClickMenu(true, pos);
+            }
+        }
+        else if (player == PlayerManager.PlayerType.Defender)
+        {
+            if (FindObjectOfType<Defender>().target = gameObject)
+            {
+                RectTransform rectTransform = GetComponent<RectTransform>();
+                Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
+                uiScript.ToggleOnClickMenu(true, pos);
             }
         }
     }
@@ -391,4 +417,5 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
 
         uiButton.colors = colors;
     }
+    
 }

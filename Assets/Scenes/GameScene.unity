@@ -539,7 +539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Name of targeted node
+  tooltipInfo: Name of selected node
 --- !u!114 &45325012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1668,7 +1668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Analyze the node for vulnerabilities
+  tooltipInfo: Analyze the node for vulnerabilities. Costs 10, duration 10 seconds.
 --- !u!114 &155124596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2035,7 +2035,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Start discovering nodes attached to this node
+  tooltipInfo: Start discovering nodes attached to this node. Costs 10, duration 10
+    seconds.
 --- !u!1 &168517692
 GameObject:
   m_ObjectHideFlags: 0
@@ -2865,7 +2866,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Target: '
+  m_Text: 'Selected: '
 --- !u!222 &229105842
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4759,7 +4760,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Probe the node for basic information
+  tooltipInfo: Probe the node for basic information. Costs 3, duration 3 seconds.
 --- !u!1 &358574057
 GameObject:
   m_ObjectHideFlags: 0
@@ -6459,7 +6460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Name of targeted node
+  tooltipInfo: Name of selected node
 --- !u!1 &528354962
 GameObject:
   m_ObjectHideFlags: 0
@@ -6966,7 +6967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Send an attack to the node
+  tooltipInfo: Send an attack to the node. Costs 10, duration 10 seconds.
 --- !u!1 &545684281
 GameObject:
   m_ObjectHideFlags: 0
@@ -8211,7 +8212,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Target: '
+  m_Text: 'Selected:'
 --- !u!222 &703085207
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9199,7 +9200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Implement a defense on the node
+  tooltipInfo: Implement a defense on the node. Costs 10, duration 10 seconds.
 --- !u!114 &798947211
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10733,7 +10734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Discovers root nodes
+  tooltipInfo: Discovers root nodes. Costs 10, duration 10 seconds.
 --- !u!114 &933671022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11598,7 +11599,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Probe the node for basic information
+  tooltipInfo: Probe the node for basic information. Costs 3, duration 3 seconds.
 --- !u!114 &983745343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12734,7 +12735,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Name of targeted node
+  tooltipInfo: Name of selcted node
 --- !u!114 &1136626760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16536,7 +16537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Implement a defense on the node
+  tooltipInfo: Implement a defense on the node. Costs 10, duration 10 seconds.
 --- !u!114 &1380965213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18216,7 +18217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Analyze the node for vulnerabilities
+  tooltipInfo: Analyze the node for vulnerabilities. Costs 10, duration 10 seconds.
 --- !u!1 &1507012200
 GameObject:
   m_ObjectHideFlags: 0
@@ -24225,7 +24226,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Target: '
+  m_Text: 'Selected:'
 --- !u!222 &2019730605
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24762,7 +24763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80dd8d48998a1334083b10169e67f95d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipInfo: Probe the node for basic information
+  tooltipInfo: Probe the node for basic information. Costs 3, duration 3 seconds.
 --- !u!114 &2061617465
 MonoBehaviour:
   m_ObjectHideFlags: 0

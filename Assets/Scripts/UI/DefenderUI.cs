@@ -153,7 +153,7 @@ public class DefenderUI : BaseUI
     /// <param name="analyzeLvl">Current level of analysis</param>
     public void UpdateStats(int res, int defLvl, int analyzeLvl)
     {
-        statsResourcesText.text = res + " GB";
+        statsResourcesText.text = res + " $";
         statsAtkDefLvlText.text = "Level - " + defLvl;
         statsAnalyzeLvlText.text = "Level - " + analyzeLvl;
     }

@@ -169,7 +169,14 @@ public abstract class BaseUI : MonoBehaviour
     /// <param name="value">Time in seconds</param>
     public void UpdateTime(float value)
     {
-        timeText.text = "Time: " + ((int)(value / 60)).ToString() + "." + ((int)(value % 60)).ToString();
+        int minutes = (int) value / 60;
+        int seconds = (int) value % 60;
+
+        string txt = "Time: " + minutes.ToString() + ".";
+        if (seconds < 10) txt += "0";
+
+        txt += seconds.ToString();
+        timeText.text = txt;
     }
 
     /// <summary>

@@ -162,7 +162,7 @@ public class AttackerUI : BaseUI
     /// <param name="discoverLvl">Current level of discovery</param>
     public void UpdateStats(int res, int attackLvl, int analyzeLvl, int discoverLvl)
     {
-        statsResourcesText.text = res + " GB";
+        statsResourcesText.text = res + " $";
         statsAtkDefLvlText.text = "Level - " + attackLvl;
         statsAnalyzeLvlText.text = "Level - " + analyzeLvl;
         statsDiscoverLvlText.text = "Level - " + discoverLvl;

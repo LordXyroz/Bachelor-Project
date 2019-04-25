@@ -13,9 +13,8 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 { 
     [Header("Attack requirements")]
     public GameObject[] attackPrefabs;
-
-    [SerializeField]
-    private GameObject target;
+    
+    public GameObject target;
 
     [SerializeField]
     private List<NodeInfo> info = new List<NodeInfo>();
@@ -243,7 +242,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
             networking.SendMessage(new LoggingMessage("", name, MessageTypes.Logging.Log, msg));
 
             uiScript.UpdateProgressbar(analyzeTimer, analyzeDuration);
-            uiScript.ToggleProgressbar(true, "Analyze", "Analyzing " + target.name);
+            uiScript.ToggleProgressbar(true, "Analyze", "Analyzing " + info.Find(x => x.component.name == target.name).displayName);
         }
     }
 
@@ -276,6 +275,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 
             go.GetComponent<Attack>().target = target;
             go.GetComponent<Attack>().probability = attackProbability;
+            go.GetComponent<Attack>().targetDisplayName = info.Find(x => x.component.name == target.name).displayName;
 
             resources -= go.GetComponent<Attack>().cost;
 
