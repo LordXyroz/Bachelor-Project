@@ -35,9 +35,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
 
     public GameObject selectionBox;
 
-    [Header("Network depth")]
+    [Header("Network")]
     public int graphDepth;
-    public List<GameNetworkComponent> children;
+    public List<GameNetworkComponent> children = new List<GameNetworkComponent>();
+    public List<GameObject> connectionLines = new List<GameObject>();
 
     [Header("Observer Related")]
     private bool attackerSelected = false;
@@ -75,6 +76,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         networking = FindObjectOfType<NetworkingManager>();
     }
 
+    /// <summary>
+    /// Adds to the available defenses based on which vulnerability the component has. 
+    /// Set during initialization of the scenario.
+    /// </summary>
     public void InitComponent()
     {
         availableDefenses = new List<DefenseTypes>();
@@ -82,10 +87,14 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             foreach (var d in VulnerabilityLogic.GetDefenses(v))
                 if (!availableDefenses.Contains(d))
                     availableDefenses.Add(d);
-
-        // Todo: Find a simple way of traversing graph
     }
 
+    /// <summary>
+    /// Places the connection lines between this component and other connected nodes.
+    /// Called during initialization of the scenario.
+    /// </summary>
+    /// <param name="connection">Script containing data for the connection</param>
+    /// <param name="line">Line gameobject to be moved to correct location</param>
     public void InitConnectionLine(ConnectionReferences connection, GameObject line)
     {
         var lineToEnd = line.transform.Find("LineToEnd").GetComponent<RectTransform>().transform;
@@ -96,7 +105,11 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
 
         float XPosDiff = Mathf.Abs(startPos.x - endPos.x) / 100;        //100 pixels per unit
         float YPosDiff = Mathf.Abs(startPos.y - endPos.y) / 100;        //100 pixels per unit
-
+        
+        if (!connection.referenceFromObject.GetComponent<GameNetworkComponent>().connectionLines.Contains(line))
+            connection.referenceFromObject.GetComponent<GameNetworkComponent>().connectionLines.Add(line);
+        if (!connection.referenceToObject.GetComponent<GameNetworkComponent>().connectionLines.Contains(line))
+            connection.referenceToObject.GetComponent<GameNetworkComponent>().connectionLines.Add(line);
 
         /// connection to the right
         if (startPos.x < endPos.x)
@@ -149,6 +162,10 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         }
     }
 
+    /// <summary>
+    /// OnClick function to be called by a ClickHandler script.
+    /// Opens up the OnClickMenu next to this gameobject.
+    /// </summary>
     public void OnClick()
     {
         PlayerManager.PlayerType player = FindObjectOfType<PlayerManager>().GetPlayerType();

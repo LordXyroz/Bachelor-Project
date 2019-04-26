@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using MessagingInterfaces;
 
-/// TODO!!!!!!!
-/// Maybe use coroutines for handling discover/analyze/attack??
-
 /// <summary>
 /// Handles the attacker's controls and capabilities.
 /// </summary>
@@ -13,7 +10,6 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
 { 
     [Header("Attack requirements")]
     public GameObject[] attackPrefabs;
-    
     public GameObject target;
 
     [SerializeField]
@@ -25,7 +21,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     [Header("Discovery variables")]
     public int discoverLevel = 1;
     public float discoverProbability = 0.8f;
-    [SerializeField]
+
     private int discoverUpgradeDuration = 10;
     private float discoverUpgradeTimer = 0f;
     private bool discoverUpgrading = false;
@@ -39,7 +35,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     [Header("Analysis variables")]
     public int analyzeLevel = 1;
     public float analyzeProbability = 0.7f;
-    [SerializeField]
+
     private int analyzeUpgradeDuration = 10;
     private float analyzeUpgradeTimer = 0f;
     private bool analyzeUpgrading = false;
@@ -49,8 +45,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     private float analyzeTimer = 0f;
     private bool analyzeInProgress = false;
     private int analyzeCost = 10;
-
-
+    
     [Header("Probing variables")]
     private int probeDuration = 3;
     private float probeTimer = 0f;
@@ -60,7 +55,7 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     [Header("Attack variables")]
     public int attackLevel = 1;
     public float attackProbability = 0.6f;
-    [SerializeField]
+
     private int attackUpgradeDuration = 10;
     private float attackUpgradeTimer = 0f;
     private bool attackUpgrading = false;
@@ -550,9 +545,12 @@ public class Attacker : MonoBehaviour, IDiscoverResponse, IAnalyzeResponse, IAtt
     }
 
     /// <summary>
+    /// From the IDefenseResponse interface.
     /// 
+    /// Listens to MessageTypes.Game.DefenseResponse.
+    /// Sets node to out-of-date so the attacker can re-analyze node for new info.
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">Message containing the relevant info to be handled by the function</param>
     public void DefenseResponse(SuccessMessage message)
     {
         NodeInfo i = info.Find(x => x.component.name == message.senderName);
