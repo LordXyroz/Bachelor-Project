@@ -458,6 +458,8 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
                 nm.matchmakingCanvas.SetActive(true);
                 nm.inGame = false;
             }
+
+            nm.sb = null;
         }
     }
     

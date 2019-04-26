@@ -359,6 +359,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
             GameObject.Find("ConnectionText").GetComponent<Text>().text = "Found host(s)";
         }
 
+        Dispose();
+
         nm.joinButton.SetActive(true);
         nm.stopJoinButton.SetActive(false);
     }
@@ -715,6 +717,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
                 nm.matchmakingCanvas.SetActive(true);
                 nm.inGame = false;
             }
+
+            nm.cb = null;
         }
     }
     
