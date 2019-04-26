@@ -114,9 +114,21 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
             {
                 /// Program is suspended while waiting for an incoming connection.  
                 Socket server = listener.Accept();
+
+                /// Check that you still want to be answering to incoming messages after one has been found.
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    server.Shutdown(SocketShutdown.Both);
+                    server.Close();
+                    listener.Close();
+                    listener.Dispose();
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
+
                 data = null;
 
-                
+
                 /// An incoming connection needs to be processed.  
                 while (true)
                 {
