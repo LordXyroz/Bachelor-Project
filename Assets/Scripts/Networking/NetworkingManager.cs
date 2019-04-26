@@ -227,9 +227,12 @@ public class NetworkingManager : MonoBehaviour
             {
                 if (cb != null)
                 {
-                    /// Player may not start hosting while looking for connection as a client.
-                    return;
+                    StopConnecting();
+                    cb.Dispose();
                 }
+
+                if (sb != null)
+                    sb.Dispose();
 
                 /// Make HostText available:
                 chatField.SetActive(true);
@@ -246,9 +249,9 @@ public class NetworkingManager : MonoBehaviour
                 RemoveLobbies();
 
                 if (cb != null)
-                {
                     cb.Dispose();
-                }
+                if (sb != null)
+                    sb.Dispose();
                 
 
                 /// Add client behaviour and try to find a host.

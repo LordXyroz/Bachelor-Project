@@ -353,13 +353,14 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
             //nm.StopConnecting();
             Debug.Log("Could not find a valid host");
             GameObject.Find("ConnectionText").GetComponent<Text>().text = "Found no hosts";
+
+
+            Dispose();
         }
         else
         {
             GameObject.Find("ConnectionText").GetComponent<Text>().text = "Found host(s)";
         }
-
-        Dispose();
 
         nm.joinButton.SetActive(true);
         nm.stopJoinButton.SetActive(false);

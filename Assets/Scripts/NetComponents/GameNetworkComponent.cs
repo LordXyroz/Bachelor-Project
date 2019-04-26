@@ -34,6 +34,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     private BaseUI uiScript;
 
     public GameObject selectionBox;
+    public TMPro.TextMeshProUGUI nameText;
 
     [Header("Network")]
     public int graphDepth;
@@ -41,6 +42,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     public List<GameObject> connectionLines = new List<GameObject>();
 
     [Header("Observer Related")]
+    public GameObject attackerFound;
     private bool attackerSelected = false;
     private bool defenderSelected = false;
     
@@ -82,6 +84,8 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     /// </summary>
     public void InitComponent()
     {
+        nameText.text = displayName;
+
         availableDefenses = new List<DefenseTypes>();
         foreach (var v in vulnerabilities)
             foreach (var d in VulnerabilityLogic.GetDefenses(v))
@@ -290,6 +294,9 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
                 exploits.Add(vulnerabilities.Count > 0);
             }
 
+            if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                attackerFound.SetActive(true);
+
             if (message.playerType != FindObjectOfType<PlayerManager>().GetPlayerType())
                 return;
 
@@ -300,11 +307,17 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
             int count = 0;
             foreach (var child in children)
             {
-                if (!child.uiElement.activeSelf && message.randValues[count] <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
+                if (message.randValues[count] <= message.probability - (0.8f * (difficulty / 5f - 0.2f)))
                 {
-                    list.Add(child.name);
-                    exploits.Add(child.vulnerabilities.Count > 0);
-                    child.uiElement.SetActive(true);
+                    if (!child.uiElement.activeSelf)
+                    {
+                        list.Add(child.name);
+                        exploits.Add(child.vulnerabilities.Count > 0);
+                        child.uiElement.SetActive(true);
+                    }
+
+                    if (FindObjectOfType<PlayerManager>().GetPlayerType() == PlayerManager.PlayerType.Observer)
+                        child.attackerFound.SetActive(true);
                 }
                 count++;
             }
