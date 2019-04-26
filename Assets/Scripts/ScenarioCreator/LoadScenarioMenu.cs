@@ -19,7 +19,7 @@ public class LoadScenarioMenu : MonoBehaviour
 
     void Start()
     {
-        _SaveFileDirectory = Application.dataPath + "/Savefiles";
+        _SaveFileDirectory = Application.persistentDataPath+ "/Savefiles";
 
         canvas = FindObjectOfType<Canvas>();
         saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);

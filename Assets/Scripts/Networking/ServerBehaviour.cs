@@ -450,6 +450,9 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
             m_ServerDriver.Dispose();
             m_connections.Dispose();
 
+            if (!cancellationTokenSource.IsCancellationRequested)
+                cancellationTokenSource.Cancel(true);
+
             disposedValue = true;
             if (nm.inGame)
             {
@@ -460,6 +463,8 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
             }
 
             nm.sb = null;
+
+            Debug.Log("Server is now: " + ((nm.sb == null) ? "Null": "not null"));
         }
     }
     

@@ -41,7 +41,7 @@ public class SaveScenario : MonoBehaviour
     private void Start()
     {
         entryPointExists = false;
-        directoryPath = Application.dataPath + "/Savefiles";
+        directoryPath = Application.persistentDataPath + "/Savefiles";
 
         if (!Directory.Exists(directoryPath))
         {

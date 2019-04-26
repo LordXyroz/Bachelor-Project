@@ -38,7 +38,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     private Task setupHostIp;
     private CancellationTokenSource cancellationTokenSource;
     private CancellationToken cancellationToken;
-    
+
+    private Dictionary<string, string> lobbyPairs = new Dictionary<string, string>();
     
 
     /// <summary>
@@ -189,6 +190,11 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         {
             Debug.Log(e);
         }
+
+        if (ServerEndPoint.IsValid)
+        {
+            lobbyPairs.Add(serverName, ServerEndPoint.GetIp());
+        }
     }
     
     /// <summary>
@@ -331,7 +337,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
             
             yield return new WaitForSeconds(0.25f);
 
-
+            /*
             if (ServerEndPoint.IsValid)
             {
                 GameObject lobby = MonoBehaviour.Instantiate(nm.lobbyButton, nm.lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform);
@@ -345,18 +351,36 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
                 {
                     cancellationTokenSource.Cancel();
                 }
-            }
+            }*/
         }
-        
-        if (!ServerEndPoint.IsValid)
+
+        foreach (var pair in lobbyPairs)
         {
-            //nm.StopConnecting();
+            GameObject lobby = MonoBehaviour.Instantiate(nm.lobbyButton, nm.lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform);
+            lobby.GetComponent<Button>().transform.Find("Text").GetComponent<Text>().text = pair.Key;
+            lobby.name = pair.Value;
+
+            lobby.GetComponent<Button>().onClick.AddListener(() => Connect(lobby.name));
+        }
+
+        if (lobbyPairs.Count == 0)
+        {
+
             Debug.Log("Could not find a valid host");
             GameObject.Find("ConnectionText").GetComponent<Text>().text = "Found no hosts";
 
 
             Dispose();
         }
+        //if (!ServerEndPoint.IsValid)
+        //{
+        //    //nm.StopConnecting();
+        //    Debug.Log("Could not find a valid host");
+        //    GameObject.Find("ConnectionText").GetComponent<Text>().text = "Found no hosts";
+        //
+        //
+        //    Dispose();
+        //}
         else
         {
             GameObject.Find("ConnectionText").GetComponent<Text>().text = "Found host(s)";
@@ -720,6 +744,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
             }
 
             nm.cb = null;
+
+            Debug.Log("Client is now: " + ((nm.cb == null) ? "Null": "not null"));
         }
     }
     

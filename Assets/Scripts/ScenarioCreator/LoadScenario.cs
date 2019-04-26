@@ -56,7 +56,7 @@ public class LoadScenario : MonoBehaviour
         dropZone = FindObjectOfType<DropZone>();
         referenceLineMenu = canvas.transform.GetComponentInChildren<ReferenceLineMenu>(true);
 
-        directoryPath = Application.dataPath + "/Savefiles";
+        directoryPath = Application.persistentDataPath + "/Savefiles";
         filePath = Path.Combine(directoryPath, saveMenu.filename + ".json");
     }
 

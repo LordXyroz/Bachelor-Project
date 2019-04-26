@@ -2077,7 +2077,7 @@ MonoBehaviour:
   scenarioCreatorOST: {fileID: 8300000, guid: 2ba39d65c05a0dc429ed03dc86f3729c, type: 3}
   gameplayOST1: {fileID: 8300000, guid: 7c73bdc9923dbc3409281cfe8b822a46, type: 3}
   efx1: {fileID: 0}
-  _bgmMaxVolume: 0
+  _bgmMaxVolume: 1
 --- !u!4 &1254205096
 Transform:
   m_ObjectHideFlags: 0
