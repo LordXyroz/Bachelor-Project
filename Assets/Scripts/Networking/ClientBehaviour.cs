@@ -109,10 +109,15 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     /// <param name="serverName"></param>
     public void FindHost(string ip, out string serverName)
     {
+
         serverName = "";
 
         // Data buffer for incoming data.  
         byte[] bytes = new byte[1024];
+
+        //NetworkEndPoint temp = null;
+
+        IPEndPoint temp = null;
 
         // Connect to a remote device.  
         try
@@ -157,7 +162,7 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
 
                 if (serverName != "" && serverName != null)
                 {
-                    ServerEndPoint = new IPEndPoint(IPAddress.Parse(ip), 9000);
+                    temp = new IPEndPoint(IPAddress.Parse(ip), 9000);
                 }
 
                 // Release the socket.  
@@ -190,10 +195,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         {
             Debug.Log(e);
         }
-
-        if (ServerEndPoint.IsValid)
+        
+        if (temp.AddressFamily == AddressFamily.InterNetwork)
         {
-            lobbyPairs.Add(serverName, ServerEndPoint.GetIp());
+            lobbyPairs.Add(serverName, temp.Address.ToString());
         }
     }
     
@@ -353,6 +358,8 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
                 }
             }*/
         }
+
+        yield return new WaitForSeconds(2.0f);
 
         foreach (var pair in lobbyPairs)
         {
