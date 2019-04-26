@@ -159,7 +159,6 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         }
         finally
         {
-            cancellationTokenSource.Dispose();
             server.Stop();
         }
     }
@@ -452,6 +451,8 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
 
             if (!cancellationTokenSource.IsCancellationRequested)
                 cancellationTokenSource.Cancel(true);
+            
+            cancellationTokenSource.Dispose();
 
             disposedValue = true;
             if (nm.inGame)
