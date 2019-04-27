@@ -185,7 +185,7 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         }
         else if (player == PlayerManager.PlayerType.Defender)
         {
-            if (FindObjectOfType<Defender>().target = gameObject)
+            if (FindObjectOfType<Defender>().target == gameObject)
             {
                 RectTransform rectTransform = GetComponent<RectTransform>();
                 Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
