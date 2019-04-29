@@ -4,6 +4,8 @@ using MessagingInterfaces;
 
 /// <summary>
 /// Static class to handle messaging between GameObjects in the scene.
+/// Passes on the message sent to the appropriate interface based on <see cref="MessageTypes"/>.
+/// Also calls server broadcast where applicable.
 /// </summary>
 public static class MessagingManager
 {

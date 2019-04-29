@@ -1,9 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
+/// <summary>
+/// Inherits from <see cref="BaseUI"/>.
+/// Handles UI for the defender.
+/// </summary>
 public class DefenderUI : BaseUI
 {
     [Header("InfoPanel")]

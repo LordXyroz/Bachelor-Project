@@ -30,9 +30,8 @@ public class Observer : MonoBehaviour, ILogging, IError
     }
 
     /// <summary>
-    /// From the IError interface.
-    /// 
-    /// TODO: Make this do something!
+    /// Function from <see cref="MessagingInterfaces.IError"/>.
+    /// Currently unused.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
     public void OnError(LoggingMessage message)
@@ -41,9 +40,7 @@ public class Observer : MonoBehaviour, ILogging, IError
     }
 
     /// <summary>
-    /// From the ILogging interface.
-    /// 
-    /// TODO: Log to file and text box on the UI
+    /// Function from <see cref="MessagingInterfaces.ILogging"/>.
     /// </summary>
     /// <param name="message">Message containing relevant info to be handled by the function</param>
     public void OnLog(LoggingMessage message)
@@ -93,6 +90,9 @@ public class Observer : MonoBehaviour, ILogging, IError
         uiScript.PopulateInfoPanel(node);
     }
 
+    /// <summary>
+    /// Disables slection box and sets target to be null.
+    /// </summary>
     public void ClearTarget()
     {
         if (target != null) 

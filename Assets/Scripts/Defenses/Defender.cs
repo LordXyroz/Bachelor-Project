@@ -53,6 +53,10 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
     private bool workInProgress = false;
     private NetworkingManager networking;
 
+    /// <summary>
+    /// Adds all the nodes to a list since defender has access to all nodes at start.
+    /// Also finds NetworkingManager.
+    /// </summary>
     void Start()
     {
         foreach (var o in FindObjectsOfType<GameNetworkComponent>())
@@ -62,7 +66,9 @@ public class Defender : MonoBehaviour, IAnalyzeResponse, IDefenseResponse, IProb
         networking = FindObjectOfType<NetworkingManager>();
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Increments timers and calls functions once durations have been reached.
+    /// </summary>
     void Update()
     {
         if (analyzeInProgress)

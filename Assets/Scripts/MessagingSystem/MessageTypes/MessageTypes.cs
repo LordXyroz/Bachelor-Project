@@ -91,7 +91,14 @@ namespace MessageTypes
                 { Logging.Error, "Error" },
                 { Logging.Targeting, "Targeting" },
 
-                // { Network }
+                { Network.Connect, "Connect" },
+                { Network.ConnectAck, "Connect Acknowledge" },
+                { Network.Disconnect, "Disconnect" },
+                { Network.ClientDisconnect, "Client Disconnect" },
+                { Network.Ping, "Ping" },
+                { Network.PingAck, "Pick Acknowledge" },
+                { Network.Chat, "Chat" },
+                { Network.Swap, "Swap" },
 
                 { Game.Attack, "Attack" },
                 { Game.AttackResponse, "Attack Response" },
@@ -102,7 +109,8 @@ namespace MessageTypes
                 { Game.Analyze, "Analyze" },
                 { Game.AnalyzeResponse, "Analyze Response" },
                 { Game.Probe, "Probe" },
-                { Game.ProbeResponse, "Probe Response" }
+                { Game.ProbeResponse, "Probe Response" },
+                { Game.SaveFile, "Save file" }
             };
         }
 

@@ -174,12 +174,13 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
     {
         PlayerManager.PlayerType player = FindObjectOfType<PlayerManager>().GetPlayerType();
 
+        RectTransform rectTransform = GetComponent<RectTransform>();
+        Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
+
         if (player == PlayerManager.PlayerType.Attacker)
         {
             if (FindObjectOfType<Attacker>().target == gameObject)
             {
-                RectTransform rectTransform = GetComponent<RectTransform>();
-                Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
                 uiScript.ToggleOnClickMenu(true, pos);
             }
         }
@@ -187,8 +188,6 @@ public class GameNetworkComponent : MonoBehaviour, IUnderAttack, IAddDefense, ID
         {
             if (FindObjectOfType<Defender>().target == gameObject)
             {
-                RectTransform rectTransform = GetComponent<RectTransform>();
-                Vector3 pos = new Vector3(rectTransform.position.x + rectTransform.rect.height * 1.5f, rectTransform.position.y);
                 uiScript.ToggleOnClickMenu(true, pos);
             }
         }

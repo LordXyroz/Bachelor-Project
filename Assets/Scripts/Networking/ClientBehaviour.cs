@@ -17,8 +17,32 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
+/// <summary>
+/// Client behaviour that keeps track of client side communication.
+/// </summary>
 public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconnectClient, IDisconect, IStartGame, IDisposable, ISaveFile
 {
+    /// <summary>
+    /// Enum for checking current swap status betwen attacker and defender
+    /// </summary>
+    public enum SwapInfo
+    {
+        Null,
+        Waiting,
+        Accepted
+    }
+
+    /// <summary>
+    /// Enum for swap message to be sent to the other client.s
+    /// </summary>
+    public enum SwapMsgType
+    {
+        Request,
+        Accept,
+        Decline,
+        Acknowledge
+    }
+
     private NetworkingManager nm;
 
     ///  results contain the ipaddresses possible to connect to.
@@ -66,20 +90,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         m_clientWantsConnection = false;
     }
     
-    public enum SwapInfo{
-        Null,
-        Waiting,
-        Accepted
-    }
-
-    public enum SwapMsgType
-    {
-        Request,
-        Accept,
-        Decline,
-        Acknowledge
-    }
-
+    /// <summary>
+    /// Gets current swap info.
+    /// </summary>
+    /// <returns>swap info</returns>
     public SwapInfo GetSwapInfo()
     {
         return swapInfo;
@@ -300,6 +314,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         return results;
     }
 
+    /// <summary>
+    /// Coroutine for searching for lobbies on local network.
+    /// </summary>
+    /// <returns><see cref="IEnumerator"/></returns>
     private IEnumerator WaitForHost()
     {
         /// Text visible to the client that shows the connection status.(Offline/Connecting/Online)
@@ -341,24 +359,9 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
             setupHostIp = Task.Factory.StartNew(() => FindHost(ips[i], out serverName), cancellationToken);
             
             yield return new WaitForSeconds(0.25f);
-
-            /*
-            if (ServerEndPoint.IsValid)
-            {
-                GameObject lobby = MonoBehaviour.Instantiate(nm.lobbyButton, nm.lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform);
-                lobby.GetComponent<Button>().transform.Find("Text").GetComponent<Text>().text = serverName;
-                lobby.name = ServerEndPoint.GetIp();
-
-                lobby.GetComponent<Button>().onClick.AddListener(() => Connect(lobby.name));
-                
-                /// Cancel task.
-                if (!setupHostIp.IsCompleted && !setupHostIp.IsCanceled)
-                {
-                    cancellationTokenSource.Cancel();
-                }
-            }*/
         }
 
+        /// Yield 2 seconds to let slow servers have a chance to reply.
         yield return new WaitForSeconds(2.0f);
 
         foreach (var pair in lobbyPairs)
@@ -397,6 +400,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         nm.stopJoinButton.SetActive(false);
     }
 
+    /// <summary>
+    /// Set up lobby and tries to connect to the host.
+    /// </summary>
+    /// <param name="name">Host IP as a string</param>
     public void Connect(string name)
     {
         Text connectionText = GameObject.Find("ConnectionText").GetComponent<Text>();
@@ -598,12 +605,22 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     }
 
     #region Interface functions
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.IPing"/>.
+    /// </summary>
+    /// <param name="message">Message</param>
+    /// <param name="index">Connection index</param>
     public void OnPing(Message message, int index)
     {
         // Debug.Log("Ping ack!");
         // throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.IConnection"/>
+    /// </summary>
+    /// <param name="message">Connection message</param>
+    /// <param name="index">Connection index</param>
     public void OnConnection(ConnectMessage message, int index)
     {
         nm.hostText.GetComponent<Text>().text = message.senderName;
@@ -624,11 +641,19 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         Debug.Log("OnConnection - You are connected to server! ip: " + ServerEndPoint.GetIp());
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.IChatMessage"/>
+    /// </summary>
+    /// <param name="message">Chat messages</param>
     public void OnChatMessage(ChatMessage message)
     {
         nm.GetChatMessage(message.message);
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.ISwap"/>
+    /// </summary>
+    /// <param name="message">Swap messages</param>
     public void OnSwap(SwapMessage message)
     {
         if (message.swapMsg == SwapMsgType.Request)
@@ -669,6 +694,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         }
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.IDisconnectClient"/>
+    /// </summary>
+    /// <param name="message">Disconnect client message</param>
     public void OnClientDisconnect(DiscClientMessage message)
     {
         if (nm.inGame)
@@ -681,6 +710,9 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         nm.FindPlayerForRemoval(message.disconnectingClient);
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.IDisconect"/>
+    /// </summary>
     public void OnDisconnect()
     {
         if (nm.inGame)
@@ -693,6 +725,9 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         nm.DisconnectFromServer();
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.IStartGame"/>
+    /// </summary>
     public void OnStartGame()
     {
         GameObject.Find("Canvas").SetActive(false);
@@ -703,6 +738,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.ISaveFile"/>
+    /// </summary>
+    /// <param name="message">Save file message</param>
     public void OnSaveFile(SaveFileMessage message)
     {
         Debug.Log("Json string of file: \n" + message.fileString);
@@ -712,6 +751,10 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
     #region IDisposable Support
     private bool disposedValue = false; // To detect redundant calls
 
+    /// <summary>
+    /// Dispose function for disposing and cleaning up variabes and states.
+    /// </summary>
+    /// <param name="disposing">If dispose is called manually</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -756,11 +799,17 @@ public class ClientBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisconn
         }
     }
     
+    /// <summary>
+    /// Destructor for calling <see cref="Dispose(bool)"/>
+    /// </summary>
     ~ClientBehaviour()
     {
       Dispose(false);
     }
     
+    /// <summary>
+    /// Public function for calling <see cref="Dispose(bool)"/> manually.
+    /// </summary>
     public void Dispose()
     {
         Dispose(true);

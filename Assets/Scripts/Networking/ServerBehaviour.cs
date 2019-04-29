@@ -17,6 +17,9 @@ using System.Collections.Generic;
 
 using MessagingInterfaces;
 
+/// <summary>
+/// Server behaviour that keeps track of server side communication.
+/// </summary>
 public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposable
 {
     NetworkingManager nm;
@@ -301,6 +304,10 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         SceneManager.LoadScene("GameScene", LoadSceneMode.Additive);
     }
 
+    /// <summary>
+    /// Disconnects a client from the server.
+    /// </summary>
+    /// <param name="index">Index of client to disconnect</param>
     public void DisconnectClient(int index)
     {
         /// Remove client that disconnected from list of people who ARE indeed connected.
@@ -334,6 +341,10 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         findConnections = Task.Factory.StartNew(() => FindConnections(serverName), cancellationToken);
     }
 
+    /// <summary>
+    /// Broadcasts a message to every client connected to the server.
+    /// </summary>
+    /// <param name="message">Any <see cref="Message"/> or that inherits it, to be broadcast</param>
     public void BroadcastMessage(dynamic message)
     {
         var str = JsonUtility.ToJson(message);
@@ -348,6 +359,12 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         writer.Dispose();
     }
 
+    /// <summary>
+    /// Overload of <see cref="BroadcastMessage(dynamic)"/>.
+    /// Sends message to a specific client.
+    /// </summary>
+    /// <param name="message">Any <see cref="Message"/> or that inherits it, to be broadcast</param>
+    /// <param name="index">Connection index of the client to send to</param>
     public void BroadcastMessage(dynamic message, int index)
     {
         string str = JsonUtility.ToJson(message);
@@ -362,6 +379,12 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         writer.Dispose();
     }
 
+    /// <summary>
+    /// Overload of <see cref="BroadcastMessage(dynamic)"/>.
+    /// Broadcasts message to all other connected clients that a client has been disconnected.
+    /// </summary>
+    /// <param name="message">Any <see cref="Message"/> or that inherits it, to be broadcast</param>
+    /// <param name="index">Connection index of the client that has been disconnected</param>
     public void BroadcastMessage(DiscClientMessage message, int index)
     {
         var str = JsonUtility.ToJson(message);
@@ -377,6 +400,11 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         writer.Dispose();
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.IPing"/>.
+    /// </summary>
+    /// <param name="message">Message</param>
+    /// <param name="index">Connection index of client</param>
     public void OnPing(Message message, int index)
     {
         var msg = new Message("client", nm.userName, MessageTypes.Network.PingAck);
@@ -392,6 +420,11 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         writer.Dispose();
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.IConnection"/>.
+    /// </summary>
+    /// <param name="message">Connect message</param>
+    /// <param name="index">Connection index of client</param>
     public void OnConnection(ConnectMessage message, int index)
     {
         string name = message.senderName;
@@ -409,12 +442,20 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
         BroadcastMessage(new SaveFileMessage(name, hostName, MessageTypes.Game.SaveFile, nm.saveFile), index);
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.IChatMessage"/>.
+    /// </summary>
+    /// <param name="message">Chat message</param>
     public void OnChatMessage(ChatMessage message)
     {
         nm.GetChatMessage(message.message);
         BroadcastMessage(message);
     }
 
+    /// <summary>
+    /// Function from <see cref="MessagingInterfaces.ISwap"/>.
+    /// </summary>
+    /// <param name="message">Swap message</param>
     public void OnSwap(SwapMessage message)
     {
         string target = message.targetName;
@@ -430,6 +471,10 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
     #region IDisposable
     private bool disposedValue = false; // To detect redundant calls
 
+    /// <summary>
+    /// Dispose function for disposing and cleaning up variabes and states.
+    /// </summary>
+    /// <param name="disposing">If dispose is called manually</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -468,12 +513,18 @@ public class ServerBehaviour : IPing, IConnection, IChatMessage, ISwap, IDisposa
             Debug.Log("Server is now: " + ((nm.sb == null) ? "Null": "not null"));
         }
     }
-    
+
+    /// <summary>
+    /// Destructor for calling <see cref="Dispose(bool)"/>
+    /// </summary>
     ~ServerBehaviour()
     {
       Dispose(false);
     }
     
+    /// <summary>
+    /// Public function for calling <see cref="Dispose(bool)"/> manually.
+    /// </summary>
     public void Dispose()
     {
         Dispose(true);

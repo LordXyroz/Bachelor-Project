@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 /// <summary>
-/// Child class of Message for storing response data from a discover event.
+/// Message sent after discover with results.
+/// Inherits from <see cref="Message"/>
 /// </summary>
 [System.Serializable]
 public class DiscoverResponseMessage : Message
@@ -12,6 +11,15 @@ public class DiscoverResponseMessage : Message
     public string displayName;
     public List<bool> exploitables;
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    /// <param name="target">Target of the message</param>
+    /// <param name="sender">Sender of the message</param>
+    /// <param name="type">Message type</param>
+    /// <param name="response">List of names of gameobjects (nodes) found</param>
+    /// <param name="dispName">Display name of node</param>
+    /// <param name="exploits">List of if found nodes are exploitable</param>
     public DiscoverResponseMessage(string target, string sender, ushort type, List<string> response, string dispName, List<bool> exploits)
         : base(target, sender, type)
     {

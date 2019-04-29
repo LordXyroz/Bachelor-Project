@@ -55,7 +55,12 @@ public class AudioManager : MonoBehaviour
     private AudioClip _nextClip = null;
     
     
-    // Ensures singleton
+    /// <summary>
+    /// Runs before start.
+    /// By using static Audiomanager instance, we can ensure only a single one if found in a scene.
+    /// Sets the object carrying this script to not be destroyed between scenes.
+    /// Starts the bgm music loop.
+    /// </summary>
     public void Awake()
     {
         if (instance == null)
@@ -68,7 +73,9 @@ public class AudioManager : MonoBehaviour
         PlayMenuBGM(true, 0.05f);
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// If we are fading, increases or decreases volume of music, or changes to next clip if we are not.
+    /// </summary>
     void Update()
     {
         if (!bgmSource.enabled)
@@ -100,6 +107,13 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Private fade function.
+    /// Will start the fading if called with a different audio clip than is currently playing.
+    /// </summary>
+    /// <param name="clip">Audio clip to fade to</param>
+    /// <param name="fadeIn">Fade in speed (volume per frame)</param>
+    /// <param name="fadeOut">Fade out speed (volume per frame)</param>
     private void Fade(AudioClip clip, float fadeIn = 0.1f, float fadeOut = 0.5f)
     {
         if (clip == null || clip == bgmSource.clip)
@@ -115,6 +129,10 @@ public class AudioManager : MonoBehaviour
             FadeToNextClip();
     }        
 
+    /// <summary>
+    /// Private function,
+    /// Will change state to FadingIn and play the next clip.
+    /// </summary>
     private void FadeToNextClip()
     {
         bgmSource.clip = _nextClip;
@@ -124,11 +142,17 @@ public class AudioManager : MonoBehaviour
             bgmSource.Play();
     }
 
+    /// <summary>
+    /// Plays the menu music.
+    /// </summary>
+    /// <param name="fade">Whether clips should fade</param>
+    /// <param name="fadeIn">Fade in speed (volume per frame)</param>
+    /// <param name="fadeOut">Fade out speed (volume per frame)</param>
     public void PlayMenuBGM(bool fade, float fadeIn = 0.1f, float fadeOut = 0.5f)
     {
         if (fade)
         {
-            Fade(mainMenuOST);
+            Fade(mainMenuOST, fadeIn, fadeOut);
         }
         else
         {
@@ -138,11 +162,18 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Plays the scenario creator music.
+    /// Currently unused as there is no special music for that scene.
+    /// </summary>
+    /// <param name="fade">Whether clips should fade</param>
+    /// <param name="fadeIn">Fade in speed (volume per frame)</param>
+    /// <param name="fadeOut">Fade out speed (volume per frame)</param>
     public void PlayScenarioCreatorBGM(bool fade, float fadeIn = 0.1f, float fadeOut = 0.5f)
     {
         if (fade)
         {
-            Fade(scenarioCreatorOST);
+            Fade(scenarioCreatorOST, fadeIn, fadeOut);
         }
         else
         {
@@ -152,11 +183,18 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Plays the gameplay ost.
+    /// Should set a playlist of different clips in the future.
+    /// </summary>
+    /// <param name="fade">Whether clips should fade</param>
+    /// <param name="fadeIn">Fade in speed (volume per frame)</param>
+    /// <param name="fadeOut">Fade out speed (volume per frame)</param>
     public void PlayGameplayBGM(bool fade, float fadeIn = 0.1f, float fadeOut = 0.5f)
     {
         if (fade)
         {
-            Fade(gameplayOST1);
+            Fade(gameplayOST1, fadeIn, fadeOut);
         }
         else
         {
@@ -166,6 +204,10 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Changes the volume of background music.
+    /// </summary>
+    /// <param name="vol">Volume to change to from 0.f to 1.f</param>
     public void SetBGMVolume(float vol)
     {
         _bgmMaxVolume = vol;

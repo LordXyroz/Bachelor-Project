@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Player manager class that controls player type, game timer, and loads level data.
+/// </summary>
 public class PlayerManager : MonoBehaviour
 {
     /// <summary>
@@ -96,6 +99,10 @@ public class PlayerManager : MonoBehaviour
         InitScenario();
     }
 
+    /// <summary>
+    /// Counts gametime, and ends the game when a limit has been reached.
+    /// Counts up or down based on scenario info.
+    /// </summary>
     public void Update()
     {
         if (counting)
@@ -141,14 +148,20 @@ public class PlayerManager : MonoBehaviour
         return playerType;
     }
 
+    /// <summary>
+    /// Init scenario function.
+    /// Sets up everything necessary to run a scenario loaded from file.
+    /// </summary>
     private void InitScenario()
     {
+        /// Gets the secnario data, and inits basic stats.
         var scenarioData = FindObjectOfType<NetworkingManager>().saveFile;
         var compList = new List<GameNetworkComponent>();
 
         timeInSeconds = scenarioData.gameTimeInMinuttes * 60;
         countDown = (timeInSeconds > 0);
 
+        /// Sets resources, level and probability on attacker and defender side.
         switch (playerType)
         {
             case PlayerType.Attacker:
@@ -177,6 +190,7 @@ public class PlayerManager : MonoBehaviour
                 break;
         }
 
+        /// Loops through and creates network nodes.
         for (int i = 0; i < scenarioData.systemComponentPositionsList.Count; i++)
         {
             VulnerabilityWrapper wrapper = scenarioData.systemComponentVulnerabilyWrappersList[i];
@@ -215,6 +229,7 @@ public class PlayerManager : MonoBehaviour
 
             obj.name += i;
 
+            /// Sets up node variables.
             GameNetworkComponent component = obj.GetComponent<GameNetworkComponent>();
 
             component.difficulty = scenarioData.systemComponentSecurityLevelsList[i];
@@ -226,29 +241,37 @@ public class PlayerManager : MonoBehaviour
             component.InitComponent();
         }
 
+        /// Loops through every connection between nodes and creates a line.
         for (int i = 0; i < scenarioData.connectionLinePosition.Count; i++)
         {
             GameObject line = Instantiate(connectionLinePrefab, scenarioData.connectionLinePosition[i], Quaternion.identity, componentWindow.transform);
             line.transform.SetAsFirstSibling();
 
+            /// Sets up which object the connection goes to and from.
             ConnectionReferences reference = line.GetComponent<ConnectionReferences>();
             reference.referenceFromObject = GameObject.Find(scenarioData.referenceFromObjectName[i]);
             reference.referenceToObject = GameObject.Find(scenarioData.referenceToObjectName[i]);
 
+            /// Adds the to-objcet as child to the from-object in the network.
             reference.referenceFromObject.GetComponent<GameNetworkComponent>()
                     .children
                     .Add(reference.referenceToObject.GetComponent<GameNetworkComponent>());
 
+            /// Adds the from-objcet as child to the to-object in the network.
             reference.referenceToObject.GetComponent<GameNetworkComponent>()
                     .children
                     .Add(reference.referenceFromObject.GetComponent<GameNetworkComponent>());
 
+            /// Sets up firewall and position
             reference.hasFirewall = scenarioData.hasFirewall[i];
             reference.transform.position = scenarioData.firewallPositionsList[i];
+
+            /// Moves and changes the line to connect between the nodes.
             reference.referenceFromObject
                 .GetComponent<GameNetworkComponent>()
                 .InitConnectionLine(reference, line);
 
+            /// Enables the firewall if the connection has one
             if (reference.hasFirewall)
             {
                 var firewall = line.gameObject.transform.Find("Firewall").gameObject;

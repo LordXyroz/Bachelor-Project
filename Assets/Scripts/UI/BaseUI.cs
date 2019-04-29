@@ -1,10 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Base game scene UI script.
+/// Handles all UI elements that are the same for every player type.
+/// </summary>
 public abstract class BaseUI : MonoBehaviour
 {
     [Header("Progressbar")]
@@ -203,11 +205,17 @@ public abstract class BaseUI : MonoBehaviour
         tooltipObject.SetActive(false);
     }
     
+    /// <summary>
+    /// Function that ends the game and returns to Menu scene.
+    /// </summary>
     public void FinishGame()
     {
         SceneManager.LoadScene("MenuScene");
     }
 
+    /// <summary>
+    /// Activates finished game overlay.
+    /// </summary>
     public void ToggleFinishScreen()
     {
         finishScreenObject.SetActive(true);

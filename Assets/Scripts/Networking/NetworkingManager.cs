@@ -1,9 +1,6 @@
-﻿using System.Text;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Unity.Collections;
-using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -42,9 +39,7 @@ public class NetworkingManager : MonoBehaviour
     public GameObject startGameButton;
 
     public GameObject matchmakingCanvas;
-
-
-
+    
     /// <summary>
     /// List of names is used to see name of players currently in the lobby.
     /// </summary>
@@ -52,7 +47,6 @@ public class NetworkingManager : MonoBehaviour
     public List<GameObject> attackerNames;
     public List<GameObject> defenderNames;
     public List<GameObject> messageList;
-
 
     /// <summary>
     /// There are two different behaviours a player can have, hosting a game or joining a game someone else is hosting:
@@ -470,6 +464,11 @@ public class NetworkingManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Private function that swaps teams for clients
+    /// </summary>
+    /// <param name="currentClient">First client</param>
+    /// <param name="otherClient">Second client</param>
     private void Swap(GameObject currentClient, GameObject otherClient)
     {
         string temp = otherClient.transform.Find("Text").GetComponent<Text>().text;
@@ -748,6 +747,9 @@ public class NetworkingManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Function that cleans up and removes lobbies.
+    /// </summary>
     public void RemoveLobbies()
     {
         foreach (Transform child in lobbyScrollField.transform.Find("ButtonListViewport").Find("ButtonListContent").transform)
@@ -760,6 +762,10 @@ public class NetworkingManager : MonoBehaviour
         matchmakingObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Loads a scenario from a file.
+    /// </summary>
+    /// <param name="path">Path of the scenario file</param>
     public void LoadSaveFile(string path)
     {
         if (System.IO.File.Exists(path))
@@ -782,9 +788,6 @@ public class NetworkingManager : MonoBehaviour
             connectionField.SetActive(false);
             GameObject.Find("ConnectionText").GetComponent<Text>().text = "Online";
             GameObject.Find("ConnectionText").GetComponent<Text>().color = Color.green;
-
-            //Text T = GameObject.Find("HostText").GetComponent<Text>();
-            //T.text = userName + "'s lobby";
 
             /// Set to false as host no client has joined a lobby before it starts.
             for (int i = 0; i < attackerNames.Count; i++)

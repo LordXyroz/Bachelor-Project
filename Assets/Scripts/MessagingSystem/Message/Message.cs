@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// Wrapper class for storing data to be sent between GameObjects.
@@ -16,11 +14,11 @@ public class Message
     public PlayerManager.PlayerType playerType;
 
     /// <summary>
-    /// Constructor when the message isn't an attack, defense, or response
+    /// Default constructor
     /// </summary>
-    /// <param name="target">Name of the target GameObject</param>
-    /// <param name="sender">name of the GameObject that sent the message</param>
-    /// <param name="type">Type of message sent</param>
+    /// <param name="target">Target of the message</param>
+    /// <param name="sender">Sender of the message</param>
+    /// <param name="type">Message type</param>
     public Message(string target, string sender, ushort type)
     {
         targetName = target;

@@ -3,6 +3,10 @@ using UnityEngine.UI;
 using System.Linq;
 using System.Collections.Generic;
 
+/// <summary>
+/// Inherits from <see cref="BaseUI"/>.
+/// Handles UI for the attacker.
+/// </summary>
 public class AttackerUI : BaseUI
 {
     [Header("InfoPanel")]

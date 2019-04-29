@@ -1,9 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
+/// <summary>
+/// Inherits from <see cref="BaseUI"/>.
+/// Handles UI for the observer.
+/// </summary>
 public class ObserverUI : BaseUI
 {
     [Header("LogPanel")]
@@ -28,7 +30,7 @@ public class ObserverUI : BaseUI
     public GameObject numImplDefPrefab;
 
     /// <summary>
-    /// 
+    /// Sets up listeners for buttons.
     /// </summary>
     public override void Start()
     {
