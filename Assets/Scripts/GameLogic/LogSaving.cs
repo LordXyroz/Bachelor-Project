@@ -9,6 +9,9 @@ using UnityEngine;
 /// </summary>
 public static class LogSaving
 {
+    static bool disposedValue = false;
+    static bool initializeValue = false;
+
     static StreamWriter attackerWriter;
     static StreamWriter defenderWriter;
 
@@ -19,19 +22,10 @@ public static class LogSaving
     static LogSaving()
     {
         AppDomain.CurrentDomain.ProcessExit += new EventHandler(Destructor);
-
-        string path = Application.persistentDataPath + "/Logs/";
-
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
-
-        attackerWriter = new StreamWriter(path + "Attacker" + System.DateTime.Now + ".txt");
-        attackerWriter.WriteLine("Event:");
-
-        defenderWriter = new StreamWriter(path + "Defender" + System.DateTime.Now + ".txt");
-        defenderWriter.WriteLine("Event:");
+        
+        Initialize(false);
     }
-
+    
     /// <summary>
     /// Delegate since C# doesn't have destructors for static classes.
     /// Makes sure the files are closed.
@@ -40,10 +34,9 @@ public static class LogSaving
     /// <param name="e">unused</param>
     public static void Destructor(object sender, EventArgs e)
     {
-        attackerWriter.Close();
-        defenderWriter.Close();
+        Dispose(false);
     }
-    
+
     /// <summary>
     /// Overloaded function.
     /// Calls base function before adding extra info.
@@ -263,4 +256,71 @@ public static class LogSaving
         attackerWriter.Flush();
         defenderWriter.Flush();
     }
+
+    /// <summary>
+    /// Public function for calling <see cref="Dispose(bool)"/> manually.
+    /// </summary>
+    public static void Dispose()
+    {
+        Dispose(true);
+    }
+
+    /// <summary>
+    /// Public function for calling <see cref="Initialize(bool)"/> manually.
+    /// </summary>
+    public static void Initialize()
+    {
+        Initialize(true);
+    }
+
+    /// <summary>
+    /// Private function for handling closing of writers
+    /// </summary>
+    /// <param name="disposing"></param>
+    static void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                // TODO: dispose managed state (managed objects).
+            }
+            FlushWriters();
+
+            attackerWriter.Close();
+            defenderWriter.Close();
+
+            disposedValue = true;
+            initializeValue = false;
+        }
+    }
+
+    /// <summary>
+    /// Private function for handling creation of new log files
+    /// </summary>
+    /// <param name="initialized"></param>
+    static void Initialize(bool initialized)
+    {
+        if (!initializeValue)
+        {
+            if (initialized)
+            {
+                // TODO: dispose managed state (managed objects).
+            }
+
+            string path = Application.persistentDataPath + "/Logs/";
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            attackerWriter = new StreamWriter(path + "Attacker" + System.DateTime.Now + ".txt");
+            attackerWriter.WriteLine("Event:");
+
+            defenderWriter = new StreamWriter(path + "Defender" + System.DateTime.Now + ".txt");
+            defenderWriter.WriteLine("Event:");
+
+            disposedValue = false;
+            initializeValue = true;
+        }
+    }    
 }

@@ -27,6 +27,7 @@ public class Observer : MonoBehaviour, ILogging, IError
 
         ClearTarget();
         uiScript.EnableLogPanel();
+        LogSaving.Initialize();
     }
 
     /// <summary>
@@ -101,13 +102,10 @@ public class Observer : MonoBehaviour, ILogging, IError
     }
 
     /// <summary>
-    /// Only exists in code when using the Unity Editor.
-    /// Makes sure the destructor for the LogSaving static class runs.
+    /// Makes sure the LogSaving static class runs dispose on exiting gameplay scene.
     /// </summary>
-#if UNITY_EDITOR
     private void OnDestroy()
     {
-        LogSaving.Destructor(null, null);
+        LogSaving.Dispose();
     }
-#endif
 }
