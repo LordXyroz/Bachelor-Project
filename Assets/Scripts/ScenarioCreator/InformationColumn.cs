@@ -3,6 +3,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Class for displaying information about a node in the scenario creator.
+/// </summary>
 public class InformationColumn : MonoBehaviour
 {
 
@@ -23,13 +26,21 @@ public class InformationColumn : MonoBehaviour
     [Header("Lists")]
     private List<GameObject> vulnerabilityObjects = new List<GameObject>();
 
-
+    /// <summary>
+    /// Called on start, makes sure information is cleared.
+    /// </summary>
     void Start()
     {
         ClearInformationColumn();
     }
 
-
+    /// <summary>
+    /// Populates the column with info about a node.
+    /// </summary>
+    /// <param name="name">Name of the node</param>
+    /// <param name="vulnerabilities">Vulnerabilities added to the node</param>
+    /// <param name="security">Security level of the node</param>
+    /// <param name="entryPoint">If the node is an entry point</param>
     public void PopulateInformationColumn(string name, List<AttackTypes> vulnerabilities, int security, bool entryPoint)
     {
         nameText.text = name;
@@ -47,6 +58,10 @@ public class InformationColumn : MonoBehaviour
         infoAreaObject.SetActive(true);
     }
 
+    /// <summary>
+    /// Overload of <see cref="PopulateInformationColumn(string, List{AttackTypes}, int, bool)"/>
+    /// </summary>
+    /// <param name="comp">The node to display info of</param>
     public void PopulateInformationColumn(SystemComponent comp)
     {
         nameText.text = comp.componentName;
@@ -64,7 +79,9 @@ public class InformationColumn : MonoBehaviour
         infoAreaObject.SetActive(true);
     }
 
-
+    /// <summary>
+    /// Disables the column, and destroys previously added vulnerabilityObjects.
+    /// </summary>
     public void ClearInformationColumn()
     {
         infoAreaObject.SetActive(false);

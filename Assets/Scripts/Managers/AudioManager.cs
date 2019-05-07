@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manager class using static instance.
+/// Controls music and sound effects.
+/// </summary>
 public class AudioManager : MonoBehaviour
 {
     private enum FadeState

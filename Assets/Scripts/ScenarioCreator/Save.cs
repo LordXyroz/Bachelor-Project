@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class containing all relevant info needed for a save file.
+/// Used for loading/saving scenario data.
+/// </summary>
 [System.Serializable]
 public class Save
 {
