@@ -17,7 +17,7 @@ public class SystemComponent : MonoBehaviour
     public string componentType;   // Must match the prefab name
     public string componentName;
     public bool isEntryPoint;
-    private TMP_Text displayedName;
+    public TMP_Text displayedName;
 
     [Header("Reference line components")]
     public List<GameObject> connectedReferenceLines = new List<GameObject>();
@@ -32,7 +32,7 @@ public class SystemComponent : MonoBehaviour
     private SelectedObject selectedObject;
     private DropZone dropZone;
 
-    [Header("Empty objects intended for later development cycles")]
+    [Header("Empty attributes intended for later development cycles")]
     public string OS = null;
     public string subnet = null;
     public GameObject configPresent = null;
@@ -155,6 +155,9 @@ public class SystemComponent : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Deletes the system components, as well as all connection lines connected to it
+    /// </summary>
     public void DeleteSystemComponent()
     {
         foreach (GameObject line in connectedReferenceLines.ToList())
@@ -195,7 +198,11 @@ public class SystemComponent : MonoBehaviour
 
     public void UpdateComponentName()
     {
-        displayedName.text = componentName;
+        if (componentName != null && componentName != "")
+        {
+            displayedName = this.gameObject.transform.Find("SystemComponentName").GetComponent<TMP_Text>();
+            displayedName.text = componentName;
+        }
     }
 }
 

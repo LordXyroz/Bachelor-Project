@@ -121,7 +121,9 @@ public class SelectedObject : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Deselects the currently selected objects
+    /// </summary>
     public void DeselectObjects()
     {
         if (selected != null)
@@ -137,7 +139,7 @@ public class SelectedObject : MonoBehaviour
             }
             oldSelected = selected;
             selected = null;
-            
+
         }
 
         if (componentMenu.gameObject.activeInHierarchy)

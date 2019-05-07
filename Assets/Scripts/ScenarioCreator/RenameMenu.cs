@@ -13,7 +13,7 @@ public class RenameMenu : MonoBehaviour
     [Header("Saving the new name to the component")]
     private Canvas canvas;
     private SystemComponent systemComponent;
-    
+
     /// <summary>
     /// Get the new selected component every time the menu is enabled, to ensure the correct component is renamed
     /// </summary>
@@ -34,6 +34,9 @@ public class RenameMenu : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Accept button pressed for the new name
+    /// </summary>
     public void RenameAcceptPressed()
     {
         // TODO validate/sanitize name

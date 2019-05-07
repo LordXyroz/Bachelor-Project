@@ -51,13 +51,12 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
-
     public void OnBeginDrag(PointerEventData eventData)
     {
         Cursor.visible = false;
         /// Only selectable if it is located in the SystemSetupScreen editor area
         if (this.transform.parent.gameObject.GetComponent<DropZone>() != null)
-        { 
+        {
             FindObjectOfType<MouseScript>().SelectObject(gameObject);
             if (this.GetComponent<Image>() != null)
             {

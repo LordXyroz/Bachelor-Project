@@ -69,6 +69,11 @@ public class SystemComponentMenu : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Populates the dropdown menu of vulnerabilities
+    /// </summary>
+    /// <param name="dropdown">The dropdown menu to be updated</param>
+    /// <param name="OptionsArray">The list of vulnerabilities</param>
     private void PopulateVulnerabilityDropdown(Dropdown dropdown, List<int> OptionsArray)
     {
         displayedSecurityLevels = new List<string>();
@@ -112,6 +117,5 @@ public class SystemComponentMenu : MonoBehaviour
     public void OpenVulnerabilityMeny()
     {
         vulnerabilityMenu.gameObject.SetActive(true);
-        //vulnerabilityMenu.PopulateVulnerabilityMenu(componentMenuName.text);
     }
 }

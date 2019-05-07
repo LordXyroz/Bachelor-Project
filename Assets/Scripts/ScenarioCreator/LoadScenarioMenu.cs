@@ -19,7 +19,7 @@ public class LoadScenarioMenu : MonoBehaviour
 
     void Start()
     {
-        _SaveFileDirectory = Application.persistentDataPath+ "/Savefiles";
+        _SaveFileDirectory = Application.persistentDataPath + "/Savefiles";
 
         canvas = FindObjectOfType<Canvas>();
         saveMenu = canvas.transform.GetComponentInChildren<SaveMenu>(true);
@@ -39,7 +39,10 @@ public class LoadScenarioMenu : MonoBehaviour
         scenarioDropdown.value = dropdown.value;
     }
 
-
+    /// <summary>
+    /// Populates the dropdown with correct values
+    /// </summary>
+    /// <param name="dropdown">The dropdown to be populated</param>
     private void PopulatescenarioDropdown(TMP_Dropdown dropdown)
     {
         List<string> loadfiles = new List<string>();

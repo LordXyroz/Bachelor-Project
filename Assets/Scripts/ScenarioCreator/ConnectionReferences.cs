@@ -29,7 +29,7 @@ public class ConnectionReferences : MonoBehaviour
         if (fromBtn == null || toBtn == null)
             return;
 
-        if (fromBtn.gameObject.activeSelf && 
+        if (fromBtn.gameObject.activeSelf &&
             toBtn.gameObject.activeSelf)
         {
             lineFromStart.SetActive(true);
@@ -45,13 +45,20 @@ public class ConnectionReferences : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set the rferences for the connection line
+    /// </summary>
+    /// <param name="from">The system component the connection starts from</param>
+    /// <param name="to">The system component the connection ends in</param>
     public void SetReferences(GameObject from, GameObject to)
     {
         referenceFromObject = from;
         referenceToObject = to;
     }
 
-
+    /// <summary>
+    /// Deletes a connection line, as well as its references in the connected system components
+    /// </summary>
     public void RemoveConnectionComponent()
     {
         systemComponent = referenceFromObject.GetComponent<SystemComponent>();
