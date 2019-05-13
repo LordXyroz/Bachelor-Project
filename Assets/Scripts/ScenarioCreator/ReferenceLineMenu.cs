@@ -32,7 +32,10 @@ public class ReferenceLineMenu : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Toggles wether or not a firewall is active on the given connection line
+    /// </summary>
+    /// <param name="firewallToggle"></param>
     private void ToggleValueChanged(Toggle firewallToggle)
     {
         selectedObject.selected.gameObject.GetComponent<ConnectionReferences>().hasFirewall = firewallToggle.isOn;
@@ -42,15 +45,14 @@ public class ReferenceLineMenu : MonoBehaviour
         UpdateFirewall(selectedObject.selected.gameObject);
     }
 
-
+    /// <summary>
+    /// Function for setting the firewalls correctly when loading a scenario from file
+    /// </summary>
+    /// <param name="connections"></param>
     public void LoadFirewall(List<GameObject> connections)
     {
-        //canvas = GetComponentInParent<Canvas>();
         foreach (GameObject line in connections)
         {
-            //lineToEnd = line.gameObject.transform.Find("LineToEnd").GetComponent<RectTransform>().transform;
-            //lineFromStart = line.gameObject.transform.Find("LineFromStart").GetComponent<RectTransform>().transform;
-
             if (line.GetComponent<ConnectionReferences>().hasFirewall)
             {
                 firewall = line.gameObject.transform.Find("Firewall").gameObject;
@@ -60,7 +62,10 @@ public class ReferenceLineMenu : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Updates what connection line the firewall appears on (the longest of the lines)
+    /// </summary>
+    /// <param name="line"></param>
     public void UpdateFirewall(GameObject line)
     {
         lineToEnd = line.gameObject.transform.Find("LineToEnd").GetComponent<RectTransform>().transform;

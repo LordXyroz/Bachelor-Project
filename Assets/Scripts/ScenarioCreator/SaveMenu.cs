@@ -74,6 +74,9 @@ public class SaveMenu : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Saves the user inputed information along with the scenario data
+    /// </summary>
     public void SaveButtonPressed()
     {
         if (inputFilename.text != "")
@@ -137,6 +140,11 @@ public class SaveMenu : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Populates the save menu with appropriate data, if any of the fields already have been edited
+    /// </summary>
+    /// <param name="dropdownList">The dropdown list to be populated</param>
     private void PopulateSaveMenu(List<TMP_Dropdown> dropdownList)
     {
         if (filename != null)

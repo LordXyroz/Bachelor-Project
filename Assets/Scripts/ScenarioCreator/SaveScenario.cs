@@ -52,6 +52,11 @@ public class SaveScenario : MonoBehaviour
         fileExistsPopup = canvas.transform.GetComponentInChildren<SavefileExistsPopup>(true);
     }
 
+
+    /// <summary>
+    /// Creates an instance of the "Save" class cointaining all the scenario data for saving
+    /// </summary>
+    /// <returns></returns>
     private Save CreateSaveScenarioObject()
     {
         dropZone = FindObjectOfType<DropZone>();

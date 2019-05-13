@@ -1,5 +1,4 @@
-﻿using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -56,7 +55,10 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         referenceLineMenu = canvas.transform.GetComponentInChildren<ReferenceLineMenu>(true);
     }
 
-
+    /// <summary>
+    /// Change selectable object's color to red when hovered over
+    /// </summary>
+    /// <param name="eventData"></param>
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (image != null)  // Component
@@ -75,7 +77,10 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
-
+    /// <summary>
+    /// Change selectable object's color back to the original color when no longer hovedr over
+    /// </summary>
+    /// <param name="eventData"></param>
     public void OnPointerExit(PointerEventData eventData)
     {
         if (image != null)  // Component
@@ -95,7 +100,10 @@ public class HighlightObject : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
-
+    /// <summary>
+    /// Update what object is selected, activating it's selection box if it is a system component and changing it's color to the selection color
+    /// </summary>
+    /// <param name="eventData"></param>
     public void OnPointerClick(PointerEventData eventData)
     {
         if (componentMenu.gameObject.activeInHierarchy)

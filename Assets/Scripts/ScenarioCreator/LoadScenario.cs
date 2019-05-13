@@ -60,7 +60,10 @@ public class LoadScenario : MonoBehaviour
         filePath = Path.Combine(directoryPath, saveMenu.filename + ".json");
     }
 
-
+    /// <summary>
+    /// Loads the game data from a JSON file, and instantiates the neccesary components
+    /// </summary>
+    /// <param name="chosenFilepath">The file path for the JSON file</param>
     public void LoadGame(string chosenFilepath)
     {
         filePath = chosenFilepath;
@@ -108,6 +111,7 @@ public class LoadScenario : MonoBehaviour
 
                 targetComponent.securityLevel = loadFromJSON.systemComponentSecurityLevelsList[i];
                 targetComponent.componentName = loadFromJSON.systemComponentNamesList[i];
+                targetComponent.UpdateComponentName();
 
                 foreach (var vulnerability in vulnerabilityWrapper.vulnerabilityWrapperList)
                 {
@@ -162,7 +166,10 @@ public class LoadScenario : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Instantiates the correct prefab based on parameter
+    /// </summary>
+    /// <param name="componentType">The type of component to be instantiated</param>
     public void LoadObject(string componentType)
     {
         switch (componentType)
@@ -211,11 +218,15 @@ public class LoadScenario : MonoBehaviour
                                          Quaternion.identity,
                                          dropZone.transform);
         if (target == null)
-            Debug.Log("Or so help me lord I will...");
+            Debug.Log("Error during instantiation of object. ");
 
         target.name = target.name + prefabNo++;
         target.GetComponent<DraggableObject>().parentToReturnTo = dropZone.transform;
         dropZone.editableSystemComponents.Add(target);
+        //if (target.GetComponent<SystemComponent>().componentName != "")
+        //{
+        target.GetComponent<SystemComponent>().UpdateComponentName();
+        //}
     }
 
 
